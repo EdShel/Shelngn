@@ -1,6 +1,6 @@
 import { gl } from "./global";
 import { assertParamNotFalse } from "../errors";
-import { FLOAT, FLOAT2, FLOAT3, FLOAT4 } from "./vertex-data-types";
+import { FLOAT, FLOAT2, FLOAT3, FLOAT4, INT32 } from "./vertex-data-types";
 
 export default class Shader {
   /** @type WebGLProgram */
@@ -180,6 +180,8 @@ const getUniformSetterFunction = (uniformType) => {
       return (l, [x, y, z]) => gl.uniform3f(l, x, y, z);
     case FLOAT4:
       return (l, [x, y, z, w]) => gl.uniform4f(l, x, y, z, w);
+    case INT32:
+      return (l, v) => gl.uniform1i(l, v);
     default:
       throw new Error("Unknown uniform data type: " + uniformType);
   }

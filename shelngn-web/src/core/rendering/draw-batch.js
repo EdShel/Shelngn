@@ -12,6 +12,8 @@ let currentShader;
 /** @type Shader */
 let previousShader;
 
+let currentTexture;
+
 export const begin = () => {
   if (began) {
     throw new Error("Already began batching.");
@@ -34,13 +36,17 @@ export const flush = () => {
     currentShader.init();
   }
   currentShader.bindShader();
-  
+
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
-  gl.drawArrays(gl.POINTS, 0, queuedVerticesCount);
+  gl.drawArrays(gl.TRIANGLES, 0, queuedVerticesCount);
 
   previousShader = currentShader;
   began = false;
+
+  console.log('//////////////')
+  console.log(gl.getParameter(gl.ACTIVE_TEXTURE))
+  console.log(gl.TEXTURE0)
 };
 
 export const setShader = (newShader) => {
@@ -56,6 +62,20 @@ export const setShader = (newShader) => {
   }
   flush();
   currentShader = newShader;
+  begin();
+};
+
+export const setTexture = (newTexture) => {
+  assertParamNotFalse("newTexture", newTexture);
+  if (newTexture === currentTexture) {
+    return;
+  }
+  if (!began) {
+    currentTexture = newTexture;
+    return;
+  }
+  flush();
+  currentTexture = newTexture;
   begin();
 };
 
