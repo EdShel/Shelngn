@@ -24,6 +24,7 @@ export const begin = () => {
   queuedVerticesCount = 0;
 };
 
+
 export const flush = () => {
   const vertexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
@@ -43,10 +44,7 @@ export const flush = () => {
 
   previousShader = currentShader;
   began = false;
-
-  console.log('//////////////')
-  console.log(gl.getParameter(gl.ACTIVE_TEXTURE))
-  console.log(gl.TEXTURE0)
+  gl.deleteBuffer(vertexBuffer);
 };
 
 export const setShader = (newShader) => {
