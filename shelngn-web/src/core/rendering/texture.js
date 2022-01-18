@@ -5,13 +5,17 @@ let loadedTextures = [];
 let loadingTextures = [];
 
 export default class Texture {
-  constructor(path, glTexture) {
+  constructor(path, glTexture, width, height) {
     this.path = path;
     this.glTexture = glTexture;
+    /** @type Number */
+    this.width = width;
+    /** @type Number */
+    this.height = height;
   }
 
   static loadLazy(textureUrl) {
-    assertParamNotFalse('textureUrl', textureUrl);
+    assertParamNotFalse("textureUrl", textureUrl);
 
     const alreadyLoadedTexture = loadedTextures.find(
       (t) => t.path === textureUrl
@@ -48,11 +52,14 @@ export default class Texture {
       pixel
     );
 
-    const textureEntry = new Texture(textureUrl, texture);
+    const textureEntry = new Texture(textureUrl, texture, width, height);
     loadingTextures.push(textureEntry);
 
     const image = new Image();
     image.onload = function () {
+      textureEntry.width = image.width;
+      textureEntry.height = image.height;
+      
       gl.bindTexture(gl.TEXTURE_2D, texture);
       gl.texImage2D(
         gl.TEXTURE_2D,

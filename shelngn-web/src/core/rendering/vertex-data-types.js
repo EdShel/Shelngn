@@ -8,4 +8,4 @@ export const FLOAT4 = { glType: glFloat, elementsCount: 4, sizeBytes: 16 };
 
 export const INT32 = { glType: glInteger, elementsCount: 1, sizeBytes: 4 };
 
-export const SAMPLER2D = { glType: WebGLRenderingContext.glInteger, elementsCount: 1, sizeBytes: 4 };
+// export const SAMPLER2D = { glType: WebGLRenderingContext.glInteger, elementsCount: 1, sizeBytes: 4 };

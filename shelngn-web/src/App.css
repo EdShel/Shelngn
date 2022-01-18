@@ -1,2 +1,12 @@
 .App {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    align-items: stretch;
+}
+
+.vertical-panel {
+    display: flex;
+    border: 1px solid black;
+    flex: 0.5;
 }
