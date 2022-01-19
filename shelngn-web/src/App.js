@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   clearCanvas,
   initializeRenderer,
@@ -6,17 +6,20 @@ import {
   unitializeRenderer,
 } from "./core/rendering";
 import "./App.css";
-import Shader from "./core/rendering/shader";
-import { FLOAT, FLOAT2, INT32 } from "./core/rendering/vertex-data-types";
-import {
-  begin,
-  flush,
-} from "./core/rendering/draw-batch";
+import { begin, flush } from "./core/rendering/draw-batch";
 import Texture from "./core/rendering/texture";
 import Draw from "./core/rendering/Draw";
+import Camera2D from "./core/rendering/Camera2D";
+import { addFpsChangeListener, updateFps } from "./core/rendering/Fps";
 
 function App() {
+  const [fps, setFps] = useState(0);
   const canvasRef = useRef();
+
+  useEffect(() => {
+    const subscriber = addFpsChangeListener(setFps);
+    return () => subscriber.remove();
+  }, []);
 
   useEffect(() => {
     if (!canvasRef.current) {
@@ -24,12 +27,15 @@ function App() {
     }
     initializeRenderer(canvasRef.current);
 
-
     const texture = Texture.loadLazy("./logo192.png");
 
     let running = true;
     const render = () => {
-      const x = Math.abs(-Math.sin(new Date().getTime() / 1000)) / 2;
+      updateFps();
+
+      const x = Math.abs(-Math.sin(new Date().getTime() / 1000)) * 512;
+
+      Draw.applyCamera(new Camera2D(0, 0, 512, 512));
       renderBegin();
       clearCanvas([0.2, 0.2, 0.2, 1]);
       begin();
@@ -38,7 +44,6 @@ function App() {
       Draw.drawTexture(texture, 0, x);
       Draw.drawTexture(texture, 0, -x);
       Draw.drawTexture(texture, -x, 0);
-
       flush();
 
       if (running) {
@@ -48,7 +53,7 @@ function App() {
     window.requestAnimationFrame(render);
 
     return () => {
-      console.log("ded");
+      console.log("cleaning up canvas");
       running = false;
       unitializeRenderer();
     };
@@ -66,6 +71,7 @@ function App() {
             height: "100%",
           }}
         />
+        <div style={{ position: "absolute", left: 10, top: 10 }}>{fps} FPS</div>
       </div>
     </div>
   );
