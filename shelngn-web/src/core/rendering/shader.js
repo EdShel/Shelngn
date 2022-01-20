@@ -78,7 +78,6 @@ export default class Shader {
 
   init() {
     for (const attrib of this.attributes) {
-      // attrib.setPointer();
       attrib.enable();
     }
   }
@@ -86,7 +85,6 @@ export default class Shader {
   bindShader() {
     for (const attrib of this.attributes) {
       attrib.setPointer();
-      // attrib.enable();
     }
 
     gl.useProgram(this.glProgram);
@@ -147,9 +145,10 @@ export default class Shader {
       gl.compileShader(shader);
       const success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
       if (!success) {
-        console.log(gl.getShaderInfoLog(shader));
+        const errorInfo = gl.getShaderInfoLog(shader);
+        console.warn(errorInfo);
         gl.deleteShader(shader);
-        throw new Error(gl.getShaderInfoLog(shader));
+        throw new Error(errorInfo);
       }
       return shader;
     }
@@ -161,8 +160,10 @@ export default class Shader {
       gl.linkProgram(program);
       var success = gl.getProgramParameter(program, gl.LINK_STATUS);
       if (!success) {
-        console.log(gl.getProgramInfoLog(program));
+        const errorInfo = gl.getProgramInfoLog(program);
+        console.warn(errorInfo);
         gl.deleteProgram(program);
+        throw new Error(errorInfo);
       }
 
       return program;

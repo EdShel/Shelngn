@@ -1,8 +1,11 @@
-import { glMatrix, mat4 } from "gl-matrix";
+import { mat4, vec3 } from "gl-matrix";
 import { addElement, setShader, setTexture } from "./draw-batch";
+import { gl } from "./global";
 import Shader from "./shader";
 import Texture from "./texture"; // eslint-disable-line no-unused-vars
+import Camera2D from "./Camera2D";
 import { FLOAT, FLOAT2, INT32, MATRIX4X4 } from "./vertex-data-types";
+import { degToRad } from "../util/math";
 
 /** @type Shader */
 let drawingShader = null;
@@ -30,7 +33,7 @@ const initialize = () => {
 
     void main() {
       vec4 col = texture2D(u_sampler, v_textureCoord);
-      gl_FragColor = vec4(col.a, col.a, col.a, 1.0);
+      gl_FragColor = col;
     }
   `;
 
@@ -46,7 +49,8 @@ const initialize = () => {
     },
   });
 
-  console.log(drawingShader);
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 };
 
 const initializeIfNeed = () => {
@@ -100,6 +104,20 @@ const Draw = {
     const { x, y, width, height } = camera2D;
     const projectionMatrix = mat4.create();
     mat4.ortho(projectionMatrix, x, x + width, y + height, y, 0, 10);
+    if (camera2D.rotation) {
+      mat4.rotateZ(
+        projectionMatrix,
+        projectionMatrix,
+        degToRad(camera2D.rotation)
+      );
+    }
+    if (camera2D.zoom !== 1) {
+      mat4.scale(projectionMatrix, projectionMatrix, [
+        camera2D.zoom,
+        camera2D.zoom,
+        camera2D.zoom,
+      ]);
+    }
     drawingShader.setUniform("u_transformation", projectionMatrix);
   },
 };

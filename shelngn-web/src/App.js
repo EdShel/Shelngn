@@ -11,6 +11,7 @@ import Texture from "./core/rendering/texture";
 import Draw from "./core/rendering/Draw";
 import Camera2D from "./core/rendering/Camera2D";
 import { addFpsChangeListener, updateFps } from "./core/rendering/Fps";
+import GameScreen from "./core/rendering/GameScreen";
 
 function App() {
   const [fps, setFps] = useState(0);
@@ -32,18 +33,27 @@ function App() {
     let running = true;
     const render = () => {
       updateFps();
+      const screenDimensions = GameScreen.getDimensions();
 
-      const x = Math.abs(-Math.sin(new Date().getTime() / 1000)) * 512;
+      const camera = new Camera2D(
+        -screenDimensions.width / 2,
+        -screenDimensions.height / 2,
+        screenDimensions.width,
+        screenDimensions.height
+      );
+      camera.rotation = new Date().getTime() / 10;
+      camera.zoom = Math.sin(new Date().getTime() / 500);
 
-      Draw.applyCamera(new Camera2D(0, 0, 512, 512));
+      Draw.applyCamera(camera);
       renderBegin();
       clearCanvas([0.2, 0.2, 0.2, 1]);
       begin();
 
-      Draw.drawTexture(texture, x, 0);
-      Draw.drawTexture(texture, 0, x);
-      Draw.drawTexture(texture, 0, -x);
-      Draw.drawTexture(texture, -x, 0);
+      const x = Math.abs(-Math.sin(new Date().getTime() / 1000)) * 512;
+      Draw.drawTexture(texture, x - texture.width / 2, -texture.height / 2);
+      Draw.drawTexture(texture, -texture.width / 2, x - texture.height / 2);
+      Draw.drawTexture(texture, -texture.width / 2, -x - texture.height / 2);
+      Draw.drawTexture(texture, -x - texture.width / 2, -texture.height / 2);
       flush();
 
       if (running) {
