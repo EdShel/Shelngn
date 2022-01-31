@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Shelngn.Migrator": {
+      "commandName": "Project",
+      "hotReloadEnabled": false,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
