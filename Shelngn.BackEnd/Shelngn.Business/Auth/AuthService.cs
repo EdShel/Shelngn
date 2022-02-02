@@ -85,7 +85,7 @@ namespace Shelngn.Business.Auth
 
             ClaimsIdentity tokenClaims = GetTokenClaimsForUser(user);
             return new LoginResult(
-                Token: this.jwtTokenGenerator.GenerateAuthToken(tokenClaims),
+                AccessToken: this.jwtTokenGenerator.GenerateAuthToken(tokenClaims),
                 RefreshToken: newRefreshToken.Value
             );
         }
@@ -139,7 +139,7 @@ namespace Shelngn.Business.Auth
                 this.unitOfWork.Commit();
 
                 return new RefreshResult(
-                    AuthToken: this.jwtTokenGenerator.GenerateAuthToken(userPrincipal.Identities.First()),
+                    AccessToken: this.jwtTokenGenerator.GenerateAuthToken(userPrincipal.Identities.First()),
                     RefreshToken: newRefreshToken.Value
                 );
             }
