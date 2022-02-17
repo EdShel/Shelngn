@@ -1,40 +1,41 @@
 import axios from "axios";
-import { refresh, saveAuthenticationTokens } from "./auth/reducer";
-import { getAccessToken, getRefreshToken } from "./auth/selectors";
+import AppStorage from "./AppStorage";
 import { apiUrl } from "./constants";
-import store from "./redux/store";
 
 const api = axios.create({
   baseURL: apiUrl,
 });
 api.interceptors.request.use(
   (requestConfig) => {
-    const accessToken = getAccessToken(store.getState());
+    const accessToken = AppStorage.accessToken;
     requestConfig.headers.Authorization = `Bearer ${accessToken}`;
   },
   async (error) => {
     const originalRequest = error.config;
     if (error.response.status === 401 && !originalRequest.retryAfterRefresh) {
       originalRequest.retryAfterRefresh = true;
-
-      const refreshResult = await store.dispatch(refresh()).unwrap();
-      if (refreshResult.status === 200) {
-        return api(originalRequest);
-      }
+      await postRefresh();
     }
     return Promise.reject(error);
   }
 );
+const post = async (url, data) => (await apiAnonymous.post(url, data)).data;
+
 const apiAnonymous = axios.create({
   baseURL: apiUrl,
 });
+const postAnonymous = async (url, data) => (await apiAnonymous.post(url, data)).data;
 
 // --------- Auth --------- //
 export const postRegister = ({ email, userName, password }) =>
-  apiAnonymous.post("/auth/register", { email, userName, password });
-export const postLogin = ({ email, password }) =>
-  apiAnonymous.post("/auth/login", { email, password });
-export const postRefresh = () =>
-  api.post("/auth/refresh", {
-    refreshToken: getRefreshToken(store.getState()),
-  });
+  postAnonymous("/auth/register", { email, userName, password });
+export const postLogin = async ({ email, password }) => {
+  const data = await postAnonymous("/auth/login", { email, password });
+  AppStorage.accessToken = data.accessToken;
+  AppStorage.refreshToken = data.refreshToken;
+};
+export const postRefresh = async () => {
+  const data = await post("/auth/refresh", { refreshToken: AppStorage.refreshToken });
+  AppStorage.accessToken = data.accessToken;
+  AppStorage.refreshToken = data.refreshToken;
+};

@@ -1,0 +1,37 @@
+.button {
+  padding: 7px 32px;
+  border-radius: 10px;
+  color: var(--text-color);
+  outline: none;
+  border: none;
+  font-family: "Quicksand";
+  font-size: 1rem;
+}
+
+.button:not([disabled]):hover {
+  opacity: 0.8;
+}
+
+.button:active {
+  opacity: 0.7;
+}
+
+.primary {
+  background: linear-gradient(239.09deg, #128eba 30.43%, #236db1 80.4%);
+}
+
+.secondary {
+  background: linear-gradient(239.09deg, #22ab95 30.43%, #0f7060 80.4%);
+}
+
+.cancel {
+  background: linear-gradient(239.09deg, #767b7c 30.43%, #595e62 80.4%);
+}
+
+.button:not([disabled]) {
+  cursor: pointer;
+}
+
+.button[disabled] {
+  background: linear-gradient(239.09deg, #606464 30.43%, #4c4f51 80.4%);
+}

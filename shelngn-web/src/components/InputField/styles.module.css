@@ -1,0 +1,65 @@
+.top-space-keeper {
+  padding-top: calc(1rem + 5px);
+}
+
+.container {
+  position: relative;
+}
+
+.container > label {
+  font-size: 1rem;
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: top 0.2s cubic-bezier(0.29, 0.82, 0.71, 0.97),
+    transform 0.2s linear;
+  color: var(--text-color);
+  user-select: none;
+}
+
+.container > input:-webkit-autofill + label,
+.container > input:focus + label,
+.container > input:not([value=""]) + label {
+  top: calc(-1rem - 5px);
+  transform: translateY(0);
+}
+
+.container > label > sup {
+  position: absolute;
+  left: 100%;
+  top: -10px;
+  color: #ed4646;
+  font-size: 30px;
+}
+
+.container > input {
+  height: 32px;
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  background-color: var(--background-light) !important;
+  border: none;
+  border-radius: 10px;
+  color: var(--text-color) !important;
+  font-family: "Quicksand";
+  font-size: 1rem;
+  padding-left: 10px;
+}
+
+.container > input:-webkit-autofill,
+.container > input:-webkit-autofill:hover,
+.container > input:-webkit-autofill:focus,
+.container > input:-webkit-autofill:active {
+  transition-delay: 36000s; /* Delays autofill background for 10hrs */
+}
+
+.container > input:focus {
+  border-bottom: 5px solid #a5a5a5;
+  padding-top: 5px;
+}
+
+.container > input.invalid {
+  border-bottom: 5px solid #ed4646;
+  padding-top: 5px;
+}

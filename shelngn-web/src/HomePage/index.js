@@ -1,14 +1,21 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import UrlTo from "../UrlTo";
+import SideBar from "../components/SideBar";
+import ScreenContainer from "../components/ScreenContainer";
+import Header from "./Header";
+import styles from "./styles.module.css";
 
 const HomePage = () => {
   return (
-    <div>
-      <Link to={UrlTo.home()}>Home</Link>
-      <Link to={UrlTo.login()}>Login</Link>
-      <Link to={UrlTo.register()}>Register</Link>
-    </div>
+    <ScreenContainer>
+      <SideBar />
+      <div className={styles['screen-content']}>
+        <Header />
+        <div>
+          <h1>Shelngn</h1>
+          <h2>Collaborative gameplay prototyping tool</h2>
+        </div>
+      </div>
+    </ScreenContainer>
   );
 };
 

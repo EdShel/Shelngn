@@ -1,10 +1,10 @@
 import React from "react";
 import { Provider } from "react-redux";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import store from "./store";
 import HomePage from "./HomePage";
 import LoginPage from "./auth/LoginPage";
 import RegisterPage from "./auth/RegisterPage";
-import store from "./redux/store";
 import UrlTo from "./UrlTo";
 
 const App = () => {
