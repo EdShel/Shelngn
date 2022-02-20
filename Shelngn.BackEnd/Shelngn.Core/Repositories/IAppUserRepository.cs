@@ -11,11 +11,4 @@ namespace Shelngn.Repositories
         Task<AppUser?> GetFirstByUserNameOrNullAsync(string userName, CancellationToken ct = default);
         Task<AppUser?> GetFirstByEmailOrNullAsync(string email, CancellationToken ct = default);
     }
-
-    public interface IRefreshTokenRepository
-    {
-        Task CreateAsync(RefreshToken refreshToken, CancellationToken ct = default);
-        Task DeleteAsync(string value, CancellationToken ct = default);
-        Task<RefreshToken?> GetByValueAsync(string value, CancellationToken ct = default);
-    }
 }

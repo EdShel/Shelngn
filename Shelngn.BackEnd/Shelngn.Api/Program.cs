@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Shelngn.Api.Filters;
 using Shelngn.Business;
 using Shelngn.Business.Auth;
+using Shelngn.Business.GameProjects;
 using Shelngn.Data.Repositories;
 using Shelngn.Repositories;
 using Shelngn.Services;
 using Shelngn.Services.Auth;
+using Shelngn.Services.GameProjects;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,9 +45,14 @@ services.AddAuthentication(options =>
     }
 );
 
-services.AddControllers();
+services.AddControllers(options =>
+{
+    options.Filters.Add<ExceptionCatchingFilter>();
+});
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
+
+services.AddAutoMapper(typeof(Program).Assembly);
 
 // Repositories
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
@@ -53,6 +61,7 @@ services.AddTransient<IUnitOfWork, UnitOfWork>();
 services.AddTransient<IRepositoryFactory, RepositoryFactory>();
 services.AddTransient<IAppUserRepository, AppUserRepository>();
 services.AddTransient<IRefreshTokenRepository, RefreshTokenRepository>();
+services.AddTransient<IGameProjectRepository, GameProjectRepository>();
 
 // Services
 services.AddSingleton<IPasswordHasher, IdentityPasswordHasher>();
@@ -60,6 +69,12 @@ services.AddTransient<IJwtTokenGenerator, JwtTokenGenerator>();
 services.AddTransient<IRefreshTokenFactory, RefreshTokenFactory>();
 services.AddTransient<IAuthService, AuthService>();
 services.AddTransient<IAppUserStore, AppUserStore>();
+services.AddSingleton<LocalFileSystem>();
+services.AddTransient<IGameProjectCreator, GameProjectCreator>();
+services.AddTransient<IGameProjectSearcher, GameProjectSearcher>();
+services.AddSingleton<IGameProjectStorageBalancer, GameProjectStorageBalancer>(p => new GameProjectStorageBalancer(@"C:\Users\Admin\Desktop\Projects\"));
+
+
 
 var app = builder.Build();
 

@@ -21,7 +21,7 @@ namespace Shelngn.Exceptions
 
     public class NotFoundException : RestException
     {
-        public NotFoundException(string? message) : base(HttpStatusCode.NotFound, message)
+        public NotFoundException(string? notFoundItemName) : base(HttpStatusCode.NotFound, $"{notFoundItemName ?? "Resource"} does not exist.")
         {
         }
     }
