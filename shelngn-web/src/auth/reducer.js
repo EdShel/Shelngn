@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { postLogin, postRefresh, postRegister } from "../api";
+import { postLogin, postRegister, postRevoke } from "../api";
 import AppStorage from "../AppStorage";
 
 const initialState = {
@@ -12,9 +12,6 @@ const initialState = {
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case login.fulfilled:
-      console.log('CAAAALLLL?>>>>???')
-      console.log(action);
-      console.log(action.payload);
       AppStorage.accessToken = action.payload.accessToken;
       AppStorage.refreshToken = action.payload.refreshToken;
       return {
@@ -26,8 +23,8 @@ const reducer = (state = initialState, action) => {
       return state;
   }
 };
-console.log('red1', reducer)
 export default reducer;
 
 export const register = createAsyncThunk("auth/register", postRegister);
 export const login = createAsyncThunk("auth/login", postLogin);
+export const revokeRefreshToken = createAsyncThunk("auth/revoke", postRevoke)

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Shelngn.Api.Filters;
+using Shelngn.Api.Workspaces;
 using Shelngn.Business;
 using Shelngn.Business.Auth;
 using Shelngn.Business.GameProjects;
@@ -47,8 +48,9 @@ services.AddAuthentication(options =>
 
 services.AddControllers(options =>
 {
-    options.Filters.Add<ExceptionCatchingFilter>();
+    //options.Filters.Add<ExceptionCatchingFilter>();
 });
+services.AddSignalR();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
@@ -74,8 +76,6 @@ services.AddTransient<IGameProjectCreator, GameProjectCreator>();
 services.AddTransient<IGameProjectSearcher, GameProjectSearcher>();
 services.AddSingleton<IGameProjectStorageBalancer, GameProjectStorageBalancer>(p => new GameProjectStorageBalancer(@"C:\Users\Admin\Desktop\Projects\"));
 
-
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -84,6 +84,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseCors(builder => builder
     .AllowAnyOrigin()
@@ -96,5 +98,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<WorkspaceHub>("/workspace");
 
 app.Run();

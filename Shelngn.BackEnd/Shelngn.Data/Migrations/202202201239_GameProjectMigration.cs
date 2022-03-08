@@ -17,7 +17,7 @@ namespace Shelngn.Data.Migrations
             this.Create.Table("game_project_member")
                 .WithColumn("game_project_id").AsGuid().NotNullable().ForeignKey("game_project", "id").OnDelete(Rule.Cascade)
                 .WithColumn("app_user_id").AsGuid().NotNullable().ForeignKey("app_user", "id")
-                .WithColumn("insert_data").AsDateTimeOffset().NotNullable().WithDefault(SystemMethods.CurrentDateTimeOffset);
+                .WithColumn("insert_date").AsDateTimeOffset().NotNullable().WithDefault(SystemMethods.CurrentDateTimeOffset);
         }
 
         public override void Down()

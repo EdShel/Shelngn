@@ -1,6 +1,15 @@
 .screen-content {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.main-container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.game-projects-list {
+  margin-top: 30px;
 }

@@ -1,0 +1,43 @@
+.game-projects-list {
+  display: grid;
+  column-gap: 8px;
+  row-gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media screen and (max-width: 576px) {
+  .game-projects-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+.game-project {
+  min-height: 160px;
+  /* background-color: var(--background); */
+  background: linear-gradient(
+    143deg,
+    #36394a 32%,
+    #4a4c58 32%,
+    #4a4c58 72%,
+    #36394a 72%
+  );
+  background-size: 600%;
+  border-radius: 10px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  text-decoration: none;
+  transition: background-size 0.2s, transform 0.1s;
+}
+
+.game-project:hover {
+    background-size: 100%;
+    transform: scale(90%);
+}
+
+.title {
+  font-size: 1.5rem;
+  color: var(--text-color);
+}

@@ -5,6 +5,7 @@ import store from "./store";
 import HomePage from "./HomePage";
 import LoginPage from "./auth/LoginPage";
 import RegisterPage from "./auth/RegisterPage";
+import WorkspacePage from "./WorkspacePage";
 import UrlTo from "./UrlTo";
 
 const App = () => {
@@ -15,6 +16,7 @@ const App = () => {
           <Route path={UrlTo.home()} element={<HomePage />} />
           <Route path={UrlTo.login()} element={<LoginPage />} />
           <Route path={UrlTo.register()} element={<RegisterPage />} />
+          <Route path={UrlTo.workspace(':id')} element={<WorkspacePage />} />
         </Routes>
       </BrowserRouter>
     </Provider>

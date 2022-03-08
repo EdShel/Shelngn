@@ -8,8 +8,9 @@ import Button from "../../components/Button";
 import Form from "../Form";
 import { useNavigate } from "react-router-dom";
 import { login, register } from "../reducer";
-import styles from "./styles.module.css";
 import UrlTo from "../../UrlTo";
+import styles from "./styles.module.css";
+import ButtonBack from "../../components/ButtonBack";
 
 const RegisterPage = () => {
   const emailField = "email";
@@ -26,11 +27,9 @@ const RegisterPage = () => {
       [userNameField]: "",
     },
     onSubmit: async ({ email, password, username }) => {
-      console.log("start");
       await dispatch(register({ email, password, username })).unwrap();
       await dispatch(login({ email, password })).unwrap();
       navigate(UrlTo.home());
-      console.log("end");
     },
   });
 
@@ -60,7 +59,7 @@ const RegisterPage = () => {
           onChange={formik.handleChange}
         />
         <div className={styles.buttons}>
-          <Button text="Back" type="cancel" />
+          <ButtonBack text="Back" type="cancel" />
           <Button text="Create account" onPress={formik.handleSubmit} disabled={formik.isSubmitting} />
         </div>
       </Form>

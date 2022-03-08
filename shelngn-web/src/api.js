@@ -5,21 +5,29 @@ import { apiUrl } from "./constants";
 const api = axios.create({
   baseURL: apiUrl,
 });
-api.interceptors.request.use(
-  (requestConfig) => {
-    const accessToken = AppStorage.accessToken;
-    requestConfig.headers.Authorization = `Bearer ${accessToken}`;
-  },
+api.interceptors.request.use((requestConfig) => {
+  const accessToken = AppStorage.accessToken;
+  requestConfig.headers.Authorization = `Bearer ${accessToken}`;
+  console.log("Request interceptor");
+  return requestConfig;
+});
+api.interceptors.response.use(
+  (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    console.log("Oh shit error", error.response.status);
     if (error.response.status === 401 && !originalRequest.retryAfterRefresh) {
+      console.log("Doing refresh");
       originalRequest.retryAfterRefresh = true;
       await postRefresh();
+      api(originalRequest);
     }
     return Promise.reject(error);
   }
 );
-const post = async (url, data) => (await apiAnonymous.post(url, data)).data;
+const getAuth = async (url, config) => (await api.get(url, config)).data;
+const postAuth = async (url, data) => (await api.post(url, data)).data;
+const deleteAuth = async (url, config) => (await api.delete(url, config)).data;
 
 const apiAnonymous = axios.create({
   baseURL: apiUrl,
@@ -35,7 +43,18 @@ export const postLogin = async ({ email, password }) => {
   AppStorage.refreshToken = data.refreshToken;
 };
 export const postRefresh = async () => {
-  const data = await post("/auth/refresh", { refreshToken: AppStorage.refreshToken });
+  const data = await postAuth("/auth/refresh", { refreshToken: AppStorage.refreshToken });
+  console.log("Done refresh");
   AppStorage.accessToken = data.accessToken;
   AppStorage.refreshToken = data.refreshToken;
 };
+export const postRevoke = async () => {
+  const revokePromise = postAuth("/auth/revoke", { refreshToken: AppStorage.refreshToken });
+  AppStorage.accessToken = null;
+  AppStorage.refreshToken = null;
+  await revokePromise;
+};
+
+// --------- Game project --------- //
+export const postCreateNewProject = () => postAuth("/gameProject");
+export const getMyGameProjects = () => getAuth("/gameProject/my");

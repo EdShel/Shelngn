@@ -2,6 +2,6 @@ const UrlTo = {
     home: () => '/',
     login: () => '/login',
     register: () => '/register',
-    project: () => '/project',
+    workspace: (id) => '/workspace/' + id,
 };
 export default UrlTo;

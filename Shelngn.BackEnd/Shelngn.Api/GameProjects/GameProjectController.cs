@@ -42,7 +42,7 @@ namespace Shelngn.Api.GameProjects
 
             return Ok(new
             {
-                Id = gameProject.Id
+                Id = gameProject.Id.ToUrlSafeBase64()
             });
         }
 
@@ -51,12 +51,17 @@ namespace Shelngn.Api.GameProjects
         {
             Guid userId = this.User.GetIdGuid();
             IEnumerable<GameProject> myProjects = await this.gameProjectSearcher.GetAllForUserAsync(userId);
-            return Ok(this.mapper.Map<GameProjectListModel>(myProjects));
+            IEnumerable<GameProjectListModel>? myProjectsModel = this.mapper.Map<IEnumerable<GameProjectListModel>>(myProjects);
+            return Ok(new
+            {
+                GameProjects = myProjectsModel
+            });
         }
 
         [HttpGet("{id}/ls")]
-        public async Task<IActionResult> ListDirTree([FromRoute(Name = "id")] Guid gameProjectId)
+        public async Task<IActionResult> ListDirTree([FromRoute(Name = "id")] string gameProjectBase64Id)
         {
+            Guid gameProjectId = GuidExtensions.FromUrlSafeBase64(gameProjectBase64Id);
             GameProject? gameProject = await this.gameProjectSearcher.GetByIdAsync(gameProjectId)
                 ?? throw new NotFoundException("Game project");
             ProjectDirectory files = await this.localFileSystem.ListDirectoryFilesAsync(new Uri(gameProject.FilesLocation))
@@ -65,5 +70,19 @@ namespace Shelngn.Api.GameProjects
         }
     }
 
-    public record GameProjectListModel(Guid Id, string Name);
+    public class GameProjectListModel
+    {
+        public string Id { get; set; } = null!;
+        public string ProjectName { get; set; } = null!;
+
+        private class GameProjectListModelProfile : Profile
+        {
+            public GameProjectListModelProfile()
+            {
+                CreateMap<GameProject, GameProjectListModel>()
+                    .ForMember(m => m.Id, opt => opt.MapFrom(g => g.Id.ToUrlSafeBase64()));
+            }
+        }
+    }
+
 }
