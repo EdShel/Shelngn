@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Shelngn.Api.Workspaces
 {
+    [Authorize]
     public class WorkspaceHub : Hub
     {
         private readonly ILogger<WorkspaceHub> logger;

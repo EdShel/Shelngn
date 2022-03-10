@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using Shelngn.Api.Filters;
+using Shelngn.Api.Utilities;
 using Shelngn.Api.Workspaces;
 using Shelngn.Business;
 using Shelngn.Business.Auth;
@@ -43,6 +45,21 @@ services.AddAuthentication(options =>
     {
         options.TokenValidationParameters = jwtValidationOptions;
         options.MapInboundClaims = false;
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context => // for SignalR clients authentication
+            {
+                string accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken)
+                    && path.StartsWithSegments("/workspace"))
+                {
+                    context.Token = accessToken;
+                }
+
+                return Task.CompletedTask;
+            }
+        };
     }
 );
 
@@ -50,7 +67,10 @@ services.AddControllers(options =>
 {
     //options.Filters.Add<ExceptionCatchingFilter>();
 });
+
 services.AddSignalR();
+services.AddSingleton<IUserIdProvider, IdClaimUserIdProvider>();
+
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
@@ -88,7 +108,8 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseCors(builder => builder
-    .AllowAnyOrigin()
+    .WithOrigins("http://localhost:3000")
+    .AllowCredentials()
     .AllowAnyMethod()
     .AllowAnyHeader());
 
