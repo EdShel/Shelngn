@@ -12,6 +12,7 @@ using Shelngn.Repositories;
 using Shelngn.Services;
 using Shelngn.Services.Auth;
 using Shelngn.Services.GameProjects;
+using Shelngn.Services.Workspaces;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -95,6 +96,9 @@ services.AddSingleton<LocalFileSystem>();
 services.AddTransient<IGameProjectCreator, GameProjectCreator>();
 services.AddTransient<IGameProjectSearcher, GameProjectSearcher>();
 services.AddSingleton<IGameProjectStorageBalancer, GameProjectStorageBalancer>(p => new GameProjectStorageBalancer(@"C:\Users\Admin\Desktop\Projects\"));
+
+services.AddSingleton<WorkspacesStatesManager>();
+services.AddTransient<ActiveUsersWorkspaceStateReducer>();
 
 var app = builder.Build();
 

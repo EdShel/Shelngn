@@ -1,0 +1,18 @@
+.hint {
+    position: relative;
+}
+
+.tooltip {
+    visibility: hidden;
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    background-color: #0F1012;
+    padding: 5px;
+    transform: translateX(-50%);
+    z-index: 9999;
+}
+
+.hint:hover .tooltip {
+    visibility: visible;
+}

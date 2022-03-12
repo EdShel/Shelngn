@@ -1,8 +1,10 @@
 :root {
   --screen-background: #272934;
-  --background: #36394A;
-  --background-light: #4B4E60;
+  --background: #36394a;
+  --background-light: #4b4e60;
   --text-color: #ffffff;
+  --primary: #128eba;
+  --secondary: #22ab95;
   font-size: 16px;
 }
 
