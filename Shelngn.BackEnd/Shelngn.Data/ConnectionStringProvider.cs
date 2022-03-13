@@ -1,4 +1,4 @@
-﻿namespace Shelngn.Data.Repositories
+﻿namespace Shelngn.Data
 {
     public record ConnectionStringProvider
     {

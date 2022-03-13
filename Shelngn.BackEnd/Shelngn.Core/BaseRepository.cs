@@ -1,4 +1,6 @@
-﻿namespace Shelngn.Repositories
+﻿using Shelngn.Repositories;
+
+namespace Shelngn
 {
     public abstract class BaseRepository
     {

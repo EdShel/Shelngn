@@ -1,4 +1,4 @@
-﻿namespace Shelngn.Models
+﻿namespace Shelngn.Entities
 {
     public class RefreshToken
     {

@@ -28,8 +28,10 @@ const Tooltip = ({ children }) => {
     setOffset({ x: offsetX });
   }, []);
   return (
+    <div className={styles['tooltip-container']}>
     <div ref={elRef} className={styles.tooltip} style={offset && { left: offset.x }}>
       {children}
+    </div>
     </div>
   );
 };

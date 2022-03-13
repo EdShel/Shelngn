@@ -2,7 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 
-namespace Shelngn.Data.Repositories
+namespace Shelngn.Data
 {
     public class SqlConnectionFactory : IDisposable, IAsyncDisposable, ISqlConnectionFactory
     {

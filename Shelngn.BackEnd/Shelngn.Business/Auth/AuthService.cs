@@ -1,5 +1,5 @@
 ﻿using Shelngn.Exceptions;
-using Shelngn.Models;
+using Shelngn.Entities;
 using Shelngn.Repositories;
 using Shelngn.Services;
 using Shelngn.Services.Auth;

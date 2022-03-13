@@ -9,11 +9,21 @@ const getUserNameAbbrev = (userName) => userName.match(/\w\w/)?.[0].toUpperCase(
 const ActiveUsersList = () => {
   const users = useSelector(getWorkspaceUsers);
 
+  if (!users.length) {
+    return null;
+  }
+
   return (
     <div className={styles.list}>
-      {users.map((user) => (
-        <Hint className={styles.user} renderContent={() => <div>{user.userName}</div>}>
-          <span className={styles["user-name"]}>{getUserNameAbbrev(user.userName)}</span>
+      {new Array(10).fill(users[0]).map((user) => (
+        <Hint
+          key={user.connectionId}
+          className={styles["user-container"]}
+          renderContent={() => <div>{user.userName}</div>}
+        >
+          <div className={styles.user}>
+            <span className={styles["user-name"]}>{getUserNameAbbrev(user.userName)}</span>
+          </div>
         </Hint>
       ))}
     </div>

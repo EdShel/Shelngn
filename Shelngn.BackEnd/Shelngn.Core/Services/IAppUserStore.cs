@@ -1,4 +1,4 @@
-﻿using Shelngn.Models;
+﻿using Shelngn.Entities;
 
 namespace Shelngn.Services
 {

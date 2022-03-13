@@ -1,7 +1,7 @@
 ﻿using Shelngn.Repositories;
 using System.Data;
 
-namespace Shelngn.Data.Repositories
+namespace Shelngn.Data
 {
     public class UnitOfWork : IUnitOfWork
     {

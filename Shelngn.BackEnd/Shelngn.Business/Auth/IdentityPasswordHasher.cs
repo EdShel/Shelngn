@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Shelngn.Models;
+using Shelngn.Entities;
 using Shelngn.Services.Auth;
 
 namespace Shelngn.Business.Auth

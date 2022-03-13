@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shelngn.Business.GameProjects;
-using Shelngn.Exceptions;
-using Shelngn.Models;
+using Shelngn.Entities;
 using Shelngn.Services.GameProjects;
 
 namespace Shelngn.Api.GameProjects
@@ -15,18 +13,15 @@ namespace Shelngn.Api.GameProjects
     {
         private readonly IGameProjectCreator gameProjectCreator;
         private readonly IGameProjectSearcher gameProjectSearcher;
-        private readonly LocalFileSystem localFileSystem;
         private readonly IMapper mapper;
 
         public GameProjectController(
             IGameProjectCreator gameProjectCreator,
             IGameProjectSearcher gameProjectSearcher,
-            LocalFileSystem localFileSystem,
             IMapper mapper)
         {
             this.gameProjectCreator = gameProjectCreator;
             this.gameProjectSearcher = gameProjectSearcher;
-            this.localFileSystem = localFileSystem;
             this.mapper = mapper;
         }
 
@@ -56,17 +51,6 @@ namespace Shelngn.Api.GameProjects
             {
                 GameProjects = myProjectsModel
             });
-        }
-
-        [HttpGet("{id}/ls")]
-        public async Task<IActionResult> ListDirTree([FromRoute(Name = "id")] string gameProjectBase64Id)
-        {
-            Guid gameProjectId = GuidExtensions.FromUrlSafeBase64(gameProjectBase64Id);
-            GameProject? gameProject = await this.gameProjectSearcher.GetByIdAsync(gameProjectId)
-                ?? throw new NotFoundException("Game project");
-            ProjectDirectory files = await this.localFileSystem.ListDirectoryFilesAsync(new Uri(gameProject.FilesLocation))
-                ?? throw new NotFoundException("Project directory");
-            return Ok(files);
         }
     }
 

@@ -1,18 +1,36 @@
 .hint {
-    position: relative;
+  position: relative;
+}
+
+.tooltip-container {
+  visibility: hidden;
+  position: absolute;
+  left: 50%;
+  top: 100%;
 }
 
 .tooltip {
-    visibility: hidden;
-    position: absolute;
-    top: calc(100% + 10px);
-    left: 0;
-    background-color: #0F1012;
-    padding: 5px;
-    transform: translateX(-50%);
-    z-index: 9999;
+  position: absolute;
+  top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0%;
+  background-color: #0f1012;
+  padding: 5px;
+  transform: translateX(-50%);
+  z-index: 9999;
 }
 
-.hint:hover .tooltip {
-    visibility: visible;
+.tooltip-container::after {
+  display: block;
+  content: "";
+  width: 16px;
+  height: 16px;
+  background-color: #0f1012;
+  transform: rotate(45deg);
+  transform-origin: 0 0;
+}
+
+.hint:hover .tooltip-container {
+  visibility: visible;
 }

@@ -7,12 +7,14 @@ using Shelngn.Api.Workspaces;
 using Shelngn.Business;
 using Shelngn.Business.Auth;
 using Shelngn.Business.GameProjects;
+using Shelngn.Data;
 using Shelngn.Data.Repositories;
 using Shelngn.Repositories;
 using Shelngn.Services;
 using Shelngn.Services.Auth;
 using Shelngn.Services.GameProjects;
 using Shelngn.Services.Workspaces;
+using Shelngn.Services.Workspaces.ActiveUsers;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -92,8 +94,9 @@ services.AddTransient<IJwtTokenGenerator, JwtTokenGenerator>();
 services.AddTransient<IRefreshTokenFactory, RefreshTokenFactory>();
 services.AddTransient<IAuthService, AuthService>();
 services.AddTransient<IAppUserStore, AppUserStore>();
-services.AddSingleton<LocalFileSystem>();
+services.AddSingleton<IFileSystem, LocalFileSystem>();
 services.AddTransient<IGameProjectCreator, GameProjectCreator>();
+services.AddTransient<IGameProjectUpdater, GameProjectUpdater>();
 services.AddTransient<IGameProjectSearcher, GameProjectSearcher>();
 services.AddSingleton<IGameProjectStorageBalancer, GameProjectStorageBalancer>(p => new GameProjectStorageBalancer(@"C:\Users\Admin\Desktop\Projects\"));
 

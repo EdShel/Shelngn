@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
-using Shelngn.Models;
+using Shelngn.Entities;
 using Shelngn.Services.Auth;
 
 namespace Shelngn.Business.Auth
