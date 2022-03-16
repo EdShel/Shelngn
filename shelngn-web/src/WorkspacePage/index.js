@@ -5,6 +5,7 @@ import WorkspaceHeader from "./WorkspaceHeader";
 import PageMeta from "./PageMeta";
 import styles from "./styles.module.css";
 import { WorkspaceContextProvider } from "./WorkspaceContext";
+import ProjectFiles from "./ProjectFiles";
 
 const WorkspacePage = () => {
   return (
@@ -14,6 +15,7 @@ const WorkspacePage = () => {
         <SideBar />
         <div className={styles["screen-content"]}>
           <WorkspaceHeader />
+          <ProjectFiles />
         </div>
       </ScreenContainer>
     </WorkspaceContextProvider>

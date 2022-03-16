@@ -1,0 +1,29 @@
+.folder {
+
+}
+
+.item {
+  user-select: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.folder-children {
+  margin-left: 2px;
+  padding-left: 7px;
+  border-left: 2px dashed transparent;
+}
+
+.folder:hover > .folder-children {
+  border-left-color: #5b5d6a;
+}
+
+.arrow-icon {
+  transition: transform 0.2s;
+  margin-right: 5px;
+}
+
+.arrow-icon.collapsed {
+  transform: rotate(90deg);
+}
