@@ -63,5 +63,14 @@ namespace Shelngn.Data.Repositories
                 "VALUES (@GameProjectId, @AppUserId);";
             await ExecuteAsync(sql, gameProjectMember);
         }
+
+        public Task<GameProjectMember> GetMemberAsync(Guid gameProjectId, Guid appUserId, CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+            const string sql =
+                "SELECT game_project_id, app_user_id FROM game_project_member " +
+                "WHERE game_project_id = @gameProjectId AND app_user_id = @appUserId";
+            return QueryFirstOrDefaultAsync<GameProjectMember>(sql, new { gameProjectId, appUserId });
+        }
     }
 }

@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shelngn.Data", "Shelngn.Dat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shelngn.Business", "Shelngn.Business\Shelngn.Business.csproj", "{908B8628-707D-4938-9297-9A28FC8B9AF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shelngn.Migrator", "Shelngn.Migrator\Shelngn.Migrator.csproj", "{530B9D30-6427-499B-80D0-E587CABF3DF9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shelngn.Migrator", "Shelngn.Migrator\Shelngn.Migrator.csproj", "{530B9D30-6427-499B-80D0-E587CABF3DF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shelngn.FileUploadApi", "Shelngn.FileUploadApi\Shelngn.FileUploadApi.csproj", "{6CDDA9B2-C27C-4A16-B58C-BABD6FB5DDBF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{530B9D30-6427-499B-80D0-E587CABF3DF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{530B9D30-6427-499B-80D0-E587CABF3DF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{530B9D30-6427-499B-80D0-E587CABF3DF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CDDA9B2-C27C-4A16-B58C-BABD6FB5DDBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CDDA9B2-C27C-4A16-B58C-BABD6FB5DDBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CDDA9B2-C27C-4A16-B58C-BABD6FB5DDBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CDDA9B2-C27C-4A16-B58C-BABD6FB5DDBF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import styles from "./styles.module.css";
 
@@ -17,7 +17,7 @@ const Tooltip = ({ children }) => {
   const elRef = useRef(null);
   const [offset, setOffset] = useState(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const { x, width } = elRef.current.getBoundingClientRect();
     let offsetX = 0;
     if (x < TOOLTIP_PADDING_X) {

@@ -10,5 +10,6 @@ namespace Shelngn.Repositories
         Task<IEnumerable<GameProject>> GetAllForUserAsync(Guid appUserId, CancellationToken ct = default);
         Task<GameProject?> GetByIdAsync(Guid gameProjectId, CancellationToken ct = default);
         Task AddMemberAsync(GameProjectMember gameProjectMember, CancellationToken ct = default);
+        Task<GameProjectMember> GetMemberAsync(Guid gameProjectId, Guid appUserId, CancellationToken ct = default);
     }
 }

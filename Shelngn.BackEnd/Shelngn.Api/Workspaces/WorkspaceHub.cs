@@ -5,6 +5,7 @@ using Shelngn.Api.GameProjects;
 using Shelngn.Entities;
 using Shelngn.Exceptions;
 using Shelngn.Services.GameProjects;
+using Shelngn.Services.GameProjects.Authorization;
 using Shelngn.Services.Workspaces;
 
 namespace Shelngn.Api.Workspaces
@@ -40,27 +41,24 @@ namespace Shelngn.Api.Workspaces
 
         public override async Task OnConnectedAsync()
         {
-            // TODO: validate access to game project
             string workspaceId = this.WorkspaceId;
             string userId = this.Context.User.GetIdString();
             Guid userIdGuid = this.Context.User.GetIdGuid();
             string connectionId = this.Context.ConnectionId;
 
-            this.logger.LogInformation("User {UserId} connected {WorkspaceId} with connection id {ConnectionId}.", userId, workspaceId, connectionId);
+            IGameProjectAuthorizer gameProjectAuthorizer = Resolve<IGameProjectAuthorizer>();
+            GameProjectRights rights = await gameProjectAuthorizer.GetRightsForUserAsync(userIdGuid, this.WorkspaceIdGuid);
+            if (!rights.Workspace)
+            {
+                this.logger.LogInformation(
+                    "Forbidden access to workspace for user {UserId} {WorkspaceId} with connection id {ConnectionId}.", 
+                    userId, workspaceId, connectionId);
+                this.Context.Abort();
+                return;
+            }
 
-            WorkspaceState workspace = null;
-            //try
-            //{
-            workspace = await this.workspacesStatesManager.AquireWorkspaceStateReferenceAsync(workspaceId, connectionId, userIdGuid);
-            //}
-            //catch (Exception)
-            //{
-            //    if (workspace != null)
-            //    {
-            //        await workspacesStatesManager.ReleaseWorkspaceStateReferenceAsync(workspaceId);
-            //    }
-            //    throw;
-            //}
+            this.logger.LogInformation("User {UserId} connected {WorkspaceId} with connection id {ConnectionId}.", userId, workspaceId, connectionId);
+            WorkspaceState workspace = await this.workspacesStatesManager.AquireWorkspaceStateReferenceAsync(workspaceId, connectionId, userIdGuid);
 
             await this.Groups.AddToGroupAsync(connectionId, workspaceId);
 

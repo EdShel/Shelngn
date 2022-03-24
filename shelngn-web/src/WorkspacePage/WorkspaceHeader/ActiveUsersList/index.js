@@ -15,7 +15,7 @@ const ActiveUsersList = () => {
 
   return (
     <div className={styles.list}>
-      {new Array(10).fill(users[0]).map((user) => (
+      {users.map((user) => (
         <Hint
           key={user.connectionId}
           className={styles["user-container"]}
