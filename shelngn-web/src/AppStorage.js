@@ -3,13 +3,21 @@ const AppStorage = {
     return localStorage.getItem("accessToken");
   },
   set accessToken(value) {
-    localStorage.setItem("accessToken", value);
+    if (!value) {
+      localStorage.removeItem("accessToken");
+    } else {
+      localStorage.setItem("accessToken", value);
+    }
   },
   get refreshToken() {
     return localStorage.getItem("refreshToken");
   },
   set refreshToken(value) {
-    localStorage.setItem("refreshToken", value);
+    if (!value) {
+      localStorage.removeItem("refreshToken");
+    } else {
+      localStorage.setItem("refreshToken", value);
+    }
   },
 };
 export default AppStorage;

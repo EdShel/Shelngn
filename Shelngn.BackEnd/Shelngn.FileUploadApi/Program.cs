@@ -34,11 +34,11 @@ app.MapPost("/{*filePath}", async (
     if (!fileUploadUrlSigning.ValidateSignature(signature, filePath, contentType))
     {
         httpContext.Response.Headers.Add("X-Reason", "Signature mismatch");
-        return Results.Forbid();
+        return Results.StatusCode(403);
     }
     if (!ContentRangeHeaderValue.TryParse(contentRange, out var contentRangeValue))
     {
-        httpContext.Response.Headers.Add("X-Reason", "Content-Range requires range");
+        httpContext.Response.Headers.Add("X-Reason", "Content-Range is malformed");
         return Results.BadRequest();
     }
 

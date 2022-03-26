@@ -1,5 +1,14 @@
-.folder {
+.files-tree {
+}
 
+.folder {
+  border-width: 1px;
+  border-style: solid;
+  border-color: transparent;
+}
+
+.folder-drag {
+  border-color: white;
 }
 
 .item {
@@ -24,6 +33,6 @@
   margin-right: 5px;
 }
 
-.arrow-icon.collapsed {
+.arrow-icon:not(.collapsed) {
   transform: rotate(90deg);
 }

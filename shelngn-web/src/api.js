@@ -15,12 +15,15 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    console.log("Oh shit error", error.response.status);
     if (error.response.status === 401 && !originalRequest.retryAfterRefresh) {
-      console.log("Doing refresh");
       originalRequest.retryAfterRefresh = true;
-      await postRefresh();
-      api(originalRequest);
+      try {
+        await postRefresh();
+        api(originalRequest);
+      } catch (ex) {
+        AppStorage.accessToken = null;
+        AppStorage.refreshToken = null;
+      }
     }
     return Promise.reject(error);
   }
@@ -44,7 +47,6 @@ export const postLogin = async ({ email, password }) => {
 };
 export const postRefresh = async () => {
   const data = await postAuth("/auth/refresh", { refreshToken: AppStorage.refreshToken });
-  console.log("Done refresh");
   AppStorage.accessToken = data.accessToken;
   AppStorage.refreshToken = data.refreshToken;
 };

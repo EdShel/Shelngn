@@ -11,8 +11,10 @@
 
         public async Task CreateOrAppendAsync(string path, Stream content)
         {
-            Directory.CreateDirectory(path);
-            using (var fs = new FileStream(Path.Combine(baseDirectory, path), FileMode.Append, FileAccess.Write))
+            var filePath = Path.Combine(baseDirectory, path);
+            var directoryPath = Path.GetDirectoryName(filePath)!;
+            Directory.CreateDirectory(directoryPath);
+            using (var fs = new FileStream(filePath, FileMode.Append, FileAccess.Write))
             {
                 await content.CopyToAsync(fs);
             }

@@ -1,14 +1,16 @@
-import React, { useState } from "react";
-import styles from "./styles.module.css";
+import React, { useCallback, useState } from "react";
 import arrowIcon from "./arrow.svg";
+import useDragArea from "../../hooks/useDragArea";
 import clsx from "clsx";
+import styles from "./styles.module.css";
 
-const FilesTree = ({ root, onContextMenu }) => {
+const FilesTree = ({ root, onContextMenu, onDrop }) => {
   const itemsProps = {
     onContextMenu,
+    onDrop,
   };
   return (
-    <div>
+    <div className={styles["files-tree"]}>
       {root.directories.map((dir) => renderDirectory(dir, itemsProps))}
       {root.files.map((f) => (
         <Item key={f.name} file={f} itemsProps={itemsProps} />
@@ -30,17 +32,13 @@ const renderDirectory = (directory, itemsProps) => {
 
 export default FilesTree;
 
-const Folder = ({ folder, children, itemsProps: { onContextMenu } }) => {
+const Folder = ({ folder, children, itemsProps: { onContextMenu, onDrop } }) => {
   const [isVisible, setVisible] = useState(true);
+  const handleDrop = useCallback((e) => onDrop?.(e, folder), [onDrop, folder]);
+  const { dragAreaProps, isDraggingOver } = useDragArea({ onDropped: handleDrop });
 
   return (
-    <div
-      className={styles.folder}
-      onContextMenu={(e) => {
-        e.folder = folder;
-        onContextMenu(e);
-      }}
-    >
+    <div className={clsx(styles.folder, isDraggingOver && styles["folder-drag"])} {...dragAreaProps}>
       <div className={styles.item} onClick={() => setVisible(!isVisible)}>
         <img src={arrowIcon} className={clsx(styles["arrow-icon"], !isVisible && styles.collapsed)} alt="Arrow" />{" "}
         {folder.name}
@@ -60,6 +58,12 @@ const Item = ({ file, itemsProps: { onContextMenu } }) => {
       onContextMenu={(e) => {
         e.file = file;
         onContextMenu(e);
+      }}
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.dropEffect = "move";
+        e.dataTransfer.setData("application/my-app", "blyaha");
+        e.dataTransfer.setData("text/html", e.target.outerHTML);
       }}
     >
       {file.name}
