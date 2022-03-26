@@ -8,6 +8,7 @@ using Shelngn.Business;
 using Shelngn.Business.Auth;
 using Shelngn.Business.FileUpload;
 using Shelngn.Business.GameProjects;
+using Shelngn.Business.GameProjects.Files;
 using Shelngn.Data;
 using Shelngn.Data.Repositories;
 using Shelngn.Repositories;
@@ -16,8 +17,10 @@ using Shelngn.Services.Auth;
 using Shelngn.Services.FileUpload;
 using Shelngn.Services.GameProjects;
 using Shelngn.Services.GameProjects.Authorization;
+using Shelngn.Services.GameProjects.Files;
 using Shelngn.Services.Workspaces;
 using Shelngn.Services.Workspaces.ActiveUsers;
+using Shelngn.Services.Workspaces.ProjectFiles;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -107,6 +110,7 @@ services.AddSingleton<IFileUploadUrlSigning, FileUploadUrlSigning>(opt => new Fi
 
 services.AddSingleton<WorkspacesStatesManager>();
 services.AddTransient<ActiveUsersWorkspaceStateReducer>();
+services.AddTransient<ProjectFilesWorkspaceStateReducer>();
 
 var app = builder.Build();
 

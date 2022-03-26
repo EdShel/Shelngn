@@ -18,8 +18,9 @@ api.interceptors.response.use(
     if (error.response.status === 401 && !originalRequest.retryAfterRefresh) {
       originalRequest.retryAfterRefresh = true;
       try {
-        await postRefresh();
-        api(originalRequest);
+        return postRefresh().then(() => {
+          return api(originalRequest);
+        });
       } catch (ex) {
         AppStorage.accessToken = null;
         AppStorage.refreshToken = null;

@@ -3,10 +3,12 @@ import { useSelector } from "react-redux";
 import ContextMenu from "../../components/ContextMenu";
 import FilesTree from "../../components/FilesTree";
 import { getProjectFiles } from "../selectors";
+import { useWorkspaceDispatch } from "../WorkspaceContext";
 
 const ProjectFiles = () => {
   const projectFiles = useSelector(getProjectFiles);
-  const [contextMenuItem, setContextMenuItem] = useState(null);
+  const [contextMenu, setContextMenu] = useState(null);
+  const { workspaceSend } = useWorkspaceDispatch();
 
   const handleContextMenu = (e) => {
     if (e.shiftKey) {
@@ -15,7 +17,15 @@ const ProjectFiles = () => {
     e.preventDefault();
     e.stopPropagation();
 
-    setContextMenuItem(e);
+    let items = [];
+    if (e.file) {
+      items = [{ text: "Delete file", onClick: () => workspaceSend("deleteFile", e.file.id) }];
+    }
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      items,
+    });
     console.log("e", e);
   };
 
@@ -25,9 +35,9 @@ const ProjectFiles = () => {
     /** @type File */
     let file;
     for (file of ev.dataTransfer.files) {
-      console.log('file', file)
+      console.log("file", file);
       const response = await fetch(uploadUrl, {
-        method: 'POST',
+        method: "POST",
         headers: {
           "Content-Range": `bytes 0-${file.size - 1}/${file.size}`,
           "Content-Type": file.type,
@@ -41,14 +51,18 @@ const ProjectFiles = () => {
   return (
     <div>
       {projectFiles && <FilesTree root={projectFiles} onContextMenu={handleContextMenu} onDrop={handleDrop} />}
-      {!!contextMenuItem && (
+      {!!contextMenu && (
         <ContextMenu
           position={{
-            x: contextMenuItem.clientX,
-            y: contextMenuItem.clientY,
+            x: contextMenu.x,
+            y: contextMenu.y,
           }}
-          onDismiss={() => setContextMenuItem(null)}
-        />
+          onDismiss={() => setContextMenu(null)}
+        >
+          {contextMenu.items.map((item) => (
+            <ContextMenu.Item key={item.text} text={item.text} onClick={item.onClick} />
+          ))}
+        </ContextMenu>
       )}
     </div>
   );

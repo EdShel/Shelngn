@@ -1,6 +1,6 @@
 ﻿namespace Shelngn
 {
-    public static class GuidExtensions
+    public static class Guids
     {
         public static string ToUrlSafeBase64(this Guid guid)
         {

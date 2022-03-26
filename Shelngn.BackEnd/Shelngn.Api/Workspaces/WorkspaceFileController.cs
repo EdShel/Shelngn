@@ -30,7 +30,7 @@ namespace Shelngn.Api.Workspaces
             [FromRoute] string filePath,
             [FromHeader(Name = "Content-Type")] string contentType)
         {
-            Guid workspaceIdGuid = GuidExtensions.FromUrlSafeBase64(workspaceId);
+            Guid workspaceIdGuid = Guids.FromUrlSafeBase64(workspaceId);
             GameProjectRights userRights = await this.gameProjectAuthorizer.GetRightsForUserAsync(User.GetIdGuid(), workspaceIdGuid);
             if (!userRights.Workspace)
             {

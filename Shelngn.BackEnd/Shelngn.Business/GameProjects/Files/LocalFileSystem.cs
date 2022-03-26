@@ -1,6 +1,7 @@
 ﻿using Shelngn.Services.GameProjects;
+using Shelngn.Services.GameProjects.Files;
 
-namespace Shelngn.Business.GameProjects
+namespace Shelngn.Business.GameProjects.Files
 {
     public class LocalFileSystem : IFileSystem
     {
@@ -31,14 +32,36 @@ namespace Shelngn.Business.GameProjects
         public ProjectDirectory ListDirectoryFiles(string path)
         {
             string[] fileNames = Directory.GetFiles(path);
-            ProjectFile[] files = fileNames.Select(f => new ProjectFile(Path.GetFileName(f))).ToArray();
+            ProjectFile[] files = fileNames.Select(f =>
+            {
+                return new ProjectFile(f);
+            }).ToArray();
             string[] directoriesNames = Directory.GetDirectories(path);
             ProjectDirectory[] directories = directoriesNames.Select(d => ListDirectoryFiles(d)).ToArray();
             return new ProjectDirectory(
-                name: Path.GetFileName(path)!,
+                fullPath: path,
                 directories: directories,
                 files: files
             );
+        }
+
+        public Task DeleteFileIfExistsAsync(Uri uri)
+        {
+            string filePath = UriToPath(uri);
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+            return Task.CompletedTask;
+        }
+        public Task DeleteDirectoryIfExists(Uri uri)
+        {
+            string directoryPath = UriToPath(uri);
+            if (Directory.Exists(directoryPath))
+            {
+                Directory.Delete(directoryPath);
+            }
+            return Task.CompletedTask;
         }
 
         private static string UriToPath(Uri uri)

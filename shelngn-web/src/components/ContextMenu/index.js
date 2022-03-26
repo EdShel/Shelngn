@@ -40,3 +40,6 @@ const ContextMenu = ({ children, position, onDismiss }) => {
   );
 };
 export default ContextMenu;
+
+const Item = ({ text, onClick }) => <div onClick={onClick}>{text}</div>;
+ContextMenu.Item = Item;

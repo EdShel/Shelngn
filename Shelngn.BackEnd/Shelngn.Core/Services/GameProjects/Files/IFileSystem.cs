@@ -1,29 +1,27 @@
-﻿namespace Shelngn.Services.GameProjects
+﻿namespace Shelngn.Services.GameProjects.Files
 {
     public class ProjectDirectory
     {
-        public ProjectDirectory(string name, IEnumerable<ProjectDirectory> directories, IEnumerable<ProjectFile> files)
+        public ProjectDirectory(string fullPath, IEnumerable<ProjectDirectory> directories, IEnumerable<ProjectFile> files)
         {
-            this.Name = name;
+            this.FullPath = fullPath;
             this.Directories = directories;
             this.Files = files;
         }
 
-        public string Name { get; set; }
+        public string FullPath { get; set; }
         public IEnumerable<ProjectDirectory> Directories { get; set; }
         public IEnumerable<ProjectFile> Files { get; set; }
     }
 
     public class ProjectFile
     {
-        public ProjectFile(string name)
+        public ProjectFile(string fullPath)
         {
-            this.Name = name;
+            this.FullPath = fullPath;
         }
 
-        public string Name { get; }
-
-        public Uri? IconUrl { get; }
+        public string FullPath { get; }
     }
 
     public interface IFileSystem
@@ -35,5 +33,9 @@
         Task<ProjectDirectory?> ListDirectoryFilesAsync(Uri uri, CancellationToken ct = default);
 
         ProjectDirectory ListDirectoryFiles(string path);
+
+        Task DeleteFileIfExistsAsync(Uri uri);
+
+        Task DeleteDirectoryIfExists(Uri uri);
     }
 }

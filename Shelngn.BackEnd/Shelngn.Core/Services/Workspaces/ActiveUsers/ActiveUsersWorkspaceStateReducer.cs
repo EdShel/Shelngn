@@ -11,6 +11,11 @@ namespace Shelngn.Services.Workspaces.ActiveUsers
             this.appUserStore = appUserStore;
         }
 
+        public Task<ActiveUsersWorkspaceState> GetInitialState()
+        {
+            return Task.FromResult(new ActiveUsersWorkspaceState());
+        }
+
         public async Task AddUserAsync(string connectionId, Guid userId, WorkspaceState workspaceState)
         {
             AppUser user = await this.appUserStore.FindByIdAsync(userId)

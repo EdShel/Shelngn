@@ -7,6 +7,7 @@ using Shelngn.Exceptions;
 using Shelngn.Services.GameProjects;
 using Shelngn.Services.GameProjects.Authorization;
 using Shelngn.Services.Workspaces;
+using Shelngn.Services.Workspaces.ProjectFiles;
 
 namespace Shelngn.Api.Workspaces
 {
@@ -27,7 +28,7 @@ namespace Shelngn.Api.Workspaces
         private string WorkspaceId => this.Context.GetHttpContext()?.Request.Query["w"]
             ?? throw new ArgumentNullException("Connected without specifying workspace id.");
 
-        private Guid WorkspaceIdGuid => GuidExtensions.FromUrlSafeBase64(this.WorkspaceId);
+        private Guid WorkspaceIdGuid => Guids.FromUrlSafeBase64(this.WorkspaceId);
 
         private T Resolve<T>() where T : class
         {
@@ -51,7 +52,7 @@ namespace Shelngn.Api.Workspaces
             if (!rights.Workspace)
             {
                 this.logger.LogInformation(
-                    "Forbidden access to workspace for user {UserId} {WorkspaceId} with connection id {ConnectionId}.", 
+                    "Forbidden access to workspace for user {UserId} {WorkspaceId} with connection id {ConnectionId}.",
                     userId, workspaceId, connectionId);
                 this.Context.Abort();
                 return;
@@ -93,7 +94,7 @@ namespace Shelngn.Api.Workspaces
             IGameProjectSearcher gameProjectSearcher = Resolve<IGameProjectSearcher>();
             IMapper mapper = Resolve<IMapper>();
 
-            Guid gameProjectId = GuidExtensions.FromUrlSafeBase64(this.WorkspaceId);
+            Guid gameProjectId = Guids.FromUrlSafeBase64(this.WorkspaceId);
             GameProject gameProject = await gameProjectSearcher.GetByIdAsync(gameProjectId)
                 ?? throw new NotFoundException("Game project");
             GameProjectListModel gameProjectModel = mapper.Map<GameProjectListModel>(gameProject);
@@ -108,19 +109,12 @@ namespace Shelngn.Api.Workspaces
         [HubMethodName("ls")]
         public async Task ListAllFiles()
         {
-            IGameProjectSearcher gameProjectSearcher = Resolve<IGameProjectSearcher>();
-            IFileSystem fileSystem = Resolve<IFileSystem>();
-
-            Guid gameProjectId = GuidExtensions.FromUrlSafeBase64(this.WorkspaceId);
-            GameProject? gameProject = await gameProjectSearcher.GetByIdAsync(gameProjectId)
-                ?? throw new NotFoundException("Game project");
-            ProjectDirectory files = await fileSystem.ListDirectoryFilesAsync(new Uri(gameProject.FilesLocation))
-                ?? throw new NotFoundException("Project directory");
+            WorkspaceState state = await this.workspacesStatesManager.GetWorkspaceAsync(this.WorkspaceId, this.Context.ConnectionId);
 
             await this.Clients.Caller.SendAsync("redux", new
             {
                 type = "workspace/ls",
-                projectFiles = files
+                projectFiles = state.ProjectFiles.Root
             });
         }
 
@@ -135,6 +129,21 @@ namespace Shelngn.Api.Workspaces
             {
                 type = "workspace/gameProject/rename",
                 newProjectName
+            });
+        }
+
+        [HubMethodName("deleteFile")]
+        public async Task DeleteFile(string fileId)
+        {
+            var state = await this.workspacesStatesManager.GetWorkspaceAsync(this.WorkspaceId, this.Context.ConnectionId);
+            var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
+
+            await reducer.DeleteFileAsync(state.ProjectFiles, fileId);
+
+            await DispatchToWorkspace(new
+            {
+                type = "workspace/ls",
+                projectFiles = state.ProjectFiles.Root
             });
         }
     }

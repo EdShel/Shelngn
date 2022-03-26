@@ -61,7 +61,5 @@ export const WorkspaceContextProvider = ({ children }) => {
 };
 
 export const useWorkspaceDispatch = () => {
-  const x = useContext(WorkspaceContext);
-  console.log("x", x);
-  return x;
+  return useContext(WorkspaceContext);
 };

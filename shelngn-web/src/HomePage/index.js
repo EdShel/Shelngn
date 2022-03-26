@@ -21,23 +21,18 @@ const HomePage = () => {
   const isAuthenticated = !!AppStorage.accessToken;
 
   useEffect(() => {
-    console.log(1)
     if (!isAuthenticated) {
       return;
     }
-    console.log(2)
     if (myGameProjects.loading) {
       return;
     }
-    console.log(3)
     dispatch(loadMyGameProjects());
   }, [isAuthenticated]);
 
   const handleCreateProject = async () => {
     try {
-      console.log(4)
       const { id } = await postCreateNewProject();
-      console.log('id', id)
       navigate(UrlTo.workspace(id));
     } catch (e) {
       // TOOD: show error toast
