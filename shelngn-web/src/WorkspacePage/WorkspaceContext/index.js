@@ -1,15 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import { HubConnectionBuilder } from "@microsoft/signalr";
-import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { apiUrl } from "../../constants";
 import AppStorage from "../../AppStorage";
 import { postRefresh } from "../../api";
+import useWorkspaceId from '../hooks/useWorkspaceId';
 
 const WorkspaceContext = React.createContext();
 
 export const WorkspaceContextProvider = ({ children }) => {
-  const { id } = useParams();
+  const id = useWorkspaceId();
   const dispatch = useDispatch();
 
   const [workspaceDispatch, setWorkspaceDispatch] = useState({

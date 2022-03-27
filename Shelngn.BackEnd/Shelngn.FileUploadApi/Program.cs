@@ -46,6 +46,11 @@ app.MapPost("/{*filePath}", async (
     await httpContext.Request.Body.CopyToAsync(memoryBuffer);
     memoryBuffer.Position = 0;
 
+    if (contentRangeValue.From == 0)
+    {
+        fileUploader.DeleteIfExists(filePath);
+    }
+
     await fileUploader.CreateOrAppendAsync(filePath, memoryBuffer);
 
     return Results.NoContent();

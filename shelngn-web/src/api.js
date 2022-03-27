@@ -30,7 +30,7 @@ api.interceptors.response.use(
   }
 );
 const getAuth = async (url, config) => (await api.get(url, config)).data;
-const postAuth = async (url, data) => (await api.post(url, data)).data;
+const postAuth = async (url, data, config) => (await api.post(url, data, config)).data;
 const deleteAuth = async (url, config) => (await api.delete(url, config)).data;
 
 const apiAnonymous = axios.create({
@@ -61,3 +61,11 @@ export const postRevoke = async () => {
 // --------- Game project --------- //
 export const postCreateNewProject = () => postAuth("/gameProject");
 export const getMyGameProjects = () => getAuth("/gameProject/my");
+
+// --------- Workspace --------- //
+export const postFileUploadRequest = (workspaceId, filePath, fileContentType) =>
+  postAuth(`/workspace/file/${workspaceId}/${filePath}`, null, {
+    headers: {
+      "Content-Type": fileContentType,
+    },
+  });

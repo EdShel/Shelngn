@@ -1,14 +1,19 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import { postFileUploadRequest } from "../../api";
 import ContextMenu from "../../components/ContextMenu";
 import FilesTree from "../../components/FilesTree";
+import { useShowAlertNotification } from "../../InfoAlert";
+import useWorkspaceId from "../hooks/useWorkspaceId";
 import { getProjectFiles } from "../selectors";
 import { useWorkspaceDispatch } from "../WorkspaceContext";
 
 const ProjectFiles = () => {
+  const workspaceId = useWorkspaceId();
+  const { workspaceSend } = useWorkspaceDispatch();
   const projectFiles = useSelector(getProjectFiles);
   const [contextMenu, setContextMenu] = useState(null);
-  const { workspaceSend } = useWorkspaceDispatch();
+  const { showError } = useShowAlertNotification();
 
   const handleContextMenu = (e) => {
     if (e.shiftKey) {
@@ -30,21 +35,35 @@ const ProjectFiles = () => {
   };
 
   const handleDrop = async (ev, folder) => {
-    const uploadUrl =
-      "https://localhost:15555/0dhDWMjAh02BxkIO1cbySg/someFolder/kitten.jpg?sign=IxhaH0YNt4i_c_UpyN-UwU6LLRTbVsgWMdq-OTWpN0c=";
     /** @type File */
     let file;
     for (file of ev.dataTransfer.files) {
-      console.log("file", file);
-      const response = await fetch(uploadUrl, {
-        method: "POST",
-        headers: {
-          "Content-Range": `bytes 0-${file.size - 1}/${file.size}`,
-          "Content-Type": file.type,
-        },
-        body: file,
-      });
-      console.log("response", response);
+      let uploadUrl = null;
+      try {
+        const fileName = file.name.split("/").pop();
+        const responseData = await postFileUploadRequest(workspaceId, folder.id + "/" + fileName, file.type);
+        uploadUrl = responseData.signedUrl;
+      } catch (ex) {
+        showError("The file name or the file itself are invalid.");
+        return;
+      }
+      try {
+        const response = await fetch(uploadUrl, {
+          method: "POST",
+          headers: {
+            "Content-Range": `bytes 0-${file.size - 1}/${file.size}`,
+            "Content-Type": file.type,
+          },
+          body: file,
+        });
+        if (!response.ok) {
+          showError("The server rejected the file.");
+          return;
+        }
+        await workspaceSend("uploadFile");
+      } catch (ex) {
+        showError("Error while uploading the file.");
+      }
     }
   };
 

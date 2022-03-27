@@ -1,8 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import styles from "./styles.module.css";
 
-const TOOLTIP_PADDING_X = 8;
-
 const ContextMenu = ({ children, position, onDismiss }) => {
   const elRef = useRef(null);
 
@@ -41,5 +39,5 @@ const ContextMenu = ({ children, position, onDismiss }) => {
 };
 export default ContextMenu;
 
-const Item = ({ text, onClick }) => <div onClick={onClick}>{text}</div>;
+const Item = ({ text, onClick }) => <div className={styles.item} onClick={onClick}>{text}</div>;
 ContextMenu.Item = Item;

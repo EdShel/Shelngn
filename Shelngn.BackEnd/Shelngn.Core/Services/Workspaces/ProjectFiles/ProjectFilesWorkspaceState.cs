@@ -87,6 +87,15 @@ namespace Shelngn.Services.Workspaces.ProjectFiles
             return Path.Combine(workspaceFolder, id);
         }
 
+        public async Task FileUploaded(ProjectFilesWorkspaceState state, Guid workspaceId)
+        {
+            Uri workspaceFolder = await GetWorkspaceRootFolderAsync(workspaceId);
+            ProjectDirectory rootDirectory = await this.fileSystem.ListDirectoryFilesAsync(workspaceFolder)
+                ?? throw new NotFoundException("Project directory");
+
+            state.Root = MapDirectory(rootDirectory, workspaceFolder.LocalPath);
+        }
+
         public async Task DeleteFileAsync(ProjectFilesWorkspaceState state, string fileId)
         {
             // TODO: add write lock

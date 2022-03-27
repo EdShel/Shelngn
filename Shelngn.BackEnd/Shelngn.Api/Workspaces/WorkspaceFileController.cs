@@ -36,6 +36,11 @@ namespace Shelngn.Api.Workspaces
             {
                 return Forbid();
             }
+            string[] forbiddenSequences = new[] { "..", ":", "~", "//" };
+            if (forbiddenSequences.Any(banned => filePath.Contains(banned)))
+            {
+                return BadRequest("Double dots are forbidden.");
+            }
 
             string fileServerPath = $"{workspaceId}/{filePath}" ?? throw new ArgumentNullException("Path can't be null.");
             string signature = fileUploadUrlSigning.CreateSignature(fileServerPath, contentType);
@@ -48,7 +53,8 @@ namespace Shelngn.Api.Workspaces
             }.Uri;
             return Ok(new
             {
-                SignedUrl = fileUploadSignedUrl
+                SignedUrl = fileUploadSignedUrl,
+                FileId = filePath,
             });
         }
     }

@@ -7,6 +7,7 @@ const useDragArea = ({ onDropped, name } = {}) => {
   return {
     dragAreaProps: {
       onDragEnter: (ev) => {
+        console.log('Enter')
         ev.preventDefault();
         ev.stopPropagation();
         if (dragCountRef.current++ === 0) {
@@ -15,10 +16,12 @@ const useDragArea = ({ onDropped, name } = {}) => {
       },
       onDragOver: (ev) => {
         ev.preventDefault();
+        console.log('Over')
         ev.stopPropagation();
         ev.dataTransfer.dropEffect = "move";
       },
       onDragLeave: (ev) => {
+        console.log('Leave')
         ev.preventDefault();
         ev.stopPropagation();
         if (--dragCountRef.current === 0) {
@@ -26,6 +29,7 @@ const useDragArea = ({ onDropped, name } = {}) => {
         }
       },
       onDrop: (ev) => {
+        console.log('Drop')
         ev.preventDefault();
         ev.stopPropagation();
         setDraggingOver(false);

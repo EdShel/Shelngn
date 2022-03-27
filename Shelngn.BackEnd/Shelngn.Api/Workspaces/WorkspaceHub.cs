@@ -146,5 +146,20 @@ namespace Shelngn.Api.Workspaces
                 projectFiles = state.ProjectFiles.Root
             });
         }
+
+        [HubMethodName("uploadFile")]
+        public async Task UploadFile()
+        {
+            var state = await this.workspacesStatesManager.GetWorkspaceAsync(this.WorkspaceId, this.Context.ConnectionId);
+            var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
+
+            await reducer.FileUploaded(state.ProjectFiles, this.WorkspaceIdGuid);
+
+            await DispatchToWorkspace(new
+            {
+                type = "workspace/ls",
+                projectFiles = state.ProjectFiles.Root
+            });
+        }
     }
 }

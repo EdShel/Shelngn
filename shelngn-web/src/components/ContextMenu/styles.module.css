@@ -1,11 +1,18 @@
-
 .context-menu {
   position: fixed;
   top: 100px;
   left: 100px;
-  width: 100px;
-  height: 100px;
+  min-height: 100px;
   background-color: #0f1012;
-  padding: 5px;
   z-index: 9999;
+}
+
+.item {
+  cursor: pointer;
+  padding: 5px 8px;
+  user-select: none;
+}
+
+.item:hover {
+  background-color: #1e2127;
 }

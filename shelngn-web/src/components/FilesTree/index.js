@@ -36,7 +36,7 @@ const Folder = ({ folder, children, itemsProps: { onContextMenu, onDrop } }) => 
   const [isVisible, setVisible] = useState(true);
   const handleDrop = useCallback((e) => onDrop?.(e, folder), [onDrop, folder]);
   const { dragAreaProps, isDraggingOver } = useDragArea({ onDropped: handleDrop });
-
+  
   return (
     <div className={clsx(styles.folder, isDraggingOver && styles["folder-drag"])} {...dragAreaProps}>
       <div className={styles.item} onClick={() => setVisible(!isVisible)}>
