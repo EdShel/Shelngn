@@ -39,11 +39,11 @@ namespace Shelngn.Business.GameProjects
                 var owner = new GameProjectMember { AppUserId = appUserId, GameProjectId = gameProject.Id };
                 await gameProjectRepository.AddMemberAsync(owner);
 
-                await this.fileSystem.CreateDirectoryOrDoNothingIfExistsAsync(new Uri(gameProject.FilesLocation));
+                await this.fileSystem.CreateDirectoryOrDoNothingIfExistsAsync(gameProject.FilesLocation);
 
-                var readmeFileUrl = new Uri(Path.Combine(gameProject.FilesLocation, "readme.txt"));
+                var readmeFilePath = Path.Combine(gameProject.FilesLocation, "readme.txt");
                 var readmeFileContent = "TODO: it's just a placeholder";
-                await this.fileSystem.CreateOrOverwriteFileAsync(readmeFileUrl, Encoding.UTF8.GetBytes(readmeFileContent));
+                await this.fileSystem.CreateOrOverwriteFileAsync(readmeFilePath, Encoding.UTF8.GetBytes(readmeFileContent));
 
                 this.unitOfWork.Commit();
 

@@ -1,12 +1,11 @@
-import { useState } from "react";
-
-const useDraggable = () => {
+const useDraggable = (dataType, dataValue) => {
   return {
     draggableProps: {
       onDragStart: (ev) => {
         ev.dataTransfer.dropEffect = "move";
-        ev.dataTransfer.setData("application/x-resource");
+        ev.dataTransfer.setData(dataType, dataValue);
       },
+      draggable: true,
     },
   };
 };

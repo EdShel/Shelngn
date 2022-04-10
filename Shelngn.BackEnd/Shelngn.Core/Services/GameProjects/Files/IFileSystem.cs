@@ -26,16 +26,20 @@
 
     public interface IFileSystem
     {
-        Task CreateDirectoryOrDoNothingIfExistsAsync(Uri uri);
+        Task CreateDirectoryOrDoNothingIfExistsAsync(string uri);
 
-        Task CreateOrOverwriteFileAsync(Uri uri, byte[] fileContent, CancellationToken ct = default);
+        Task CreateOrOverwriteFileAsync(string uri, byte[] fileContent, CancellationToken ct = default);
 
-        Task<ProjectDirectory?> ListDirectoryFilesAsync(Uri uri, CancellationToken ct = default);
+        Task<ProjectDirectory?> ListDirectoryFilesAsync(string uri, CancellationToken ct = default);
 
         ProjectDirectory ListDirectoryFiles(string path);
 
-        Task DeleteFileIfExistsAsync(Uri uri);
+        Task DeleteFileIfExistsAsync(string uri);
 
-        Task DeleteDirectoryIfExists(Uri uri);
+        Task DeleteDirectoryIfExistsAsync(string uri);
+
+        Task MoveFileAsync(string sourceUri, string destinationUri);
+
+        Task MoveDirectoryAsync(string sourcePath, string destinationPath);
     }
 }

@@ -7,10 +7,11 @@ import { useShowAlertNotification } from "../../InfoAlert";
 import useWorkspaceId from "../hooks/useWorkspaceId";
 import { getProjectFiles } from "../selectors";
 import { useWorkspaceDispatch } from "../WorkspaceContext";
+import styles from "./styles.module.css";
 
-const ProjectFiles = () => {
+const ProjectFiles = ({ className }) => {
   const workspaceId = useWorkspaceId();
-  const { workspaceSend } = useWorkspaceDispatch();
+  const { workspaceSend, workspaceInvoke } = useWorkspaceDispatch();
   const projectFiles = useSelector(getProjectFiles);
   const [contextMenu, setContextMenu] = useState(null);
   const { showError } = useShowAlertNotification();
@@ -26,50 +27,89 @@ const ProjectFiles = () => {
     if (e.file) {
       items = [{ text: "Delete file", onClick: () => workspaceSend("deleteFile", e.file.id) }];
     }
+    if (e.folder) {
+      items = [
+        {
+          text: "Create folder",
+          onClick: () => {
+            const name = prompt("Enter folder name");
+            workspaceSend("createFolder", e.folder.id, name);
+          },
+        },
+        e.folder !== projectFiles && {
+          text: "Delete folder",
+          onClick: async () => {
+            try {
+              await workspaceInvoke("deleteFolder", e.folder.id);
+            } catch (e) {
+              showError(e.message);
+            }
+          },
+        },
+      ].filter((i) => i);
+    }
     setContextMenu({
       x: e.clientX,
       y: e.clientY,
       items,
     });
-    console.log("e", e);
   };
 
   const handleDrop = async (ev, folder) => {
-    /** @type File */
-    let file;
-    for (file of ev.dataTransfer.files) {
-      let uploadUrl = null;
-      try {
-        const fileName = file.name.split("/").pop();
-        const responseData = await postFileUploadRequest(workspaceId, folder.id + "/" + fileName, file.type);
-        uploadUrl = responseData.signedUrl;
-      } catch (ex) {
-        showError("The file name or the file itself are invalid.");
-        return;
-      }
-      try {
-        const response = await fetch(uploadUrl, {
-          method: "POST",
-          headers: {
-            "Content-Range": `bytes 0-${file.size - 1}/${file.size}`,
-            "Content-Type": file.type,
-          },
-          body: file,
+    for (const droppedItem of ev.dataTransfer.items) {
+      if (droppedItem.type === "application/x-fileid") {
+        droppedItem.getAsString((fileId) => {
+          workspaceSend("moveFile", fileId, folder.id);
         });
-        if (!response.ok) {
-          showError("The server rejected the file.");
+      }
+      if (droppedItem.type === "application/x-folderid") {
+        droppedItem.getAsString((droppedFolderId) => {
+          workspaceSend("moveFolder", droppedFolderId, folder.id);
+        });
+      }
+
+      if (droppedItem.kind === "file") {
+        const file = droppedItem.getAsFile();
+        let uploadUrl = null;
+        try {
+          const fileName = file.name.split("/").pop();
+          const responseData = await postFileUploadRequest(workspaceId, folder.id + "/" + fileName, file.type);
+          uploadUrl = responseData.signedUrl;
+        } catch (ex) {
+          showError("The file name or the file itself are invalid.");
           return;
         }
-        await workspaceSend("uploadFile");
-      } catch (ex) {
-        showError("Error while uploading the file.");
+        try {
+          const response = await fetch(uploadUrl, {
+            method: "POST",
+            headers: {
+              "Content-Range": `bytes 0-${file.size - 1}/${file.size}`,
+              "Content-Type": file.type,
+            },
+            body: file,
+          });
+          if (!response.ok) {
+            showError("The server rejected the file.");
+            return;
+          }
+          await workspaceSend("uploadFile");
+        } catch (ex) {
+          showError("Error while uploading the file.");
+        }
       }
     }
   };
 
   return (
-    <div>
-      {projectFiles && <FilesTree root={projectFiles} onContextMenu={handleContextMenu} onDrop={handleDrop} />}
+    <div className={styles["project-files"]}>
+      {projectFiles && (
+        <FilesTree
+          className={styles["files-tree"]}
+          root={projectFiles}
+          onContextMenu={handleContextMenu}
+          onDrop={handleDrop}
+        />
+      )}
       {!!contextMenu && (
         <ContextMenu
           position={{

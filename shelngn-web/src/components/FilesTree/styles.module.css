@@ -1,4 +1,6 @@
 .files-tree {
+  border: 1px solid transparent;
+  box-sizing: border-box;
 }
 
 .folder {

@@ -5,27 +5,24 @@ namespace Shelngn.Business.GameProjects.Files
 {
     public class LocalFileSystem : IFileSystem
     {
-        public Task CreateDirectoryOrDoNothingIfExistsAsync(Uri uri)
+        public Task CreateDirectoryOrDoNothingIfExistsAsync(string uri)
         {
-            string path = UriToPath(uri);
-            Directory.CreateDirectory(path);
+            Directory.CreateDirectory(uri);
             return Task.CompletedTask;
         }
 
-        public async Task CreateOrOverwriteFileAsync(Uri uri, byte[] fileContent, CancellationToken ct = default)
+        public async Task CreateOrOverwriteFileAsync(string uri, byte[] fileContent, CancellationToken ct = default)
         {
-            string path = UriToPath(uri);
-            await File.WriteAllBytesAsync(path, fileContent, ct);
+            await File.WriteAllBytesAsync(uri, fileContent, ct);
         }
 
-        public Task<ProjectDirectory?> ListDirectoryFilesAsync(Uri uri, CancellationToken ct = default)
+        public Task<ProjectDirectory?> ListDirectoryFilesAsync(string uri, CancellationToken ct = default)
         {
-            string path = UriToPath(uri);
-            if (!Directory.Exists(path))
+            if (!Directory.Exists(uri))
             {
                 return Task.FromResult<ProjectDirectory?>(null);
             }
-            var root = ListDirectoryFiles(path);
+            var root = ListDirectoryFiles(uri);
             return Task.FromResult<ProjectDirectory?>(root);
         }
 
@@ -45,28 +42,33 @@ namespace Shelngn.Business.GameProjects.Files
             );
         }
 
-        public Task DeleteFileIfExistsAsync(Uri uri)
+        public Task DeleteFileIfExistsAsync(string uri)
         {
-            string filePath = UriToPath(uri);
-            if (File.Exists(filePath))
+            if (File.Exists(uri))
             {
-                File.Delete(filePath);
+                File.Delete(uri);
             }
             return Task.CompletedTask;
         }
-        public Task DeleteDirectoryIfExists(Uri uri)
+        public Task DeleteDirectoryIfExistsAsync(string uri)
         {
-            string directoryPath = UriToPath(uri);
-            if (Directory.Exists(directoryPath))
+            if (Directory.Exists(uri))
             {
-                Directory.Delete(directoryPath);
+                Directory.Delete(uri, true);
             }
             return Task.CompletedTask;
         }
 
-        private static string UriToPath(Uri uri)
+        public Task MoveFileAsync(string sourceUri, string destinationUri)
         {
-            return uri.LocalPath;
+            File.Move(sourceUri, destinationUri, overwrite: true);
+            return Task.CompletedTask;
+        }
+
+        public Task MoveDirectoryAsync(string sourcePath, string destinationPath)
+        {
+            Directory.Move(sourcePath, destinationPath);
+            return Task.CompletedTask;
         }
     }
 }

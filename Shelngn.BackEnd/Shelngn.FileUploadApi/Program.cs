@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
 using Shelngn.Business.FileUpload;
 using Shelngn.FileUploadApi;
 using Shelngn.Services.FileUpload;
@@ -7,11 +8,12 @@ using System.Net.Http.Headers;
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
+string projectsDirectory = configuration.GetValue<string>("ProjectsDirectory");
 
 services.AddLogging();
 services.AddCors();
 services.AddSingleton<IFileUploadUrlSigning, FileUploadUrlSigning>(opt => new FileUploadUrlSigning(configuration.GetValue<string>("SigningPrivateKey")));
-services.AddSingleton<FileUploader>(new FileUploader(configuration.GetValue<string>("ProjectsDirectory")));
+services.AddSingleton<FileUploader>(new FileUploader(projectsDirectory));
 
 var app = builder.Build();
 

@@ -11,8 +11,114 @@ using Shelngn.Services.Workspaces.ProjectFiles;
 
 namespace Shelngn.Api.Workspaces
 {
+    public partial class WorkspaceHub
+    {
+
+        [HubMethodName("ls")]
+        public async Task ListAllFiles()
+        {
+            WorkspaceState state = await GetWorkspaceStateAsync();
+
+            await DispatchToCallerAsync(new
+            {
+                type = "workspace/ls",
+                projectFiles = state.ProjectFiles.Root
+            });
+        }
+
+        [HubMethodName("deleteFile")]
+        public async Task DeleteFile(string fileId)
+        {
+            WorkspaceState state = await GetWorkspaceStateAsync();
+            var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
+
+            await reducer.DeleteFileAsync(state.ProjectFiles, fileId);
+
+            await DispatchToWorkspaceAsync(new
+            {
+                type = "workspace/ls",
+                projectFiles = state.ProjectFiles.Root
+            });
+        }
+
+        [HubMethodName("uploadFile")]
+        public async Task UploadFile()
+        {
+            WorkspaceState state = await GetWorkspaceStateAsync();
+            var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
+
+            await reducer.FileUploaded(state.ProjectFiles, this.WorkspaceIdGuid);
+
+            await DispatchToWorkspaceAsync(new
+            {
+                type = "workspace/ls",
+                projectFiles = state.ProjectFiles.Root
+            });
+        }
+
+        [HubMethodName("moveFile")]
+        public async Task MoveFile(string fileId, string folderId)
+        {
+            WorkspaceState state = await GetWorkspaceStateAsync();
+            var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
+
+            await reducer.MoveFileAsync(state.ProjectFiles, fileId, folderId);
+
+            await DispatchToWorkspaceAsync(new
+            {
+                type = "workspace/ls",
+                projectFiles = state.ProjectFiles.Root
+            });
+        }
+
+        [HubMethodName("createFolder")]
+        public async Task CreateFolder(string containingFolderId, string folderName)
+        {
+            WorkspaceState state = await GetWorkspaceStateAsync();
+            var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
+
+            await reducer.CreateFolderAsync(state.ProjectFiles, containingFolderId, folderName);
+
+            await DispatchToWorkspaceAsync(new
+            {
+                type = "workspace/ls",
+                projectFiles = state.ProjectFiles.Root
+            });
+        }
+
+        [HubMethodName("deleteFolder")]
+        public async Task DeleteFolder(string folderId)
+        {
+            WorkspaceState state = await GetWorkspaceStateAsync();
+            var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
+
+            await reducer.DeleteFolderAsync(state.ProjectFiles, folderId);
+
+            await DispatchToWorkspaceAsync(new
+            {
+                type = "workspace/ls",
+                projectFiles = state.ProjectFiles.Root
+            });
+        }
+
+        [HubMethodName("moveFolder")]
+        public async Task MoveFolder(string movedFolderId, string newContainingFolderId)
+        {
+            WorkspaceState state = await GetWorkspaceStateAsync();
+            var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
+
+            await reducer.MoveFolderAsync(state.ProjectFiles, movedFolderId, newContainingFolderId);
+
+            await DispatchToWorkspaceAsync(new
+            {
+                type = "workspace/ls",
+                projectFiles = state.ProjectFiles.Root
+            });
+        }
+    }
+
     [Authorize]
-    public class WorkspaceHub : Hub
+    public partial class WorkspaceHub : Hub
     {
         private readonly ILogger<WorkspaceHub> logger;
         private readonly WorkspacesStatesManager workspacesStatesManager;
@@ -34,10 +140,20 @@ namespace Shelngn.Api.Workspaces
         {
             return this.serviceProvider.GetRequiredService<T>();
         }
+        
+        private async Task<WorkspaceState> GetWorkspaceStateAsync()
+        {
+            return await this.workspacesStatesManager.GetWorkspaceAsync(this.WorkspaceId, this.Context.ConnectionId);
+        }
 
-        private async Task DispatchToWorkspace(object action)
+        private async Task DispatchToWorkspaceAsync(object action)
         {
             await this.Clients.Group(this.WorkspaceId).SendAsync("redux", action);
+        }
+
+        private async Task DispatchToCallerAsync(object action)
+        {
+            await this.Clients.Caller.SendAsync("redux", action);
         }
 
         public override async Task OnConnectedAsync()
@@ -63,7 +179,7 @@ namespace Shelngn.Api.Workspaces
 
             await this.Groups.AddToGroupAsync(connectionId, workspaceId);
 
-            await DispatchToWorkspace(new
+            await DispatchToWorkspaceAsync(new
             {
                 type = "workspace/userConnected",
                 users = workspace.ActiveUsers.GetUsers()
@@ -74,14 +190,13 @@ namespace Shelngn.Api.Workspaces
         {
             string workspaceId = this.WorkspaceId;
             string userId = this.Context.User.GetIdString();
-            Guid userIdGuid = this.Context.User.GetIdGuid();
             string connectionId = this.Context.ConnectionId;
 
             this.logger.LogInformation(exception, "User {UserId} disconnected {WorkspaceId} with connection id {ConnectionId}.", userId, workspaceId, connectionId);
 
             WorkspaceState workspace = await this.workspacesStatesManager.ReleaseWorkspaceStateReferenceAsync(workspaceId, connectionId);
 
-            await DispatchToWorkspace(new
+            await DispatchToWorkspaceAsync(new
             {
                 type = "workspace/userDisconnected",
                 users = workspace.ActiveUsers.GetUsers()
@@ -106,18 +221,6 @@ namespace Shelngn.Api.Workspaces
             });
         }
 
-        [HubMethodName("ls")]
-        public async Task ListAllFiles()
-        {
-            WorkspaceState state = await this.workspacesStatesManager.GetWorkspaceAsync(this.WorkspaceId, this.Context.ConnectionId);
-
-            await this.Clients.Caller.SendAsync("redux", new
-            {
-                type = "workspace/ls",
-                projectFiles = state.ProjectFiles.Root
-            });
-        }
-
         [HubMethodName("renameProject")]
         public async Task RenameGameProject(string newProjectName)
         {
@@ -125,40 +228,10 @@ namespace Shelngn.Api.Workspaces
 
             await gameProjectUpdater.UpdateNameAsync(this.WorkspaceIdGuid, newProjectName);
 
-            await DispatchToWorkspace(new
+            await DispatchToWorkspaceAsync(new
             {
                 type = "workspace/gameProject/rename",
                 newProjectName
-            });
-        }
-
-        [HubMethodName("deleteFile")]
-        public async Task DeleteFile(string fileId)
-        {
-            var state = await this.workspacesStatesManager.GetWorkspaceAsync(this.WorkspaceId, this.Context.ConnectionId);
-            var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
-
-            await reducer.DeleteFileAsync(state.ProjectFiles, fileId);
-
-            await DispatchToWorkspace(new
-            {
-                type = "workspace/ls",
-                projectFiles = state.ProjectFiles.Root
-            });
-        }
-
-        [HubMethodName("uploadFile")]
-        public async Task UploadFile()
-        {
-            var state = await this.workspacesStatesManager.GetWorkspaceAsync(this.WorkspaceId, this.Context.ConnectionId);
-            var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
-
-            await reducer.FileUploaded(state.ProjectFiles, this.WorkspaceIdGuid);
-
-            await DispatchToWorkspace(new
-            {
-                type = "workspace/ls",
-                projectFiles = state.ProjectFiles.Root
             });
         }
     }

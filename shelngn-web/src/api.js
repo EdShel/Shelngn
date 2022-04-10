@@ -8,7 +8,6 @@ const api = axios.create({
 api.interceptors.request.use((requestConfig) => {
   const accessToken = AppStorage.accessToken;
   requestConfig.headers.Authorization = `Bearer ${accessToken}`;
-  console.log("Request interceptor");
   return requestConfig;
 });
 api.interceptors.response.use(
@@ -18,9 +17,8 @@ api.interceptors.response.use(
     if (error.response.status === 401 && !originalRequest.retryAfterRefresh) {
       originalRequest.retryAfterRefresh = true;
       try {
-        return postRefresh().then(() => {
-          return api(originalRequest);
-        });
+        await postRefresh();
+        return api(originalRequest);
       } catch (ex) {
         AppStorage.accessToken = null;
         AppStorage.refreshToken = null;
@@ -69,3 +67,4 @@ export const postFileUploadRequest = (workspaceId, filePath, fileContentType) =>
       "Content-Type": fileContentType,
     },
   });
+export const getBuiltJsBundle = (workspaceId) => getAuth(`workspace/build/${workspaceId}/bundle.js`);
