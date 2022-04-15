@@ -5,6 +5,11 @@ const GAME_PROJECT_INFO = "workspace/gameProject";
 const GAME_PROJECT_RENAMED = "workspace/gameProject/rename";
 const LIST_PROJECT_FILES = "workspace/ls";
 
+const GAME_PROJECT_BUILD_BEGIN = "wokspace/build/begin";
+const GAME_PROJECT_BUILD_FINISH = "wokspace/build/finish";
+const GAME_PROJECT_BUILD_FAILED = "wokspace/build/failed";
+const GAME_PROJECT_BUILD_ERROR_SHOWN = "wokspace/build/errorShown";
+
 const initialState = {
   users: [],
   project: {
@@ -12,6 +17,10 @@ const initialState = {
     projectName: null,
   },
   projectFiles: null,
+  build: {
+    progress: false,
+    error: null,
+  },
 };
 
 const reducer = (state = initialState, action) => {
@@ -41,8 +50,44 @@ const reducer = (state = initialState, action) => {
         projectFiles: action.projectFiles,
       };
     }
+    case GAME_PROJECT_BUILD_BEGIN:
+      return {
+        ...state,
+        build: {
+          progress: true,
+          error: null,
+        },
+      };
+    case GAME_PROJECT_BUILD_FINISH:
+      return {
+        ...state,
+        build: {
+          ...state.build,
+          progress: false,
+        },
+      };
+    case GAME_PROJECT_BUILD_FAILED:
+      return {
+        ...state,
+        build: {
+          progress: false,
+          error: action.error,
+        },
+      };
+    case GAME_PROJECT_BUILD_ERROR_SHOWN:
+      return {
+        ...state,
+        build: {
+          ...state.build,
+          error: null,
+        },
+      };
     default:
       return state;
   }
 };
 export default reducer;
+
+export const buildErrorShown = () => ({
+  type: GAME_PROJECT_BUILD_ERROR_SHOWN,
+});

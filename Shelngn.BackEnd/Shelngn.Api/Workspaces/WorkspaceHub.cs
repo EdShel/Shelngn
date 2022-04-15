@@ -6,11 +6,47 @@ using Shelngn.Entities;
 using Shelngn.Exceptions;
 using Shelngn.Services.GameProjects;
 using Shelngn.Services.GameProjects.Authorization;
+using Shelngn.Services.GameProjects.Build;
+using Shelngn.Services.GameProjects.Files;
 using Shelngn.Services.Workspaces;
 using Shelngn.Services.Workspaces.ProjectFiles;
+using System.Text;
 
 namespace Shelngn.Api.Workspaces
 {
+    public partial class WorkspaceHub
+    {
+        [HubMethodName("build")]
+        public async Task BuildProject()
+        {
+            var builder = Resolve<IGameProjectBuilder>();
+
+            await DispatchToWorkspaceAsync(new
+            {
+                type = "wokspace/build/begin"
+            });
+
+            string workspaceId = this.WorkspaceId;
+            BuildResult result = await builder.BuildProjectAsync(workspaceId);
+
+            if (result.IsSuccess)
+            {
+                await DispatchToWorkspaceAsync(new
+                {
+                    type = "wokspace/build/finish"
+                });
+            }
+            else
+            {
+                await DispatchToWorkspaceAsync(new
+                {
+                    type = "wokspace/build/failed",
+                    error = result.Error
+                });
+            }
+        }
+    }
+
     public partial class WorkspaceHub
     {
 
@@ -115,6 +151,32 @@ namespace Shelngn.Api.Workspaces
                 projectFiles = state.ProjectFiles.Root
             });
         }
+
+        [HubMethodName("createFile")]
+        public async Task CreateFile(string folderId, string fileName)
+        {
+            WorkspaceState state = await GetWorkspaceStateAsync();
+            var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
+
+            await reducer.CreateEmptyFileAsync(state.ProjectFiles, folderId, fileName);
+
+            await DispatchToWorkspaceAsync(new
+            {
+                type = "workspace/ls",
+                projectFiles = state.ProjectFiles.Root
+            });
+        }
+
+        [HubMethodName("dumpFile")]
+        public async Task DumpFileContent(string fileId, string content)
+        {
+            IFileSystem fileSystem = Resolve<IFileSystem>();
+            WorkspaceState state = await GetWorkspaceStateAsync();
+            var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
+            string path = reducer.GetResourcePath(fileId, state.ProjectFiles.ProjectFilesRoot);
+
+            await fileSystem.CreateOrOverwriteFileAsync(path, Encoding.UTF8.GetBytes(content));
+        }
     }
 
     [Authorize]
@@ -140,7 +202,7 @@ namespace Shelngn.Api.Workspaces
         {
             return this.serviceProvider.GetRequiredService<T>();
         }
-        
+
         private async Task<WorkspaceState> GetWorkspaceStateAsync()
         {
             return await this.workspacesStatesManager.GetWorkspaceAsync(this.WorkspaceId, this.Context.ConnectionId);

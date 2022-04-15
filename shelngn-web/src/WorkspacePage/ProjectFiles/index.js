@@ -30,6 +30,17 @@ const ProjectFiles = ({ className }) => {
     if (e.folder) {
       items = [
         {
+          text: "Create object",
+          onClick: async () => {
+            const fileName = prompt("Enter file name");
+            if (!fileName) {
+              return;
+            }
+            await workspaceSend("createFile", e.folder.id, fileName + ".sobj");
+            await workspaceSend("dumpFile", e.folder.id === "." ? fileName : `${e.folder.id}/${fileName}.sobj`, "Test");
+          },
+        },
+        {
           text: "Create folder",
           onClick: () => {
             const name = prompt("Enter folder name");

@@ -28,6 +28,8 @@
     {
         Task CreateDirectoryOrDoNothingIfExistsAsync(string uri);
 
+        Task CreateEmptyFileAsync(string path);
+
         Task CreateOrOverwriteFileAsync(string uri, byte[] fileContent, CancellationToken ct = default);
 
         Task<ProjectDirectory?> ListDirectoryFilesAsync(string uri, CancellationToken ct = default);

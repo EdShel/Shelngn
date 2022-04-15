@@ -81,7 +81,7 @@ namespace Shelngn.Services.Workspaces.ProjectFiles
             return Path.GetRelativePath(workspaceFolder, fullPath).Replace('\\', '/');
         }
 
-        private static string GetResourcePath(string id, string workspaceFolder)
+        public string GetResourcePath(string id, string workspaceFolder)
         {
             return Path.Combine(workspaceFolder, id);
         }
@@ -93,6 +93,27 @@ namespace Shelngn.Services.Workspaces.ProjectFiles
                 ?? throw new NotFoundException("Project directory");
 
             state.Root = MapDirectory(rootDirectory, workspaceFolder);
+        }
+
+        public Task CreateEmptyFileAsync(ProjectFilesWorkspaceState state, string folderId, string fileName)
+        {
+            var containingDirectory = FindDirectoryState(state, folderId)
+                ?? throw new InvalidOperationException("Directory doesn't exist.");
+            if (containingDirectory.Files.Any(f => f.Name == fileName))
+            {
+                throw new InvalidOperationException("File with such name already exists.");
+            }
+            WorkspaceFile newFile = new WorkspaceFile
+            {
+                Id = containingDirectory.Id == "." ? fileName : containingDirectory.Id + "/" + fileName,
+                Name = fileName
+            };
+            containingDirectory.Files.Add(newFile);
+
+            string filePath = GetResourcePath(newFile.Id, state.ProjectFilesRoot);
+            fileSystem.CreateEmptyFileAsync(filePath);
+
+            return Task.CompletedTask;
         }
 
         public async Task DeleteFileAsync(ProjectFilesWorkspaceState state, string fileId)
@@ -140,11 +161,11 @@ namespace Shelngn.Services.Workspaces.ProjectFiles
             return currentDir;
         }
 
-        private WorkspaceDirectory? FindContainingDirectoryState(ProjectFilesWorkspaceState state, string folderOrFileId)
+        private WorkspaceDirectory FindContainingDirectoryState(ProjectFilesWorkspaceState state, string folderOrFileId)
         {
             if (folderOrFileId == ".")
             {
-                return null;
+                return state.Root;
             }
             string[] itemAddress = folderOrFileId.Split('/');
             WorkspaceDirectory currentDir = state.Root;
@@ -210,8 +231,11 @@ namespace Shelngn.Services.Workspaces.ProjectFiles
 
         public async Task DeleteFolderAsync(ProjectFilesWorkspaceState state, string folderId)
         {
-            WorkspaceDirectory containingFolder = FindContainingDirectoryState(state, folderId)
-                ?? throw new InvalidOperationException("Cannot delete the folder.");
+            WorkspaceDirectory containingFolder = FindContainingDirectoryState(state, folderId);
+            if (containingFolder == state.Root)
+            {
+                throw new InvalidOperationException("Cannot delete the folder.");
+            }
 
             WorkspaceDirectory folderToDelete = containingFolder.Directories.FirstOrDefault(d => d.Id == folderId)
                 ?? throw new InvalidOperationException("The folder doesn't exist.");
@@ -224,8 +248,11 @@ namespace Shelngn.Services.Workspaces.ProjectFiles
 
         public async Task MoveFolderAsync(ProjectFilesWorkspaceState state, string movedFolderId, string newContainingFolderId)
         {
-            WorkspaceDirectory dirToMoveFrom = FindContainingDirectoryState(state, movedFolderId)
-                ?? throw new InvalidOperationException("Cannot move the folder");
+            WorkspaceDirectory dirToMoveFrom = FindContainingDirectoryState(state, movedFolderId);
+            if (dirToMoveFrom == state.Root)
+            {
+                throw new InvalidOperationException("Cannot move the folder");
+            }
 
             if (newContainingFolderId == dirToMoveFrom.Id)
             {

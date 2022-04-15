@@ -13,7 +13,16 @@ namespace Shelngn.Business.GameProjects.Files
 
         public async Task CreateOrOverwriteFileAsync(string uri, byte[] fileContent, CancellationToken ct = default)
         {
-            await File.WriteAllBytesAsync(uri, fileContent, ct);
+            using (var fs = new FileStream(uri, FileMode.Create, FileAccess.Write))
+            {
+                await fs.WriteAsync(fileContent, ct);
+            }
+        }
+
+        public Task CreateEmptyFileAsync(string path)
+        {
+            using (File.Create(path)) { }
+            return Task.CompletedTask;
         }
 
         public Task<ProjectDirectory?> ListDirectoryFilesAsync(string uri, CancellationToken ct = default)
