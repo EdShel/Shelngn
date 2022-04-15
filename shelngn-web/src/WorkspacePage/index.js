@@ -6,6 +6,8 @@ import PageMeta from "./PageMeta";
 import styles from "./styles.module.css";
 import { WorkspaceContextProvider } from "./WorkspaceContext";
 import ProjectFiles from "./ProjectFiles";
+import CodeEditor from "../components/CodeEditor";
+import SplitPane from "../components/SplitPane";
 
 const WorkspacePage = () => {
   return (
@@ -15,7 +17,7 @@ const WorkspacePage = () => {
         <SideBar />
         <div className={styles["screen-content"]}>
           <WorkspaceHeader />
-          <ProjectFiles />
+          <SplitPane className={styles.split} left={<ProjectFiles />} right={<CodeEditor />}></SplitPane>
         </div>
       </ScreenContainer>
     </WorkspaceContextProvider>

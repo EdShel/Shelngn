@@ -1,7 +1,12 @@
 .screen-content {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+.split {
+  flex: 1;
+  overflow: hidden;
+}

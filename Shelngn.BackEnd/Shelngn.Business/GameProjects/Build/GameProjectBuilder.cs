@@ -23,7 +23,6 @@ namespace Shelngn.Business.GameProjects.Build
                 WorkingDirectory = projectsDirectory,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
-                //CreateNoWindow = true,
                 UseShellExecute = false,
                 Arguments = $"/c npx webpack build --config ./{gameProjectId}/webpack.config.js --entry ./{gameProjectId}/main.js"
             };
