@@ -79,5 +79,10 @@ namespace Shelngn.Business.GameProjects.Files
             Directory.Move(sourcePath, destinationPath);
             return Task.CompletedTask;
         }
+
+        public Task<byte[]> ReadFileAsync(string uri, CancellationToken ct = default)
+        {
+            return File.ReadAllBytesAsync(uri, ct);
+        }
     }
 }

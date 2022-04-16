@@ -5,3 +5,6 @@ export const getProjectFiles = (state) => state.workspace.projectFiles;
 
 export const getProjectBuildProgress = (state) => state.workspace.build.progress;
 export const getProjectBuildError = (state) => state.workspace.build.error;
+
+export const getOpenFiles = (state) => state.workspace.files;
+export const getCurrentFileId = (state) => state.workspace.currentFileId;

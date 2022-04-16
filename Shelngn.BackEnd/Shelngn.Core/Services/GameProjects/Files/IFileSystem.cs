@@ -43,5 +43,7 @@
         Task MoveFileAsync(string sourceUri, string destinationUri);
 
         Task MoveDirectoryAsync(string sourcePath, string destinationPath);
+
+        Task<byte[]> ReadFileAsync(string uri, CancellationToken ct = default);
     }
 }

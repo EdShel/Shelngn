@@ -12,4 +12,10 @@
 .scrollable::-webkit-scrollbar-thumb {
   border-radius: 10px;
   background-color: var(--background);
+  visibility: hidden;
+}
+
+.scrollable:hover::-webkit-scrollbar-thumb,
+.scrollable:focus::-webkit-scrollbar-thumb {
+  visibility: visible;
 }

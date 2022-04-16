@@ -5,12 +5,13 @@ import clsx from "clsx";
 import styles from "./styles.module.css";
 import useDraggable from "../../hooks/useDraggable";
 
-const FilesTree = ({ root, onContextMenu, onDrop, className }) => {
+const FilesTree = ({ root, onContextMenu, onDrop, onOpenFile, className }) => {
   const handleDrop = useCallback((e) => onDrop?.(e, root), [onDrop, root]);
   const { dragAreaProps, isDraggingOver } = useDragArea({ onDropped: handleDrop });
   const itemsProps = {
     onContextMenu,
     onDrop,
+    onOpenFile,
   };
   return (
     <div
@@ -67,14 +68,14 @@ const Folder = ({ folder, children, itemsProps: { onContextMenu, onDrop } }) => 
     </div>
   );
 };
-// FilesTree.Folder = Folder;
 
-const Item = ({ file, itemsProps: { onContextMenu } }) => {
+const Item = ({ file, itemsProps: { onContextMenu, onOpenFile } }) => {
   const { draggableProps } = useDraggable("application/x-fileid", file.id);
 
   return (
     <div
       className={styles.item}
+      onClick={() => onOpenFile(file)}
       onContextMenu={(e) => {
         e.file = file;
         onContextMenu(e);
@@ -85,4 +86,3 @@ const Item = ({ file, itemsProps: { onContextMenu } }) => {
     </div>
   );
 };
-// FilesTree.Item = Item;

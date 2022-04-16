@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import React, { useCallback, useContext, useState } from "react";
-import crossIcon from "./cross.svg";
+import crossIcon from "../assets/cross.svg";
 import styles from "./styles.module.css";
 
 const ShowNotificationContext = React.createContext();
@@ -16,14 +16,14 @@ export const InfoAlertProvider = ({ children }) => {
   const topMostNotification = notifications[0];
 
   const handleClose = () => {
-    setNotifications(oldNotifications => oldNotifications.slice(1))
+    setNotifications((oldNotifications) => oldNotifications.slice(1));
   };
 
   return (
     <ShowNotificationContext.Provider value={showNotification}>
       {children}
       {!!topMostNotification && (
-        <div className={clsx(styles.alert, topMostNotification.type === 'error' && styles.error)}>
+        <div className={clsx(styles.alert, topMostNotification.type === "error" && styles.error)}>
           {topMostNotification.text}
           <button onClick={handleClose} className={styles.close}>
             <img src={crossIcon} alt="Close" />

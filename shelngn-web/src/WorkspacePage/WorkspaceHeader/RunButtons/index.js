@@ -33,7 +33,6 @@ const RunButtons = () => {
     const scriptWorker = new Worker(scriptUrl);
     scriptWorker.onmessage = (msg) => {
       console.log("msg", msg);
-      msg();
     };
     scriptWorker.postMessage("Hello");
     URL.revokeObjectURL(scriptUrl);

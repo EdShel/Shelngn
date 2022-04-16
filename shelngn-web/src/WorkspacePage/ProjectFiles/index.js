@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { postFileUploadRequest } from "../../api";
 import ContextMenu from "../../components/ContextMenu";
 import FilesTree from "../../components/FilesTree";
 import { useShowAlertNotification } from "../../InfoAlert";
 import useWorkspaceId from "../hooks/useWorkspaceId";
+import { openFile } from "../reducer";
 import { getProjectFiles } from "../selectors";
 import { useWorkspaceDispatch } from "../WorkspaceContext";
 import styles from "./styles.module.css";
@@ -15,6 +16,7 @@ const ProjectFiles = ({ className }) => {
   const projectFiles = useSelector(getProjectFiles);
   const [contextMenu, setContextMenu] = useState(null);
   const { showError } = useShowAlertNotification();
+  const dispatch = useDispatch();
 
   const handleContextMenu = (e) => {
     if (e.shiftKey) {
@@ -111,6 +113,8 @@ const ProjectFiles = ({ className }) => {
     }
   };
 
+  const handleOpenFile = (file) => dispatch(openFile(file.id, file.name));
+
   return (
     <div className={styles["project-files"]}>
       {projectFiles && (
@@ -119,6 +123,7 @@ const ProjectFiles = ({ className }) => {
           root={projectFiles}
           onContextMenu={handleContextMenu}
           onDrop={handleDrop}
+          onOpenFile={handleOpenFile}
         />
       )}
       {!!contextMenu && (

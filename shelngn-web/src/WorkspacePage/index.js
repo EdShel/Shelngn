@@ -6,8 +6,8 @@ import PageMeta from "./PageMeta";
 import styles from "./styles.module.css";
 import { WorkspaceContextProvider } from "./WorkspaceContext";
 import ProjectFiles from "./ProjectFiles";
-import CodeEditor from "../components/CodeEditor";
 import SplitPane from "../components/SplitPane";
+import OpenEditors from "./OpenEditors";
 
 const WorkspacePage = () => {
   return (
@@ -17,11 +17,7 @@ const WorkspacePage = () => {
         <SideBar />
         <div className={styles["screen-content"]}>
           <WorkspaceHeader />
-          <SplitPane
-            className={styles.split}
-            left={<ProjectFiles />}
-            right={<CodeEditor className={styles.code} />}
-          ></SplitPane>
+          <SplitPane className={styles.split} left={<ProjectFiles />} right={<OpenEditors className={styles.code} />} />
         </div>
       </ScreenContainer>
     </WorkspaceContextProvider>

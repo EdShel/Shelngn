@@ -176,6 +176,32 @@ namespace Shelngn.Api.Workspaces
             string path = reducer.GetResourcePath(fileId, state.ProjectFiles.ProjectFilesRoot);
 
             await fileSystem.CreateOrOverwriteFileAsync(path, Encoding.UTF8.GetBytes(content));
+
+            await DispatchToOthersInWorkspaceAsync(new
+            {
+                type = "workspace/readFile",
+                fileId = fileId,
+                content = content
+            });
+        }
+
+        [HubMethodName("readFile")]
+        public async Task ReadFileContent(string fileId)
+        {
+            IFileSystem fileSystem = Resolve<IFileSystem>();
+            WorkspaceState state = await GetWorkspaceStateAsync();
+            var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
+            string path = reducer.GetResourcePath(fileId, state.ProjectFiles.ProjectFilesRoot);
+
+            byte[] fileContent = await fileSystem.ReadFileAsync(path);
+            string textContent = Encoding.UTF8.GetString(fileContent);
+
+            await DispatchToCallerAsync(new
+            {
+                type = "workspace/readFile",
+                fileId = fileId,
+                content = textContent
+            });
         }
     }
 
@@ -216,6 +242,11 @@ namespace Shelngn.Api.Workspaces
         private async Task DispatchToCallerAsync(object action)
         {
             await this.Clients.Caller.SendAsync("redux", action);
+        }
+
+        private async Task DispatchToOthersInWorkspaceAsync(object action)
+        {
+            await this.Clients.OthersInGroup(this.WorkspaceId).SendAsync("redux", action);
         }
 
         public override async Task OnConnectedAsync()
