@@ -1,3 +1,7 @@
+.screen {
+  height: 100vh;
+}
+
 .screen-content {
   flex-grow: 1;
   display: flex;
@@ -9,4 +13,8 @@
 .split {
   flex: 1;
   overflow: hidden;
+}
+
+.code {
+  height: 100%;
 }

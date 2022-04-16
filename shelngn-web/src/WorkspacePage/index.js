@@ -12,12 +12,16 @@ import SplitPane from "../components/SplitPane";
 const WorkspacePage = () => {
   return (
     <WorkspaceContextProvider>
-      <ScreenContainer>
+      <ScreenContainer className={styles.screen}>
         <PageMeta />
         <SideBar />
         <div className={styles["screen-content"]}>
           <WorkspaceHeader />
-          <SplitPane className={styles.split} left={<ProjectFiles />} right={<CodeEditor />}></SplitPane>
+          <SplitPane
+            className={styles.split}
+            left={<ProjectFiles />}
+            right={<CodeEditor className={styles.code} />}
+          ></SplitPane>
         </div>
       </ScreenContainer>
     </WorkspaceContextProvider>
