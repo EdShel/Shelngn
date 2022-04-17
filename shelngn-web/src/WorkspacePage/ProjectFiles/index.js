@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { postFileUploadRequest } from "../../api";
 import ContextMenu from "../../components/ContextMenu";
 import FilesTree from "../../components/FilesTree";
+import Scrollable from "../../components/Scrollable";
 import { useShowAlertNotification } from "../../InfoAlert";
 import useWorkspaceId from "../hooks/useWorkspaceId";
 import { openFile } from "../reducer";
@@ -116,10 +117,10 @@ const ProjectFiles = ({ className }) => {
   const handleOpenFile = (file) => dispatch(openFile(file.id, file.name));
 
   return (
-    <div className={styles["project-files"]}>
+    <Scrollable className={styles["project-files"]}>
       {projectFiles && (
         <FilesTree
-          className={styles["files-tree"]}
+          className={styles["files-tree"]} //not used
           root={projectFiles}
           onContextMenu={handleContextMenu}
           onDrop={handleDrop}
@@ -139,7 +140,7 @@ const ProjectFiles = ({ className }) => {
           ))}
         </ContextMenu>
       )}
-    </div>
+    </Scrollable>
   );
 };
 

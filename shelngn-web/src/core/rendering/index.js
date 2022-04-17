@@ -1,6 +1,5 @@
 import { gl, canvas, initialize } from './global'
 
-
 const notInitialized = () => { throw new Error('Not initialized yet.'); };
 
 let stopObservingCanvasSize = notInitialized;

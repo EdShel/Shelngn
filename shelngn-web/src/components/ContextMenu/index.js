@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import styles from "./styles.module.css";
 
 const ContextMenu = ({ children, position, onDismiss }) => {

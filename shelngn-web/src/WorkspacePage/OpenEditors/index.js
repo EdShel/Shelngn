@@ -31,7 +31,7 @@ const OpenEditors = () => {
 
   const sendNewCodeDebounced = useDebouncedCallback(
     (newText) => workspaceSend("dumpFile", currentFileId, newText),
-    500
+    10_000
   );
   const handleContentChange = (newText) => {
     setLocalCodeText(newText);

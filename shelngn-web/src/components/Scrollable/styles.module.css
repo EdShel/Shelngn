@@ -4,9 +4,14 @@
 
 .scrollable::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
 .scrollable::-webkit-scrollbar-track {
+}
+
+.scrollable::-webkit-scrollbar-corner {
+  visibility: hidden;
 }
 
 .scrollable::-webkit-scrollbar-thumb {
@@ -18,4 +23,8 @@
 .scrollable:hover::-webkit-scrollbar-thumb,
 .scrollable:focus::-webkit-scrollbar-thumb {
   visibility: visible;
+}
+
+.scrollable::-webkit-scrollbar-thumb:hover {
+  background-color: var(--background-light);
 }

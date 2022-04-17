@@ -16,7 +16,7 @@ const SplitPane = ({ className, left, right }) => {
   };
 
   const onMove = (clientX) => {
-    if (dragging && leftWidth && separatorXPosition) {
+    if (dragging && leftWidth !== undefined && separatorXPosition) {
       const newLeftWidth = leftWidth + clientX - separatorXPosition;
       setSeparatorXPosition(clientX);
 
@@ -74,7 +74,12 @@ const SplitPane = ({ className, left, right }) => {
       <LeftPanel leftWidth={leftWidth} setLeftWidth={setLeftWidth}>
         {left}
       </LeftPanel>
-      <div className={styles['divider-hitbox']} onMouseDown={onMouseDown} onTouchStart={onTouchStart} onTouchEnd={onMouseUp}>
+      <div
+        className={styles["divider-hitbox"]}
+        onMouseDown={onMouseDown}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onMouseUp}
+      >
         <div className={styles.divider} />
       </div>
       <div className={styles.right}>{right}</div>
@@ -89,8 +94,9 @@ const LeftPanel = ({ children, leftWidth, setLeftWidth }) => {
 
   useEffect(() => {
     if (leftRef.current) {
-      if (!leftWidth) {
-        setLeftWidth(leftRef.current?.clientWidth);
+      if (leftWidth === undefined) {
+        // setLeftWidth(leftRef.current?.clientWidth); Maybe use this
+        setLeftWidth(240);
         return;
       }
 
@@ -99,7 +105,7 @@ const LeftPanel = ({ children, leftWidth, setLeftWidth }) => {
   }, [leftRef, leftWidth, setLeftWidth]);
 
   return (
-    <div ref={leftRef}>
+    <div ref={leftRef} className={styles.left}>
       {children}
     </div>
   );

@@ -3,22 +3,33 @@
 
 .editor {
   min-height: 100%;
+  min-width: 100%;
+  overflow: visible !important;
+  display: inline-block !important;
 }
 
 .editor textarea {
   outline: none;
   padding-left: 60px !important;
+  white-space: pre !important;
+  word-break: inherit !important;
+  overflow-wrap: inherit !important;
 }
 
 .editor pre {
   padding-left: 60px !important;
+  white-space: pre !important;
+  word-break: keep-all !important;
+  overflow-wrap: inherit !important;
+  display: inline-block !important;
 }
 
 .line-number {
   position: absolute;
   left: -25px;
-  color: #cccccc;
+  color: #838198;
   text-align: right;
   width: 60px;
+  font-family: monospace;
 }
 
