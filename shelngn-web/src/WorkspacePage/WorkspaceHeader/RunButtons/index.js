@@ -1,14 +1,13 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getBuiltJsBundle } from "../../../api";
 import useWorkspaceId from "../../hooks/useWorkspaceId";
 import { getProjectBuildError, getProjectBuildProgress } from "../../selectors";
 import { useWorkspaceDispatch } from "../../WorkspaceContext";
 import { buildErrorShown } from "../../reducer";
 import { useShowAlertNotification } from "../../../InfoAlert";
 import { ReactComponent as PlayIcon } from "./play.svg";
-import styles from "./styles.module.css";
 import UrlTo from "../../../UrlTo";
+import styles from "./styles.module.css";
 
 const RunButtons = () => {
   const workspaceId = useWorkspaceId();
@@ -28,26 +27,10 @@ const RunButtons = () => {
   const handleRun = async () => {
     await workspaceInvoke("build");
     window.open(UrlTo.debug(workspaceId)).focus();
-
-    // const bundleSourceCode = await getBuiltJsBundle(workspaceId);
-    // const bundleBlob = new Blob([bundleSourceCode]);
-    // console.log("bundleBlob", bundleBlob);
-    // const scriptUrl = URL.createObjectURL(bundleBlob);
-    // console.log("scriptUrl", scriptUrl);
-    // const scriptWorker = new Worker(scriptUrl);
-    // scriptWorker.onmessage = (msg) => {
-    //   console.log("Received message from user script", msg);
-    // };
-    // scriptWorker.postMessage("Hello");
-    // URL.revokeObjectURL(scriptUrl);
-
-    // setTimeout(() => {
-    //   scriptWorker.terminate();
-    // }, 1000);
   };
 
   return (
-    <div>
+    <div className={styles.buttons}>
       <button onClick={handleRun} disabled={progress} className={styles.run}>
         <PlayIcon />
       </button>

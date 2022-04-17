@@ -1,9 +1,8 @@
-import { mat4, vec3 } from "gl-matrix";
+import { mat4 } from "gl-matrix";
 import { addElement, setShader, setTexture } from "./draw-batch";
 import { gl } from "./global";
 import Shader from "./shader";
 import Texture from "./texture"; // eslint-disable-line no-unused-vars
-import Camera2D from "./Camera2D";
 import { FLOAT, FLOAT2, INT32, MATRIX4X4 } from "./vertex-data-types";
 import { degToRad } from "../util/math";
 
@@ -68,7 +67,7 @@ const Draw = {
    * @param {Number} x
    * @param {Number} y
    */
-  drawTexture(texture, x, y) {
+  texture(texture, x, y) {
     initializeIfNeed();
     setShader(drawingShader);
     setTexture(texture);

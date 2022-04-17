@@ -20,5 +20,15 @@ namespace Shelngn.Business.GameProjects.Build
             }
             return path;
         }
+
+        public string? GetResource(string gameProjectId, string resourcePath)
+        {
+            string path = Path.Combine(this.projectsDirectory, gameProjectId, "dist", resourcePath);
+            if (!File.Exists(path))
+            {
+                return null;
+            }
+            return path;
+        }
     }
 }

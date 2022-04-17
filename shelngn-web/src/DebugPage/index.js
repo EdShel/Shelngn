@@ -4,11 +4,11 @@ import { begin, flush } from "../core/rendering/draw-batch";
 import Texture from "../core/rendering/texture";
 import Draw from "../core/rendering/Draw";
 import Camera2D from "../core/rendering/Camera2D";
-import { addFpsChangeListener, updateFps } from "../core/rendering/Fps";
 import GameScreen from "../core/rendering/GameScreen";
-import styles from "./styles.module.css";
-import { getBuiltJsBundle } from "../api";
 import useWorkspaceId from "../WorkspacePage/hooks/useWorkspaceId";
+import { addFpsChangeListener, updateFps } from "../core/rendering/Fps";
+import { getBuiltJsBundle, getResourceUrl } from "../api";
+import styles from "./styles.module.css";
 
 const DebugPage = () => {
   const workspaceId = useWorkspaceId();
@@ -24,16 +24,31 @@ const DebugPage = () => {
         return;
       }
       initializeRenderer(canvasRef.current);
-      const texture = Texture.loadLazy("/logo192.png");
+      let loadedTextures = {};
+
+      const getTexture = (textureUrl) => {
+        if (loadedTextures[textureUrl]) {
+          return loadedTextures[textureUrl];
+        }
+        const textureAbsoluteUrl = getResourceUrl(workspaceId, textureUrl);
+        return (loadedTextures[textureUrl] = Texture.loadLazy(textureAbsoluteUrl));
+      };
+
+      const drawObjects = {
+        Draw: {
+          texture(textureUrl, x, y) {
+            const txt = getTexture(textureUrl);
+            Draw.texture(txt, x, y);
+          },
+        },
+        Texture: {},
+      };
 
       const bundleSourceCode = await getBuiltJsBundle(workspaceId);
       const bundleBlob = new Blob([bundleSourceCode]);
       const scriptUrl = URL.createObjectURL(bundleBlob);
       gameWebWorkerRef.current = new Worker(scriptUrl);
-      gameWebWorkerRef.current.onmessage = (msg) => {
-        console.log('msg', msg)
-        console.log("data", msg.data);
-
+      gameWebWorkerRef.current.onmessage = ({ data }) => {
         updateFps();
         const screenDimensions = GameScreen.getDimensions();
 
@@ -49,12 +64,11 @@ const DebugPage = () => {
         clearCanvas([0.2, 0.2, 0.2, 1]);
         begin();
 
-        for (const drawCall of msg.data) {
-          const [functionName, ...args] = drawCall;
-          Draw[functionName](texture, ...args);
+        for (const drawCall of data) {
+          const [objectName, functionName, ...args] = drawCall;
+          drawObjects[objectName][functionName](...args);
         }
         flush();
-        console.log('running', running)
         if (running) {
           window.requestAnimationFrame(render);
         }
@@ -62,11 +76,9 @@ const DebugPage = () => {
       URL.revokeObjectURL(scriptUrl);
 
       const render = () => {
-        console.log('Render clall')
         if (!gameWebWorkerRef.current) {
           return;
         }
-        console.log('Render')
         gameWebWorkerRef.current.postMessage("draw");
       };
       window.requestAnimationFrame(render);

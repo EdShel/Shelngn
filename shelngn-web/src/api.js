@@ -68,3 +68,4 @@ export const postFileUploadRequest = (workspaceId, filePath, fileContentType) =>
     },
   });
 export const getBuiltJsBundle = (workspaceId) => getAuth(`workspace/build/${workspaceId}/bundle.js`);
+export const getResourceUrl = (workspaceId, url) => `${apiUrl}/workspace/build/${workspaceId}/${url}`;

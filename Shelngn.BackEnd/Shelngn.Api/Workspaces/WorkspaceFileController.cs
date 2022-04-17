@@ -31,7 +31,7 @@ namespace Shelngn.Api.Workspaces
             [FromHeader(Name = "Content-Type")] string contentType)
         {
             Guid workspaceIdGuid = Guids.FromUrlSafeBase64(workspaceId);
-            GameProjectRights userRights = await this.gameProjectAuthorizer.GetRightsForUserAsync(User.GetIdGuid(), workspaceIdGuid);
+            GameProjectRights userRights = await this.gameProjectAuthorizer.GetRightsForUserAsync(this.User.GetIdGuid(), workspaceIdGuid);
             if (!userRights.Workspace)
             {
                 return Forbid();
@@ -39,11 +39,11 @@ namespace Shelngn.Api.Workspaces
             string[] forbiddenSequences = new[] { "..", ":", "~", "//" };
             if (forbiddenSequences.Any(banned => filePath.Contains(banned)))
             {
-                return BadRequest("Double dots are forbidden.");
+                return BadRequest("File path is forbidden.");
             }
 
             string fileServerPath = $"{workspaceId}/{filePath}" ?? throw new ArgumentNullException("Path can't be null.");
-            string signature = fileUploadUrlSigning.CreateSignature(fileServerPath, contentType);
+            string signature = this.fileUploadUrlSigning.CreateSignature(fileServerPath, contentType);
             string fileUploadServer = this.configuration.GetValue<string>("FileUploadServer")
                 ?? throw new InvalidOperationException("No file upload server specified.");
             Uri fileUploadSignedUrl = new UriBuilder(fileUploadServer)

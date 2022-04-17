@@ -1,18 +1,30 @@
+.buttons {
+  align-self: stretch;
+}
+
 .run {
   background: none;
   outline: none;
   border: none;
   cursor: pointer;
+  height: 100%;
+  padding-left: 8px;
+  padding-right: 8px;
 }
 
-.run:focus {
-  transform: scale(120%);
-}
-
-.run:hover {
-  opacity: 0.5;
+.run:hover, .run:focus {
+  background-color: var(--screen-background);
 }
 
 .run path {
   stroke: white;
+}
+
+.run:hover:not(:disabled) path {
+  fill: white;
+}
+
+.run:disabled {
+    opacity: 0.5;
+    cursor: progress;
 }

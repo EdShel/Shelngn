@@ -59,9 +59,10 @@ export default class Texture {
       loadingTextures = loadingTextures.filter((t) => t !== textureEntry);
       loadedTextures.push(textureEntry);
     };
-    image.onerror = function (e) {
-      throw new Error(`Error loading the image '${textureUrl}' for texture: ${JSON.stringify(e)}`);
+    image.onerror = () => {
+      throw new Error(`Error loading the image '${textureUrl}' for texture`);
     };
+    image.crossOrigin = "anonymous";
     image.src = textureUrl;
 
     return textureEntry;

@@ -24,7 +24,7 @@ namespace Shelngn.Business.GameProjects.Build
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
-                Arguments = $"/c npx webpack build --config ./{gameProjectId}/webpack.config.js --entry ./{gameProjectId}/main.js"
+                Arguments = $"/c npx webpack build --config ./{gameProjectId}/webpack.config.js --env workspace={gameProjectId}"
             };
 
             Process webpack = Process.Start(webpackProcess)

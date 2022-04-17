@@ -87,7 +87,4 @@ export function clearCanvas(color) {
     const [r, g, b, a] = color || [1, 1, 1, 1];
     gl.clearColor(r, g, b, a);
     gl.clear(gl.COLOR_BUFFER_BIT);
-
-    
-
 }
