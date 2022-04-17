@@ -8,6 +8,7 @@ import { buildErrorShown } from "../../reducer";
 import { useShowAlertNotification } from "../../../InfoAlert";
 import { ReactComponent as PlayIcon } from "./play.svg";
 import styles from "./styles.module.css";
+import UrlTo from "../../../UrlTo";
 
 const RunButtons = () => {
   const workspaceId = useWorkspaceId();
@@ -26,22 +27,23 @@ const RunButtons = () => {
 
   const handleRun = async () => {
     await workspaceInvoke("build");
+    window.open(UrlTo.debug(workspaceId)).focus();
 
-    const bundleSourceCode = await getBuiltJsBundle(workspaceId);
-    const bundleBlob = new Blob([bundleSourceCode]);
-    console.log("bundleBlob", bundleBlob);
-    const scriptUrl = URL.createObjectURL(bundleBlob);
-    console.log("scriptUrl", scriptUrl);
-    const scriptWorker = new Worker(scriptUrl);
-    scriptWorker.onmessage = (msg) => {
-      console.log("msg", msg);
-    };
-    scriptWorker.postMessage("Hello");
-    URL.revokeObjectURL(scriptUrl);
+    // const bundleSourceCode = await getBuiltJsBundle(workspaceId);
+    // const bundleBlob = new Blob([bundleSourceCode]);
+    // console.log("bundleBlob", bundleBlob);
+    // const scriptUrl = URL.createObjectURL(bundleBlob);
+    // console.log("scriptUrl", scriptUrl);
+    // const scriptWorker = new Worker(scriptUrl);
+    // scriptWorker.onmessage = (msg) => {
+    //   console.log("Received message from user script", msg);
+    // };
+    // scriptWorker.postMessage("Hello");
+    // URL.revokeObjectURL(scriptUrl);
 
-    setTimeout(() => {
-      scriptWorker.terminate();
-    }, 1000);
+    // setTimeout(() => {
+    //   scriptWorker.terminate();
+    // }, 1000);
   };
 
   return (

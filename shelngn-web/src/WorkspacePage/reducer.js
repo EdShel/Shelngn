@@ -13,6 +13,7 @@ const GAME_PROJECT_BUILD_ERROR_SHOWN = "wokspace/build/errorShown";
 const OPEN_FILE = "workspace/openFile";
 const CLOSE_FILE = "workspace/closeFile";
 const READ_FILE = "workspace/readFile";
+const EDIT_FILE = "workspace/editFile";
 
 const initialState = {
   users: [],
@@ -128,6 +129,17 @@ const reducer = (state = initialState, action) => {
           },
         },
       };
+    case EDIT_FILE:
+      return {
+        ...state,
+        files: {
+          ...state.files,
+          [action.fileId]: {
+            ...state.files[action.fileId],
+            content: action.newText,
+          },
+        },
+      };
     default:
       return state;
   }
@@ -147,4 +159,10 @@ export const openFile = (fileId, fileName) => ({
 export const closeFile = (fileId) => ({
   type: CLOSE_FILE,
   fileId,
+});
+
+export const editFile = (fileId, newText) => ({
+  type: EDIT_FILE,
+  fileId,
+  newText,
 });

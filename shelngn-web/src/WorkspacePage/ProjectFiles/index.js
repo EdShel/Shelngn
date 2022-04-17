@@ -33,14 +33,17 @@ const ProjectFiles = ({ className }) => {
     if (e.folder) {
       items = [
         {
-          text: "Create object",
+          text: "Create script",
           onClick: async () => {
-            const fileName = prompt("Enter file name");
+            const fileName = prompt("Enter script name");
             if (!fileName) {
               return;
             }
-            await workspaceSend("createFile", e.folder.id, fileName + ".sobj");
-            await workspaceSend("dumpFile", e.folder.id === "." ? fileName : `${e.folder.id}/${fileName}.sobj`, "Test");
+            const fileNameWithExt = fileName + ".js";
+            const fileId = e.folder.id === "." ? fileNameWithExt : `${e.folder.id}/${fileNameWithExt}`;
+            await workspaceSend("createFile", e.folder.id, fileNameWithExt);
+            // await workspaceSend("dumpFile", e.folder.id === "." ? fileName : `${e.folder.id}/${fileName}.js`, "");
+            dispatch(openFile(fileId, fileNameWithExt));
           },
         },
         {
@@ -120,7 +123,7 @@ const ProjectFiles = ({ className }) => {
     <Scrollable className={styles["project-files"]}>
       {projectFiles && (
         <FilesTree
-          className={styles["files-tree"]} //not used
+          className={styles["files-tree"]}
           root={projectFiles}
           onContextMenu={handleContextMenu}
           onDrop={handleDrop}

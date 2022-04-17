@@ -17,9 +17,7 @@ export default class Texture {
   static loadLazy(textureUrl) {
     assertParamNotFalse("textureUrl", textureUrl);
 
-    const alreadyLoadedTexture = loadedTextures.find(
-      (t) => t.path === textureUrl
-    );
+    const alreadyLoadedTexture = loadedTextures.find((t) => t.path === textureUrl);
     if (alreadyLoadedTexture) {
       return alreadyLoadedTexture;
     }
@@ -40,17 +38,7 @@ export default class Texture {
     const srcFormat = gl.RGBA;
     const srcType = gl.UNSIGNED_BYTE;
     const pixel = new Uint8Array([0, 0, 255, 255]);
-    gl.texImage2D(
-      gl.TEXTURE_2D,
-      level,
-      internalFormat,
-      width,
-      height,
-      border,
-      srcFormat,
-      srcType,
-      pixel
-    );
+    gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border, srcFormat, srcType, pixel);
 
     const textureEntry = new Texture(textureUrl, texture, width, height);
     loadingTextures.push(textureEntry);
@@ -59,16 +47,9 @@ export default class Texture {
     image.onload = function () {
       textureEntry.width = image.width;
       textureEntry.height = image.height;
-      
+
       gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.texImage2D(
-        gl.TEXTURE_2D,
-        level,
-        internalFormat,
-        srcFormat,
-        srcType,
-        image
-      );
+      gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, image);
       if (!isPowerOf2(image.width) || !isPowerOf2(image.height)) {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -79,9 +60,7 @@ export default class Texture {
       loadedTextures.push(textureEntry);
     };
     image.onerror = function (e) {
-      throw new Error(
-        "Error loading the image for texture: " + JSON.stringify(e)
-      );
+      throw new Error(`Error loading the image '${textureUrl}' for texture: ${JSON.stringify(e)}`);
     };
     image.src = textureUrl;
 

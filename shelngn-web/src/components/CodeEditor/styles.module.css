@@ -6,6 +6,8 @@
   min-width: 100%;
   overflow: visible !important;
   display: inline-block !important;
+  font-family: Consolas, 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
 }
 
 .editor textarea {

@@ -3,11 +3,11 @@ import ScreenContainer from "../components/ScreenContainer";
 import SideBar from "../components/SideBar";
 import WorkspaceHeader from "./WorkspaceHeader";
 import PageMeta from "./PageMeta";
-import styles from "./styles.module.css";
 import { WorkspaceContextProvider } from "./WorkspaceContext";
 import ProjectFiles from "./ProjectFiles";
 import SplitPane from "../components/SplitPane";
 import OpenEditors from "./OpenEditors";
+import styles from "./styles.module.css";
 
 const WorkspacePage = () => {
   return (

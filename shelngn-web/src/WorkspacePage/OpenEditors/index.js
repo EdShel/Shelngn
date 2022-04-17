@@ -3,13 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import CodeEditor from "../../components/CodeEditor";
 import TabsPanel from "../../components/TabsPanel";
 import useDebouncedCallback from "../../hooks/useDebouncedCallback";
-import { closeFile, openFile } from "../reducer";
+import { closeFile, editFile, openFile } from "../reducer";
 import { getCurrentFileId, getOpenFiles } from "../selectors";
 import { useWorkspaceDispatch } from "../WorkspaceContext";
 import styles from "./styles.module.css";
 
 const OpenEditors = () => {
-  const [localCodeText, setLocalCodeText] = useState(null);
   const openFiles = useSelector(getOpenFiles);
   const currentFileId = useSelector(getCurrentFileId);
   const dispatch = useDispatch();
@@ -26,16 +25,15 @@ const OpenEditors = () => {
       workspaceSend("readFile", currentFileId);
       return;
     }
-    setLocalCodeText(currentFile.content);
   }, [currentFile]);
 
   const sendNewCodeDebounced = useDebouncedCallback(
-    (newText) => workspaceSend("dumpFile", currentFileId, newText),
-    10_000
+    (fileId, newText) => workspaceSend("dumpFile", fileId, newText),
+    2_000
   );
   const handleContentChange = (newText) => {
-    setLocalCodeText(newText);
-    sendNewCodeDebounced(newText);
+    dispatch(editFile(currentFileId, newText));
+    sendNewCodeDebounced(currentFileId, newText);
   };
 
   return (
@@ -49,7 +47,7 @@ const OpenEditors = () => {
       {currentFile && (
         <CodeEditor
           className={styles.code}
-          value={currentFile.loading || localCodeText === null ? "Loading..." : localCodeText}
+          value={currentFile.loading ? "Loading..." : currentFile.content}
           onValueChange={handleContentChange}
         />
       )}
