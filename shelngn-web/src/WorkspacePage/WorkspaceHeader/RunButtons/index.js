@@ -6,6 +6,8 @@ import { getProjectBuildError, getProjectBuildProgress } from "../../selectors";
 import { useWorkspaceDispatch } from "../../WorkspaceContext";
 import { buildErrorShown } from "../../reducer";
 import { useShowAlertNotification } from "../../../InfoAlert";
+import { ReactComponent as PlayIcon } from "./play.svg";
+import styles from "./styles.module.css";
 
 const RunButtons = () => {
   const workspaceId = useWorkspaceId();
@@ -44,8 +46,8 @@ const RunButtons = () => {
 
   return (
     <div>
-      <button onClick={handleRun} disabled={progress}>
-        Run
+      <button onClick={handleRun} disabled={progress} className={styles.run}>
+        <PlayIcon />
       </button>
     </div>
   );

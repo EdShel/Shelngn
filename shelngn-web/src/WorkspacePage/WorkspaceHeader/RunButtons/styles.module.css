@@ -1,0 +1,18 @@
+.run {
+  background: none;
+  outline: none;
+  border: none;
+  cursor: pointer;
+}
+
+.run:focus {
+  transform: scale(120%);
+}
+
+.run:hover {
+  opacity: 0.5;
+}
+
+.run path {
+  stroke: white;
+}
