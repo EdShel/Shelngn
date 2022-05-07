@@ -17,6 +17,7 @@ namespace Shelngn.Services.GameProjects.Authorization
             return new GameProjectRights
             {
                 Workspace = isUserProjectMember,
+                ChangeMembers = isUserProjectMember
             };
         }
     }

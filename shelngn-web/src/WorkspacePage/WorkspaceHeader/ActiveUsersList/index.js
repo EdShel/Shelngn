@@ -1,10 +1,9 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import Hint from "../../../components/Hint";
+import UserPreview from "../../../components/UserPreview";
 import { getWorkspaceUsers } from "../../selectors";
 import styles from "./styles.module.css";
-
-const getUserNameAbbrev = (userName) => userName.match(/\w\w/)?.[0].toUpperCase() || "";
 
 const ActiveUsersList = () => {
   const users = useSelector(getWorkspaceUsers);
@@ -21,9 +20,7 @@ const ActiveUsersList = () => {
           className={styles["user-container"]}
           renderContent={() => <div>{user.userName}</div>}
         >
-          <div className={styles.user}>
-            <span className={styles["user-name"]}>{getUserNameAbbrev(user.userName)}</span>
-          </div>
+          <UserPreview userName={user.userName} />
         </Hint>
       ))}
     </div>

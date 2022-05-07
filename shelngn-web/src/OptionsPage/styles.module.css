@@ -1,0 +1,25 @@
+.members {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.user-card {
+  min-height: 160px;
+  background-color: var(--background);
+  background-size: 600%;
+  border-radius: 10px;
+  padding: 10px 16px;
+  padding: 5px;
+  text-decoration: none;
+  transition: background-size 0.2s, transform 0.1s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.user-avatar {
+  --size: 64px;
+  font-size: 2rem;
+}

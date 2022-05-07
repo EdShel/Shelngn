@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shelngn.Entities;
+using Shelngn.Exceptions;
+using Shelngn.Repositories;
 using Shelngn.Services.GameProjects;
 
 namespace Shelngn.Api.GameProjects
@@ -13,16 +15,25 @@ namespace Shelngn.Api.GameProjects
     {
         private readonly IGameProjectCreator gameProjectCreator;
         private readonly IGameProjectSearcher gameProjectSearcher;
+        private readonly IGameProjectRepository gameProjectRepository;
+        private readonly IAppUserRepository appUserRepository;
+        private readonly IGameProjectDeleter gameProjectDeleter;
         private readonly IMapper mapper;
 
         public GameProjectController(
             IGameProjectCreator gameProjectCreator,
             IGameProjectSearcher gameProjectSearcher,
-            IMapper mapper)
+            IMapper mapper,
+            IGameProjectRepository gameProjectRepository,
+            IGameProjectDeleter gameProjectDeleter,
+            IAppUserRepository appUserRepository)
         {
             this.gameProjectCreator = gameProjectCreator;
             this.gameProjectSearcher = gameProjectSearcher;
             this.mapper = mapper;
+            this.gameProjectRepository = gameProjectRepository;
+            this.gameProjectDeleter = gameProjectDeleter;
+            this.appUserRepository = appUserRepository;
         }
 
         [HttpPost]
@@ -52,21 +63,64 @@ namespace Shelngn.Api.GameProjects
                 GameProjects = myProjectsModel
             });
         }
-    }
 
-    public class GameProjectListModel
-    {
-        public string Id { get; set; } = null!;
-        public string ProjectName { get; set; } = null!;
-
-        private class GameProjectListModelProfile : Profile
+        [HttpGet("{gameProjectId}")]
+        [Authorize(Filters.GameProjectAuthPolicy.JustBeingMember)]
+        public async Task<IActionResult> GetProjectInfo([FromRoute] string gameProjectId, CancellationToken ct)
         {
-            public GameProjectListModelProfile()
+            Guid id = Guids.FromUrlSafeBase64(gameProjectId);
+            GameProject? gameProject = await gameProjectSearcher.GetByIdAsync(id)
+                ?? throw new NotFoundException("Game project");
+            IEnumerable<AppUser> usersMembers = await gameProjectRepository.GetAllMembersAsync(id, ct);
+
+            GameProjectViewModel viewModel = mapper.Map<GameProjectViewModel>(gameProject);
+            viewModel.Members = mapper.Map<IEnumerable<GameProjectMemberViewModel>>(usersMembers);
+
+            return Ok(viewModel);
+        }
+
+        [HttpPost("{gameProjectId}/member")]
+        [Authorize(Filters.GameProjectAuthPolicy.ChangeMembers)]
+        public async Task<IActionResult> AddMember(
+            [FromRoute] string gameProjectId,
+            [FromBody] AddMemberModel model,
+            CancellationToken ct)
+        {
+            Guid id = Guids.FromUrlSafeBase64(gameProjectId);
+            AppUser? user = await appUserRepository.GetFirstByEmailOrNullAsync(model.EmailOrUserName, ct)
+                ?? await appUserRepository.GetFirstByUserNameOrNullAsync(model.EmailOrUserName, ct);
+            if (user == null)
             {
-                CreateMap<GameProject, GameProjectListModel>()
-                    .ForMember(m => m.Id, opt => opt.MapFrom(g => g.Id.ToUrlSafeBase64()));
+                throw new BadRequestException("User does not exist");
             }
+
+            await gameProjectRepository.AddMemberAsync(new GameProjectMember { AppUserId = user.Id, GameProjectId = id }, ct);
+
+            return NoContent();
+        }
+
+        [HttpDelete("{gameProjectId}/member/{appUserId}")]
+        [Authorize(Filters.GameProjectAuthPolicy.ChangeMembers)]
+        public async Task<IActionResult> RemoveMember(
+            [FromRoute] string gameProjectId,
+            [FromRoute] string appUserId,
+            CancellationToken ct)
+        {
+            Guid projectId = Guids.FromUrlSafeBase64(gameProjectId);
+            Guid userId = Guids.FromUrlSafeBase64(appUserId);
+
+            await gameProjectRepository.RemoveMemberAsync(projectId, userId, ct);
+
+            return NoContent();
+        }
+
+        [HttpDelete("{gameProjectId}")]
+        [Authorize(Filters.GameProjectAuthPolicy.ChangeMembers)]
+        public async Task<IActionResult> DeleteProject([FromRoute] string gameProjectId)
+        {
+            Guid projectId = Guids.FromUrlSafeBase64(gameProjectId);
+            await gameProjectDeleter.DeleteProjectAsync(projectId);
+            return NoContent();
         }
     }
-
 }

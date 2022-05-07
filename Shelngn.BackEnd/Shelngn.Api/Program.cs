@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using Shelngn.Api.Filters;
@@ -33,6 +34,7 @@ var services = builder.Services;
 services.Configure<ConnectionStringProvider>(builder.Configuration.GetSection("ConnectionStrings"));
 services.Configure<AuthenticationSettings>(builder.Configuration.GetSection("AuthenticationSettings"));
 AuthenticationSettings jwtSettings = configuration.GetSection("AuthenticationSettings").Get<AuthenticationSettings>();
+services.Configure<GameProjectCreateSettings>(configuration.GetSection("GameProjectCreationSettings"));
 
 TokenValidationParameters? jwtValidationOptions = new TokenValidationParameters
 {
@@ -73,11 +75,18 @@ services.AddAuthentication(options =>
         };
     }
 );
+services.AddAuthorization(options =>
+{
+    options.AddPolicy(GameProjectAuthPolicy.JustBeingMember, b => b.AddRequirements(new GameProjectMemberRequirement(new GameProjectRights())));
+    options.AddPolicy(GameProjectAuthPolicy.ChangeMembers, b => b.AddRequirements(new GameProjectMemberRequirement(new GameProjectRights { ChangeMembers = true })));
+});
+services.AddTransient<IAuthorizationHandler, GameProjectMemberAuthorizationHandler>();
 
 services.AddControllers(options =>
 {
     //options.Filters.Add<ExceptionCatchingFilter>();
 });
+services.AddHttpContextAccessor();
 
 services.AddSignalR();
 services.AddSingleton<IUserIdProvider, IdClaimUserIdProvider>();
@@ -111,6 +120,7 @@ services.AddSingleton<IGameProjectBuilder, IGameProjectBuilder>(p => new GamePro
 services.AddSingleton<IGameProjectBuildResultAccessor, GameProjectBuildResultAccessor>(p => new GameProjectBuildResultAccessor(configuration.GetValue<string>("ProjectsDirectory")));
 services.AddTransient<IGameProjectAuthorizer, GameProjectAuthorizer>();
 services.AddSingleton<IFileUploadUrlSigning, FileUploadUrlSigning>(opt => new FileUploadUrlSigning(configuration.GetValue<string>("SigningPrivateKey")));
+services.AddTransient<IGameProjectDeleter, GameProjectDeleter>();
 
 services.AddSingleton<WorkspacesStatesManager>();
 services.AddTransient<ActiveUsersWorkspaceStateReducer>();

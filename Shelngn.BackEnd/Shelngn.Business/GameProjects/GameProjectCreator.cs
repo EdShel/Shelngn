@@ -1,8 +1,8 @@
-﻿using Shelngn.Entities;
+﻿using Microsoft.Extensions.Options;
+using Shelngn.Entities;
 using Shelngn.Repositories;
 using Shelngn.Services.GameProjects;
 using Shelngn.Services.GameProjects.Files;
-using System.Text;
 
 namespace Shelngn.Business.GameProjects
 {
@@ -12,17 +12,20 @@ namespace Shelngn.Business.GameProjects
         private readonly IRepositoryFactory repositoryFactory;
         private readonly IGameProjectStorageBalancer storageBalancer;
         private readonly IFileSystem fileSystem;
+        private readonly GameProjectCreateSettings gameProjectCreateSettings;
 
         public GameProjectCreator(
             IUnitOfWork unitOfWork,
             IRepositoryFactory repositoryFactory,
             IGameProjectStorageBalancer storageBalancer,
-            IFileSystem fileSystem)
+            IFileSystem fileSystem,
+            IOptions<GameProjectCreateSettings> gameProjectCreateSettings)
         {
             this.unitOfWork = unitOfWork;
             this.repositoryFactory = repositoryFactory;
             this.storageBalancer = storageBalancer;
             this.fileSystem = fileSystem;
+            this.gameProjectCreateSettings = gameProjectCreateSettings.Value;
         }
 
         public async Task<GameProject> CreateAsync(GameProject gameProject, Guid appUserId)
@@ -33,7 +36,7 @@ namespace Shelngn.Business.GameProjects
             try
             {
                 gameProject.Id = Guid.NewGuid();
-                gameProject.FilesLocation = (await this.storageBalancer.RequestNewUriAsync(gameProject.Id)).ToString();
+                gameProject.FilesLocation = (await this.storageBalancer.RequestNewUriAsync(gameProject.Id)).LocalPath;
                 await gameProjectRepository.CreateAsync(gameProject);
 
                 var owner = new GameProjectMember { AppUserId = appUserId, GameProjectId = gameProject.Id };
@@ -41,9 +44,8 @@ namespace Shelngn.Business.GameProjects
 
                 await this.fileSystem.CreateDirectoryOrDoNothingIfExistsAsync(gameProject.FilesLocation);
 
-                var readmeFilePath = Path.Combine(gameProject.FilesLocation, "readme.txt");
-                var readmeFileContent = "TODO: it's just a placeholder";
-                await this.fileSystem.CreateOrOverwriteFileAsync(readmeFilePath, Encoding.UTF8.GetBytes(readmeFileContent));
+                string templateFolder = Path.Combine(this.gameProjectCreateSettings.TemplatesDirectory, "Empty");
+                await this.fileSystem.CopyDirectoryContentsAsync(templateFolder, gameProject.FilesLocation);
 
                 this.unitOfWork.Commit();
 

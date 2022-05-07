@@ -14,7 +14,7 @@
         {
             return new Guid(Convert.FromBase64String(urlSafeBase64
                 .Replace('-', '+')
-                .Replace('_', '_') + "=="
+                .Replace('_', '/') + "=="
             ));
         }
     }

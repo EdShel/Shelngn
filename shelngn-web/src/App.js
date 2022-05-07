@@ -8,6 +8,7 @@ import LoginPage from "./auth/LoginPage";
 import RegisterPage from "./auth/RegisterPage";
 import WorkspacePage from "./WorkspacePage";
 import DebugPage from "./DebugPage";
+import OptionsPage from "./OptionsPage";
 import UrlTo from "./UrlTo";
 
 const App = () => {
@@ -21,6 +22,7 @@ const App = () => {
             <Route path={UrlTo.register()} element={<RegisterPage />} />
             <Route path={UrlTo.workspace(":id")} element={<WorkspacePage />} />
             <Route path={UrlTo.debug(":id")} element={<DebugPage />} />
+            <Route path={UrlTo.options(":id")} element={<OptionsPage />} />
           </Routes>
         </BrowserRouter>
       </InfoAlertProvider>

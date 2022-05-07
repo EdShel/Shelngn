@@ -1,5 +1,4 @@
-﻿using Shelngn.Services.GameProjects;
-using Shelngn.Services.GameProjects.Files;
+﻿using Shelngn.Services.GameProjects.Files;
 
 namespace Shelngn.Business.GameProjects.Files
 {
@@ -9,6 +8,25 @@ namespace Shelngn.Business.GameProjects.Files
         {
             Directory.CreateDirectory(uri);
             return Task.CompletedTask;
+        }
+
+        public Task CopyDirectoryContentsAsync(string sourcePath, string destinationPath)
+        {
+            CopyFilesRecursively(new DirectoryInfo(sourcePath), new DirectoryInfo(destinationPath));
+            return Task.CompletedTask;
+        }
+
+        public static void CopyFilesRecursively(DirectoryInfo source, DirectoryInfo target)
+        {
+            foreach (DirectoryInfo dir in source.GetDirectories())
+            {
+                CopyFilesRecursively(dir, target.CreateSubdirectory(dir.Name));
+            }
+
+            foreach (FileInfo file in source.GetFiles())
+            {
+                file.CopyTo(Path.Combine(target.FullName, file.Name));
+            }
         }
 
         public async Task CreateOrOverwriteFileAsync(string uri, byte[] fileContent, CancellationToken ct = default)

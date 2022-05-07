@@ -1,0 +1,22 @@
+.container {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-areas:
+    "sidebar header"
+    "sidebar page-content";
+  grid-template-columns: max-content 1fr;
+  grid-template-rows: max-content 1fr;
+}
+
+.side-bar {
+  grid-area: sidebar;
+}
+
+.header {
+  grid-area: header;
+}
+
+.content {
+  grid-area: page-content;
+}

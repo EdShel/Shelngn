@@ -2,8 +2,6 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import InputField from "../../components/InputField";
-import SideBar from "../../components/SideBar";
-import ScreenContainer from "../../components/ScreenContainer";
 import Button from "../../components/Button";
 import Form from "../Form";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +9,7 @@ import { login } from "../reducer";
 import UrlTo from "../../UrlTo";
 import styles from "./styles.module.css";
 import ButtonBack from "../../components/ButtonBack";
+import ScreenLayout, { contentClassName } from "../../components/ScreenLayout";
 
 const LoginPage = () => {
   const emailField = "email";
@@ -31,9 +30,8 @@ const LoginPage = () => {
   });
 
   return (
-    <ScreenContainer>
-      <SideBar />
-      <Form title="Sign up">
+    <ScreenLayout>
+      <Form className={contentClassName} title="Sign up">
         <InputField
           labelText="Email"
           name={emailField}
@@ -54,7 +52,7 @@ const LoginPage = () => {
           <Button text="Login" onPress={formik.handleSubmit} disabled={formik.isSubmitting} />
         </div>
       </Form>
-    </ScreenContainer>
+    </ScreenLayout>
   );
 };
 

@@ -1,0 +1,33 @@
+.line-loader {
+  height: 4px;
+  width: 100%;
+  background: transparent;
+}
+
+.line-loader::before {
+  content: "";
+  display: block;
+  background-color: var(--secondary);
+  height: 4px;
+  width: 0;
+}
+
+.animate::before {
+  animation: go-to-100-percent-width 0.5s ease-in forwards;
+}
+
+.hide::before {
+  transition: opacity 0.5s ease-in;
+  opacity: 0;
+  width: 100%;
+}
+
+@keyframes go-to-100-percent-width {
+  100% {
+    width: 100%;
+  }
+}
+
+.space-keep {
+    height: 4px;
+}

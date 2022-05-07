@@ -1,0 +1,17 @@
+.user {
+  --size: 32px;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background-color: var(--primary);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-name {
+  position: relative;
+  color: #ffffff;
+  user-select: none;
+}

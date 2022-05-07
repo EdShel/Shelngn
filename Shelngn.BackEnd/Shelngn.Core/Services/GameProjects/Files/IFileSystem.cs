@@ -28,6 +28,8 @@
     {
         Task CreateDirectoryOrDoNothingIfExistsAsync(string uri);
 
+        Task CopyDirectoryContentsAsync(string sourcePath, string destinationPath);
+
         Task CreateEmptyFileAsync(string path);
 
         Task CreateOrOverwriteFileAsync(string uri, byte[] fileContent, CancellationToken ct = default);

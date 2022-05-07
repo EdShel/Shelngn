@@ -6,8 +6,9 @@ import styles from "./styles.module.css";
 import AppStorage from "../../AppStorage";
 import { useDispatch } from "react-redux";
 import { revokeRefreshToken } from "../../auth/reducer";
+import clsx from "clsx";
 
-const Header = () => {
+const Header = ({ className }) => {
   const dispatch = useDispatch();
 
   const handleSignOut = () => {
@@ -17,7 +18,7 @@ const Header = () => {
   const isAuthenticated = !!AppStorage.accessToken;
 
   return (
-    <nav className={styles.header}>
+    <nav className={clsx(styles.header, className)}>
       {isAuthenticated && (
         <Link to={UrlTo.home()} onClick={handleSignOut}>
           <Button text="Sign out" type="secondary" />

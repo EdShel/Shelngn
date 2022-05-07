@@ -1,9 +1,8 @@
 import React, { useEffect } from "react";
-import SideBar from "../components/SideBar";
-import ScreenContainer from "../components/ScreenContainer";
 import Header from "./Header";
 import Button from "../components/Button";
-import styles from "./styles.module.css";
+import ScreenLayout, { headerClassName, contentClassName } from "../components/ScreenLayout";
+import Scrollable from "../components/Scrollable";
 import { postCreateNewProject } from "../api";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,6 +11,8 @@ import UrlTo from "../UrlTo";
 import AppStorage from "../AppStorage";
 import { loadMyGameProjects } from "./reducer";
 import GameProjectsList from "./GameProjectsList";
+import pixelArtImage from "./assets/pixelArt.webp";
+import styles from "./styles.module.css";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -40,19 +41,20 @@ const HomePage = () => {
   };
 
   return (
-    <ScreenContainer>
-      <SideBar />
-      <div className={styles["screen-content"]}>
-        <Header />
-        <div className={styles["main-container"]}>
-          <h1>Shelngn</h1>
-          <h2>Collaborative gameplay prototyping tool</h2>
-          {isAuthenticated && <Button text="Create new project for free" onPress={handleCreateProject} />}
+    <ScreenLayout>
+      <Header className={headerClassName} />
+      <Scrollable className={contentClassName}>
+      <div className={styles["main-container"]}>
+        <h1>Shelngn</h1>
+        <h2>Collaborative gameplay prototyping tool</h2>
+        {isAuthenticated && <Button text="Create new project for free" onPress={handleCreateProject} />}
 
-          <GameProjectsList gameProjects={myGameProjects.data} className={styles['game-projects-list']} />
-        </div>
+        <img src={pixelArtImage} alt="Adventure" className={styles.picture} />
+
+        <GameProjectsList gameProjects={myGameProjects.data} className={styles["game-projects-list"]} />
       </div>
-    </ScreenContainer>
+      </Scrollable>
+    </ScreenLayout>
   );
 };
 

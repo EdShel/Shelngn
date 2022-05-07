@@ -8,19 +8,3 @@
 .user-container {
   padding: 0 4px;
 }
-
-.user {
-  --size: 32px;
-  width: var(--size);
-  height: var(--size);
-  border-radius: 50%;
-  background-color: var(--primary);
-  text-align: center;
-}
-
-.user-name {
-  position: relative;
-  top: 5px;
-  color: #ffffff;
-  user-select: none;
-}

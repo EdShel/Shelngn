@@ -64,6 +64,8 @@ const DebugPage = () => {
         clearCanvas([0.2, 0.2, 0.2, 1]);
         begin();
 
+        console.log('Received from web worker', data);
+        
         for (const drawCall of data) {
           const [objectName, functionName, ...args] = drawCall;
           drawObjects[objectName][functionName](...args);

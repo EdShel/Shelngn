@@ -59,6 +59,11 @@ export const postRevoke = async () => {
 // --------- Game project --------- //
 export const postCreateNewProject = () => postAuth("/gameProject");
 export const getMyGameProjects = () => getAuth("/gameProject/my");
+export const getProjectInfo = (gameProjectId) => getAuth(`/gameProject/${gameProjectId}`);
+export const postAddMember = (gameProjectId, emailOrUserName) =>
+  postAuth(`/gameProject/${gameProjectId}/member`, { emailOrUserName });
+export const deleteMember = (gameProjectId, appUserId) =>
+  deleteAuth(`/gameProject/${gameProjectId}/member/${appUserId}`);
 
 // --------- Workspace --------- //
 export const postFileUploadRequest = (workspaceId, filePath, fileContentType) =>
