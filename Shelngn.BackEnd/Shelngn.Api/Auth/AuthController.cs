@@ -1,25 +1,32 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
+using Shelngn.Entities;
 using Shelngn.Exceptions;
+using Shelngn.Services;
 using Shelngn.Services.Auth;
 
 namespace Shelngn.Api.Auth
 {
     [ApiController]
-    [AllowAnonymous]
     [Route("[controller]")]
-    public class AuthController : ControllerBase
+    public partial class AuthController : ControllerBase
     {
         private readonly IAuthService authService;
+        private readonly IAppUserStore appUserStore;
+        private readonly IMapper mapper;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IAppUserStore appUserStore, IMapper mapper)
         {
             this.authService = authService;
+            this.appUserStore = appUserStore;
+            this.mapper = mapper;
         }
 
         [HttpPost("register")]
+        [AllowAnonymous]
         public async Task<ActionResult> RegisterAsync([FromBody] RegisterModel request, CancellationToken ct)
         {
             var registerDTO = new RegisterRequest
@@ -34,6 +41,7 @@ namespace Shelngn.Api.Auth
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<ActionResult> LoginAsync([FromBody] LoginRequest request, CancellationToken ct)
         {
             var loginDTO = new LoginRequest
@@ -47,6 +55,7 @@ namespace Shelngn.Api.Auth
         }
 
         [HttpPost("refresh")]
+        [AllowAnonymous]
         public async Task<ActionResult> RefreshTokenAsync([FromBody] RefreshModel request, CancellationToken ct)
         {
             bool hasAuthHeader = this.Request.Headers.TryGetValue(HeaderNames.Authorization, out StringValues tokens);
@@ -78,5 +87,15 @@ namespace Shelngn.Api.Auth
             return Ok();
         }
 
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<IActionResult> GetCurrentUser(CancellationToken ct)
+        {
+            Guid currentUserId = this.User.GetIdGuid();
+            AppUser user = await this.appUserStore.FindByIdAsync(currentUserId, ct)
+                ?? throw new InvalidOperationException("User who owns access token does not exist.");
+            CurrentUserModel currentUser = mapper.Map<CurrentUserModel>(user);
+            return Ok(currentUser);
+        }
     }
 }

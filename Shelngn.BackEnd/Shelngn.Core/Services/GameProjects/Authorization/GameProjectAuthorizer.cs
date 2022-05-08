@@ -1,4 +1,5 @@
-﻿using Shelngn.Repositories;
+﻿using Shelngn.Entities;
+using Shelngn.Repositories;
 
 namespace Shelngn.Services.GameProjects.Authorization
 {
@@ -13,11 +14,16 @@ namespace Shelngn.Services.GameProjects.Authorization
 
         public async Task<GameProjectRights> GetRightsForUserAsync(Guid userId, Guid gameProjectId)
         {
-            bool isUserProjectMember = await this.gameProjectRepository.GetMemberAsync(gameProjectId, userId) != null;
+            GameProjectMember? member = await this.gameProjectRepository.GetMemberAsync(gameProjectId, userId);
+            if (member == null)
+            {
+                return GameProjectRights.NoRights();
+            }
+
             return new GameProjectRights
             {
-                Workspace = isUserProjectMember,
-                ChangeMembers = isUserProjectMember
+                Workspace = true,
+                ChangeMembers = member.MemberRole == MemberRole.Owner
             };
         }
     }

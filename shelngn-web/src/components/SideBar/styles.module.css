@@ -1,52 +1,56 @@
 .side-bar {
-    background-color: var(--background);
-    width: 54px;
-    padding-left: 3px;
-    padding-right: 3px;
-    padding-top: 2px;
-    box-sizing: border-box;
+  background-color: var(--background);
+  width: 54px;
+  padding-left: 3px;
+  padding-right: 3px;
+  padding-top: 2px;
+  box-sizing: border-box;
 }
 
 .button {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
 .button::after {
-    content: '';
-    position: absolute;
-    inset: 24px;
-    border-radius: 100%;
-    transition: inset 0.25s, border-radius 0.5s;
-    background-color: var(--secondary);
+  content: "";
+  position: absolute;
+  inset: 24px;
+  border-radius: 100%;
+  transition: inset 0.25s, border-radius 0.5s;
+  background-color: var(--secondary);
 }
 
 .link.active .button::after {
-    background-color: var(--background-light);
+  background-color: var(--background-light);
+}
+.link.active:hover .button::after,
+.link.active:focus .button::after {
+  background-color: var(--primary);
 }
 
 .link.active .button::after,
 .link:focus .button::after,
 .button:hover::after {
-    inset: 0;
-    border-radius: 10px;
+  inset: 0;
+  border-radius: 10px;
 }
 
 .link:focus {
-    outline: none;
+  outline: none;
 }
 
 .button img {
-    width: 32px;
-    height: 32px;
-    z-index: 1;
-    user-select: none;
-    pointer-events: none;
+  width: 32px;
+  height: 32px;
+  z-index: 1;
+  user-select: none;
+  pointer-events: none;
 }
 
 .button span {
-    color: var(--text-color);
+  color: var(--text-color);
 }

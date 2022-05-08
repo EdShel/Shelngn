@@ -39,7 +39,7 @@ namespace Shelngn.Business.GameProjects
                 gameProject.FilesLocation = (await this.storageBalancer.RequestNewUriAsync(gameProject.Id)).LocalPath;
                 await gameProjectRepository.CreateAsync(gameProject);
 
-                var owner = new GameProjectMember { AppUserId = appUserId, GameProjectId = gameProject.Id };
+                var owner = new GameProjectMember { AppUserId = appUserId, GameProjectId = gameProject.Id, MemberRole = MemberRole.Owner };
                 await gameProjectRepository.AddMemberAsync(owner);
 
                 await this.fileSystem.CreateDirectoryOrDoNothingIfExistsAsync(gameProject.FilesLocation);

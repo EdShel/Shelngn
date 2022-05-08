@@ -8,6 +8,11 @@
         // TODO: access to playing game/adding or removing members etc
 
 
+        public static GameProjectRights NoRights()
+        {
+            return new GameProjectRights();
+        }
+
         public bool DoesOtherObjectSatisfy(GameProjectRights otherRights)
         {
             return (!this.Workspace || (this.Workspace && otherRights.Workspace))

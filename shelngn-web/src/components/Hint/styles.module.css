@@ -8,7 +8,7 @@
   position: absolute;
   left: 50%;
   top: calc(100% + var(--arrow-distance));
-  z-index: 9999;
+  z-index: var(--z-tooltip);
 }
 .tooltip-container.right {
   top: 50%;
@@ -22,7 +22,7 @@
   background-color: #0f1012;
   padding: 5px;
   transform: translateX(-50%);
-  z-index: 9999;
+  z-index: var(--z-tooltip);
 }
 .tooltip.right {
   transform: translateY(-50%);

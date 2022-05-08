@@ -24,7 +24,7 @@ export const InfoAlertProvider = ({ children }) => {
       {children}
       {!!topMostNotification && (
         <div className={clsx(styles.alert, topMostNotification.type === "error" && styles.error)}>
-          {topMostNotification.text}
+          {notifications.length > 1 && `(1/${notifications.length})`} {topMostNotification.text}
           <button onClick={handleClose} className={styles.close}>
             <img src={crossIcon} alt="Close" />
           </button>

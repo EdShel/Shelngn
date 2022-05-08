@@ -5,6 +5,7 @@ using Shelngn.Entities;
 using Shelngn.Exceptions;
 using Shelngn.Repositories;
 using Shelngn.Services.GameProjects;
+using Shelngn.Services.GameProjects.Authorization;
 
 namespace Shelngn.Api.GameProjects
 {
@@ -18,6 +19,7 @@ namespace Shelngn.Api.GameProjects
         private readonly IGameProjectRepository gameProjectRepository;
         private readonly IAppUserRepository appUserRepository;
         private readonly IGameProjectDeleter gameProjectDeleter;
+        private readonly IGameProjectAuthorizer gameProjectAuthorizer;
         private readonly IMapper mapper;
 
         public GameProjectController(
@@ -26,7 +28,8 @@ namespace Shelngn.Api.GameProjects
             IMapper mapper,
             IGameProjectRepository gameProjectRepository,
             IGameProjectDeleter gameProjectDeleter,
-            IAppUserRepository appUserRepository)
+            IAppUserRepository appUserRepository,
+            IGameProjectAuthorizer gameProjectAuthorizer)
         {
             this.gameProjectCreator = gameProjectCreator;
             this.gameProjectSearcher = gameProjectSearcher;
@@ -34,6 +37,7 @@ namespace Shelngn.Api.GameProjects
             this.gameProjectRepository = gameProjectRepository;
             this.gameProjectDeleter = gameProjectDeleter;
             this.appUserRepository = appUserRepository;
+            this.gameProjectAuthorizer = gameProjectAuthorizer;
         }
 
         [HttpPost]
@@ -68,13 +72,23 @@ namespace Shelngn.Api.GameProjects
         [Authorize(Filters.GameProjectAuthPolicy.JustBeingMember)]
         public async Task<IActionResult> GetProjectInfo([FromRoute] string gameProjectId, CancellationToken ct)
         {
-            Guid id = Guids.FromUrlSafeBase64(gameProjectId);
-            GameProject? gameProject = await gameProjectSearcher.GetByIdAsync(id)
+            Guid currentUserId = this.User.GetIdGuid();
+            Guid projectId = Guids.FromUrlSafeBase64(gameProjectId);
+            GameProject? gameProject = await this.gameProjectSearcher.GetByIdAsync(projectId)
                 ?? throw new NotFoundException("Game project");
-            IEnumerable<AppUser> usersMembers = await gameProjectRepository.GetAllMembersAsync(id, ct);
+            IEnumerable<GameProjectMemberUser> usersMembers = await this.gameProjectRepository.GetAllMembersAsync(projectId, ct);
 
-            GameProjectViewModel viewModel = mapper.Map<GameProjectViewModel>(gameProject);
-            viewModel.Members = mapper.Map<IEnumerable<GameProjectMemberViewModel>>(usersMembers);
+            GameProjectViewModel viewModel = this.mapper.Map<GameProjectViewModel>(gameProject);
+            viewModel.Members = this.mapper.Map<IEnumerable<GameProjectMemberViewModel>>(usersMembers);
+
+            GameProjectRights? currentUserRights = await this.gameProjectAuthorizer.GetRightsForUserAsync(currentUserId, projectId);
+
+            string currentUserBase64Id = Guids.ToUrlSafeBase64(currentUserId);
+            foreach (GameProjectMemberViewModel member in viewModel.Members)
+            {
+                member.CanBeDeleted = member.Id != currentUserBase64Id
+                    && currentUserRights!.ChangeMembers;
+            }
 
             return Ok(viewModel);
         }
@@ -87,14 +101,24 @@ namespace Shelngn.Api.GameProjects
             CancellationToken ct)
         {
             Guid id = Guids.FromUrlSafeBase64(gameProjectId);
-            AppUser? user = await appUserRepository.GetFirstByEmailOrNullAsync(model.EmailOrUserName, ct)
-                ?? await appUserRepository.GetFirstByUserNameOrNullAsync(model.EmailOrUserName, ct);
+            AppUser? user = await this.appUserRepository.GetFirstByEmailOrNullAsync(model.EmailOrUserName, ct)
+                ?? await this.appUserRepository.GetFirstByUserNameOrNullAsync(model.EmailOrUserName, ct);
             if (user == null)
             {
                 throw new BadRequestException("User does not exist");
             }
+            GameProjectMember? existingMember = await this.gameProjectRepository.GetMemberAsync(id, user.Id, ct);
+            if (existingMember != null)
+            {
+                throw new BadRequestException("User is already a project member");
+            }
 
-            await gameProjectRepository.AddMemberAsync(new GameProjectMember { AppUserId = user.Id, GameProjectId = id }, ct);
+            await this.gameProjectRepository.AddMemberAsync(new GameProjectMember
+            {
+                AppUserId = user.Id,
+                GameProjectId = id,
+                MemberRole = MemberRole.Developer
+            }, ct);
 
             return NoContent();
         }
@@ -109,7 +133,13 @@ namespace Shelngn.Api.GameProjects
             Guid projectId = Guids.FromUrlSafeBase64(gameProjectId);
             Guid userId = Guids.FromUrlSafeBase64(appUserId);
 
-            await gameProjectRepository.RemoveMemberAsync(projectId, userId, ct);
+            IEnumerable<GameProjectMemberUser> allMembers = await gameProjectRepository.GetAllMembersAsync(projectId, ct);
+            if (allMembers.Count() <= 1)
+            {
+                throw new BadRequestException("Cannot delete a single project member");
+            }
+
+            await this.gameProjectRepository.RemoveMemberAsync(projectId, userId, ct);
 
             return NoContent();
         }
@@ -119,7 +149,7 @@ namespace Shelngn.Api.GameProjects
         public async Task<IActionResult> DeleteProject([FromRoute] string gameProjectId)
         {
             Guid projectId = Guids.FromUrlSafeBase64(gameProjectId);
-            await gameProjectDeleter.DeleteProjectAsync(projectId);
+            await this.gameProjectDeleter.DeleteProjectAsync(projectId);
             return NoContent();
         }
     }

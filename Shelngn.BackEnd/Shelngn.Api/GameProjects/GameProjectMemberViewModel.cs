@@ -11,15 +11,17 @@ namespace Shelngn.Api.GameProjects
 
         public string UserName { get; set; } = null!;
 
-        public string PasswordHash { get; set; } = null!;
-
         public string? AvatarUrl { get; set; }
+
+        public string MemberRole { get; set; } = null!;
+
+        public bool CanBeDeleted { get; set; }
 
         private class MappingProfile : Profile
         {
             public MappingProfile()
             {
-                CreateMap<AppUser, GameProjectMemberViewModel>()
+                CreateMap<GameProjectMemberUser, GameProjectMemberViewModel>()
                     .ForMember(m => m.Id, opt => opt.MapFrom(g => g.Id.ToUrlSafeBase64()));
             }
         }

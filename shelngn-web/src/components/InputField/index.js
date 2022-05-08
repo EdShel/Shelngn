@@ -13,6 +13,7 @@ const InputField = ({
   className,
   error,
   required,
+  autoFocus = false,
 }) => {
   const inputId = useUniquedId();
 
@@ -27,6 +28,7 @@ const InputField = ({
           onChange={onChange}
           onBlur={onBlur}
           className={error ? styles.invalid : null}
+          autoFocus={autoFocus}
         />
         <label htmlFor={inputId}>
           {labelText}

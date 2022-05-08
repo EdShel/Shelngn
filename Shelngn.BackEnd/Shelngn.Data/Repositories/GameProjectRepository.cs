@@ -60,8 +60,8 @@ namespace Shelngn.Data.Repositories
         {
             ct.ThrowIfCancellationRequested();
             const string sql =
-                "INSERT INTO game_project_member (game_project_id, app_user_id) " +
-                "VALUES (@GameProjectId, @AppUserId);";
+                "INSERT INTO game_project_member (game_project_id, app_user_id, member_role) " +
+                "VALUES (@GameProjectId, @AppUserId, @MemberRole);";
             await ExecuteAsync(sql, gameProjectMember);
         }
 
@@ -73,24 +73,24 @@ namespace Shelngn.Data.Repositories
             await ExecuteAsync(sql, new { gameProjectId, appUserId });
         }
 
-        public Task<GameProjectMember> GetMemberAsync(Guid gameProjectId, Guid appUserId, CancellationToken ct = default)
+        public Task<GameProjectMember?> GetMemberAsync(Guid gameProjectId, Guid appUserId, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
             const string sql =
-                "SELECT game_project_id, app_user_id FROM game_project_member " +
+                "SELECT game_project_id, app_user_id, member_role FROM game_project_member " +
                 "WHERE game_project_id = @gameProjectId AND app_user_id = @appUserId";
-            return QueryFirstOrDefaultAsync<GameProjectMember>(sql, new { gameProjectId, appUserId });
+            return QueryFirstOrDefaultAsync<GameProjectMember?>(sql, new { gameProjectId, appUserId });
         }
 
-        public Task<IEnumerable<AppUser>> GetAllMembersAsync(Guid gameProjectId, CancellationToken ct = default)
+        public Task<IEnumerable<GameProjectMemberUser>> GetAllMembersAsync(Guid gameProjectId, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
             const string sql =
-                "SELECT au.id, au.email, au.user_name, au.avatar_url FROM app_user au " +
+                "SELECT au.id, au.email, au.user_name, au.avatar_url, m.member_role FROM app_user au " +
                 "JOIN game_project_member m ON au.id = m.app_user_id " +
                 "WHERE m.game_project_id = @gameProjectId " +
                 "ORDER BY m.insert_date ASC";
-            return QueryAsync<AppUser>(sql, new { gameProjectId });
+            return QueryAsync<GameProjectMemberUser>(sql, new { gameProjectId });
         }
     }
 }

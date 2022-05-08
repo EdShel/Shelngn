@@ -19,6 +19,8 @@
 .members {
   --columns: 1;
   display: grid;
+  column-gap: 16px;
+  row-gap: 12px;
   grid-template-columns: 1fr;
   grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
 }
@@ -35,23 +37,31 @@
   }
 }
 
-.user-card {
+.create-user-card {
   min-height: 160px;
-  background-color: var(--background);
-  background-size: 600%;
+  background-color: var(--primary);
   border-radius: 10px;
   padding: 10px 16px;
   padding: 5px;
-  text-decoration: none;
-  transition: background-size 0.2s, transform 0.1s;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 10px;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  border:none;
 }
 
-.user-avatar {
-  --size: 64px;
-  font-size: 2rem;
+.create-user-card:hover,
+.create-user-card:focus {
+  outline: none;
+  opacity: 0.9;
+}
+
+.create-user-card img {
+  width: 48px;
+  height: 48px;
 }

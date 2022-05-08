@@ -10,14 +10,16 @@ import UrlTo from "../../UrlTo";
 import styles from "./styles.module.css";
 import ButtonBack from "../../components/ButtonBack";
 import ScreenLayout, { contentClassName } from "../../components/ScreenLayout";
+import { useShowAlertNotification } from "../../InfoAlert";
 
 const RegisterPage = () => {
   const emailField = "email";
   const passwordField = "password";
-  const userNameField = "username";
+  const userNameField = "userName";
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const {showError} = useShowAlertNotification();
 
   const formik = useFormik({
     initialValues: {
@@ -25,10 +27,15 @@ const RegisterPage = () => {
       [passwordField]: "",
       [userNameField]: "",
     },
-    onSubmit: async ({ email, password, username }) => {
-      await dispatch(register({ email, password, username })).unwrap();
-      await dispatch(login({ email, password })).unwrap();
-      navigate(UrlTo.home());
+    onSubmit: async ({ email, password, userName }) => {
+      try {
+        await dispatch(register({ email, password, userName })).unwrap();
+        await dispatch(login({ email, password })).unwrap();
+        navigate(UrlTo.home());
+      } catch(e){
+        const text = e.response?.data.Message;
+        showError(text || 'An error occurred')
+      }
     },
   });
 

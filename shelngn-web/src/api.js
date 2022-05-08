@@ -55,6 +55,7 @@ export const postRevoke = async () => {
   AppStorage.refreshToken = null;
   await revokePromise;
 };
+export const getCurrentUser = () => getAuth("/auth/me");
 
 // --------- Game project --------- //
 export const postCreateNewProject = () => postAuth("/gameProject");
