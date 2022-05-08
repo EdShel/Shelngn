@@ -1,6 +1,38 @@
+.container {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.header-text {
+  margin: 0;
+  position: relative;
+  top: 5px;
+}
+
 .members {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  --columns: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+}
+
+@media screen and (min-width: 768px) {
+  .members {
+    --columns: 2;
+  }
+}
+
+@media screen and (min-width: 1280px) {
+  .members {
+    --columns: 4;
+  }
 }
 
 .user-card {

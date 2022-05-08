@@ -1,4 +1,5 @@
 .hint {
+  --arrow-distance: 10px;
   position: relative;
 }
 
@@ -6,19 +7,25 @@
   visibility: hidden;
   position: absolute;
   left: 50%;
-  top: 100%;
+  top: calc(100% + var(--arrow-distance));
+  z-index: 9999;
+}
+.tooltip-container.right {
+  top: 50%;
+  left: calc(100% + var(--arrow-distance));
 }
 
 .tooltip {
   position: absolute;
-  top: 10px;
   margin-left: auto;
   margin-right: auto;
-  left: 0%;
   background-color: #0f1012;
   padding: 5px;
   transform: translateX(-50%);
   z-index: 9999;
+}
+.tooltip.right {
+  transform: translateY(-50%);
 }
 
 .tooltip-container::after {
@@ -27,8 +34,7 @@
   width: 16px;
   height: 16px;
   background-color: #0f1012;
-  transform: rotate(45deg);
-  transform-origin: 0 0;
+  transform: translate(-50%, -50%) rotate(45deg);
 }
 
 .hint:hover .tooltip-container {

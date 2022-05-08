@@ -28,7 +28,7 @@ export default SideBar;
 
 const Button = ({ link, iconSrc, text }) => (
   <NavLink to={link} className={({ isActive }) => clsx(styles.link, isActive && styles.active)}>
-    <Hint className={styles.button} renderContent={() => <span>{text}</span>}>
+    <Hint className={styles.button} renderContent={() => <span>{text}</span>} orientation="right" arrowDistance={14}>
       <img src={iconSrc} alt={text} />
     </Hint>
   </NavLink>

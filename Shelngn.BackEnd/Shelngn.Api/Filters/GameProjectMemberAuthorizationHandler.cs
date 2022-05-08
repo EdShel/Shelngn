@@ -16,9 +16,9 @@ namespace Shelngn.Api.Filters
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, GameProjectMemberRequirement requirement)
         {
-            RouteData route = httpContextAccessor.HttpContext?.GetRouteData()
+            RouteValueDictionary route = httpContextAccessor.HttpContext?.Request.RouteValues
                 ?? throw new InvalidOperationException("Calling outside of http context scope.");
-            if (!route.Values.TryGetValue("gameProjectId", out object? gameProjectIdObj))
+            if (!route.TryGetValue("gameProjectId", out object? gameProjectIdObj))
             {
                 throw new InvalidOperationException("Calling without 'gameProjectId' route parameter defined.");
             }

@@ -58,6 +58,7 @@ export const postRevoke = async () => {
 
 // --------- Game project --------- //
 export const postCreateNewProject = () => postAuth("/gameProject");
+export const deleteProject = (gameProjectId) => deleteAuth(`/gameProject/${gameProjectId}`);
 export const getMyGameProjects = () => getAuth("/gameProject/my");
 export const getProjectInfo = (gameProjectId) => getAuth(`/gameProject/${gameProjectId}`);
 export const postAddMember = (gameProjectId, emailOrUserName) =>

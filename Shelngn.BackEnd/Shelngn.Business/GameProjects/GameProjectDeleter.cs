@@ -32,6 +32,8 @@ namespace Shelngn.Business.GameProjects
                 await fileSystem.DeleteDirectoryIfExistsAsync(gameProject.FilesLocation);
 
                 await gameProjectRepository.DeleteAsync(gameProjectId);
+
+                this.unitOfWork.Commit();
             }
             catch (Exception)
             {
