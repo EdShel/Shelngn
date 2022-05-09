@@ -74,5 +74,7 @@ export const postFileUploadRequest = (workspaceId, filePath, fileContentType) =>
       "Content-Type": fileContentType,
     },
   });
+export const getFileSource = (workspaceId, filePath) =>
+  getAuth(`workspace/file/${workspaceId}/${filePath}`, { responseType: "blob" });
 export const getBuiltJsBundle = (workspaceId) => getAuth(`workspace/build/${workspaceId}/bundle.js`);
-export const getResourceUrl = (workspaceId, url) => `${apiUrl}/workspace/build/${workspaceId}/${url}`;
+export const getBuiltResourceFile = (workspaceId, url) => `${apiUrl}/workspace/build/${workspaceId}/${url}`;

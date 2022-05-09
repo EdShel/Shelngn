@@ -16,10 +16,13 @@ module.exports = (env) => ({
           from: "**/*.{jpg,png}",
           noErrorOnMissing: true,
           globOptions: {
-            ignore: ['**/dist/**']
-          }
+            ignore: ["**/dist/**"],
+          },
         },
       ],
     }),
   ],
+  resolve: {
+    alias: { Shelgn: path.resolve(__dirname, "shelngn.js") },
+  },
 });

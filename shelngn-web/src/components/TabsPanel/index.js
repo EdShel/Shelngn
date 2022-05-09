@@ -9,6 +9,7 @@ const TabsPanel = ({ tabs, currentTabId, onChangeCurrentTabId, onCloseTab, child
       <div className={styles["tabs-list"]}>
         {(tabs || []).map(({ name, id }) => (
           <div
+            key={id}
             className={clsx(styles.tab, id === currentTabId && styles["tab-active"])}
             onClick={() => onChangeCurrentTabId(id)}
             tabIndex={0}

@@ -7,7 +7,7 @@ import Camera2D from "../core/rendering/Camera2D";
 import GameScreen from "../core/rendering/GameScreen";
 import useWorkspaceId from "../WorkspacePage/hooks/useWorkspaceId";
 import { addFpsChangeListener, updateFps } from "../core/rendering/Fps";
-import { getBuiltJsBundle, getResourceUrl } from "../api";
+import { getBuiltJsBundle, getBuiltResourceFile } from "../api";
 import styles from "./styles.module.css";
 
 const DebugPage = () => {
@@ -30,7 +30,7 @@ const DebugPage = () => {
         if (loadedTextures[textureUrl]) {
           return loadedTextures[textureUrl];
         }
-        const textureAbsoluteUrl = getResourceUrl(workspaceId, textureUrl);
+        const textureAbsoluteUrl = getBuiltResourceFile(workspaceId, textureUrl);
         return (loadedTextures[textureUrl] = Texture.loadLazy(textureAbsoluteUrl));
       };
 

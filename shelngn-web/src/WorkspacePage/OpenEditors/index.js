@@ -1,39 +1,31 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import CodeEditor from "../../components/CodeEditor";
 import TabsPanel from "../../components/TabsPanel";
-import useDebouncedCallback from "../../hooks/useDebouncedCallback";
-import { closeFile, editFile, openFile } from "../reducer";
+import { closeFile, openFile } from "../reducer";
 import { getCurrentFileId, getOpenFiles } from "../selectors";
-import { useWorkspaceDispatch } from "../WorkspaceContext";
-import styles from "./styles.module.css";
+import ChooseFile from "./ChooseFile";
+import ImagePreview from "./ImageEditor";
+import JsEditor from "./JsEditor";
 
 const OpenEditors = () => {
   const openFiles = useSelector(getOpenFiles);
   const currentFileId = useSelector(getCurrentFileId);
   const dispatch = useDispatch();
-  const { workspaceSend } = useWorkspaceDispatch();
 
   const tabs = useMemo(() => Object.entries(openFiles).map(([id, file]) => ({ id, name: file.name })), [openFiles]);
   const currentFile = openFiles[currentFileId];
 
-  useEffect(() => {
-    if (!currentFile) {
-      return;
+  const renderCurrentTab = () => {
+    const fileExtension = currentFileId.substring(currentFileId.lastIndexOf("."));
+    switch (fileExtension) {
+      case ".js":
+        return <JsEditor currentFileId={currentFileId} currentFile={currentFile} />;
+      case ".jpg":
+      case ".png":
+        return <ImagePreview currentFileId={currentFileId} />;
+      default:
+        return <div>The file preview is not supported.</div>;
     }
-    if (currentFile.loading && !currentFile.hasContent) {
-      workspaceSend("readFile", currentFileId);
-      return;
-    }
-  }, [currentFile]);
-
-  const sendNewCodeDebounced = useDebouncedCallback(
-    (fileId, newText) => workspaceSend("dumpFile", fileId, newText),
-    2_000
-  );
-  const handleContentChange = (newText) => {
-    dispatch(editFile(currentFileId, newText));
-    sendNewCodeDebounced(currentFileId, newText);
   };
 
   return (
@@ -43,14 +35,8 @@ const OpenEditors = () => {
       currentTabId={currentFileId}
       onCloseTab={(id) => dispatch(closeFile(id))}
     >
-      {!currentFile && <div>Choose a file</div>}
-      {currentFile && (
-        <CodeEditor
-          className={styles.code}
-          value={currentFile.loading ? "Loading..." : currentFile.content}
-          onValueChange={handleContentChange}
-        />
-      )}
+      {!currentFile && <ChooseFile />}
+      {currentFile && renderCurrentTab()}
     </TabsPanel>
   );
 };

@@ -1,0 +1,23 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100%;
+}
+
+.container h2 {
+  color: var(--background-light);
+}
+
+.container ol {
+  font-size: 1.5rem;
+}
+
+.container li {
+  margin-top: 10px;
+}
+
+.container b {
+  color: var(--primary);
+}

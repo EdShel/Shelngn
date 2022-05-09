@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.IdentityModel.Tokens;
 using Shelngn.Api.Filters;
 using Shelngn.Api.Utilities;
@@ -79,6 +80,7 @@ services.AddAuthorization(options =>
 {
     options.AddPolicy(GameProjectAuthPolicy.JustBeingMember, b => b.AddRequirements(new GameProjectMemberRequirement(new GameProjectRights())));
     options.AddPolicy(GameProjectAuthPolicy.ChangeMembers, b => b.AddRequirements(new GameProjectMemberRequirement(new GameProjectRights { ChangeMembers = true })));
+    options.AddPolicy(GameProjectAuthPolicy.WorkspaceWrite, b => b.AddRequirements(new GameProjectMemberRequirement(new GameProjectRights { Workspace = true })));
 });
 services.AddTransient<IAuthorizationHandler, GameProjectMemberAuthorizationHandler>();
 
@@ -118,9 +120,11 @@ services.AddTransient<IGameProjectSearcher, GameProjectSearcher>();
 services.AddSingleton<IGameProjectStorageBalancer, GameProjectStorageBalancer>(p => new GameProjectStorageBalancer(configuration.GetValue<string>("ProjectsDirectory")));
 services.AddSingleton<IGameProjectBuilder, IGameProjectBuilder>(p => new GameProjectBuilder(configuration.GetValue<string>("ProjectsDirectory"), p.GetRequiredService<ILogger<GameProjectBuilder>>()));
 services.AddSingleton<IGameProjectBuildResultAccessor, GameProjectBuildResultAccessor>(p => new GameProjectBuildResultAccessor(configuration.GetValue<string>("ProjectsDirectory")));
+services.AddSingleton<IProjectFileAccessor, ProjectFileAccessor>(p => new ProjectFileAccessor(configuration.GetValue<string>("ProjectsDirectory")));
 services.AddTransient<IGameProjectAuthorizer, GameProjectAuthorizer>();
 services.AddSingleton<IFileUploadUrlSigning, FileUploadUrlSigning>(opt => new FileUploadUrlSigning(configuration.GetValue<string>("SigningPrivateKey")));
 services.AddTransient<IGameProjectDeleter, GameProjectDeleter>();
+services.AddTransient<IContentTypeProvider, FileExtensionContentTypeProvider>();
 
 services.AddSingleton<WorkspacesStatesManager>();
 services.AddTransient<ActiveUsersWorkspaceStateReducer>();
