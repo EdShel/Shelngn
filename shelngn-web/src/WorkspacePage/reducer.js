@@ -14,6 +14,7 @@ const OPEN_FILE = "workspace/openFile";
 const CLOSE_FILE = "workspace/closeFile";
 const READ_FILE = "workspace/readFile";
 const EDIT_FILE = "workspace/editFile";
+const DUMP_FILE = "workspace/dumpFile";
 
 const initialState = {
   users: [],
@@ -26,7 +27,7 @@ const initialState = {
     progress: false,
     error: null,
   },
-  files: {}, // fileId: {name: '', content: '', loading: bool, hasContent: bool}
+  files: {}, // fileId: {name: '', content: '', loading: bool, hasContent: bool, dirty: bool}
   currentFileId: null,
 };
 
@@ -126,6 +127,7 @@ const reducer = (state = initialState, action) => {
             content: action.content,
             hasContent: true,
             loading: false,
+            dirty: false,
           },
         },
       };
@@ -137,6 +139,18 @@ const reducer = (state = initialState, action) => {
           [action.fileId]: {
             ...state.files[action.fileId],
             content: action.newText,
+            dirty: true,
+          },
+        },
+      };
+    case DUMP_FILE:
+      return {
+        ...state,
+        files: {
+          ...state.files,
+          [action.fileId]: {
+            ...state.files[action.fileId],
+            dirty: false,
           },
         },
       };
@@ -165,4 +179,9 @@ export const editFile = (fileId, newText) => ({
   type: EDIT_FILE,
   fileId,
   newText,
+});
+
+export const dumpFile = (fileId) => ({
+  type: DUMP_FILE,
+  fileId,
 });
