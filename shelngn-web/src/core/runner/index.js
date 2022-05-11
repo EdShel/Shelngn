@@ -1,3 +1,4 @@
+import { inputProvider } from "../input";
 import { clearCanvas, initializeRenderer, renderBegin, unitializeRenderer } from "../rendering";
 import Camera2D from "../rendering/Camera2D";
 import Draw from "../rendering/Draw";
@@ -10,6 +11,8 @@ import { deepEqual } from "../util/deepEqual";
 export function runner(canvas, { loadBundle, textureUriResolver, onError }) {
   let running = true;
   let gameWebWorker = null;
+
+  const input = inputProvider();
 
   const fetchGame = async () => {
     if (!canvas) {
@@ -41,6 +44,7 @@ export function runner(canvas, { loadBundle, textureUriResolver, onError }) {
 
     let state = {
       screenDimensions: { width: 0, height: 0 },
+      input: {},
     };
 
     const bundleSourceCode = await loadBundle();
@@ -86,7 +90,14 @@ export function runner(canvas, { loadBundle, textureUriResolver, onError }) {
       const screenDimensions = GameScreen.getDimensions();
       if (!deepEqual(state.screenDimensions, screenDimensions)) {
         state.screenDimensions = screenDimensions;
-        stateIncr = { screenDimensions };
+        stateIncr = { ...stateIncr, screenDimensions };
+      }
+
+      const newInputState = input.update();
+      if (!deepEqual(state.input, newInputState)) {
+        state.input = newInputState;
+        stateIncr = { ...stateIncr, input: newInputState };
+        console.log('SENDING', newInputState)
       }
 
       gameWebWorker.postMessage({ type: "draw", stateIncr });
@@ -98,6 +109,7 @@ export function runner(canvas, { loadBundle, textureUriResolver, onError }) {
   return {
     cleanup: () => {
       gameWebWorker?.terminate();
+      input.cleanup();
       running = false;
       unitializeRenderer();
     },
