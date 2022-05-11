@@ -6,7 +6,7 @@ namespace Shelngn.Api.Workspaces
     public partial class WorkspaceHub
     {
         [HubMethodName("build")]
-        public async Task BuildProject()
+        public async Task<object> BuildProject()
         {
             var builder = Resolve<IGameProjectBuilder>();
 
@@ -33,6 +33,8 @@ namespace Shelngn.Api.Workspaces
                     error = result.Error
                 });
             }
+
+            return new { shouldOpenProject = result.IsSuccess };
         }
     }
 

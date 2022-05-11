@@ -41,7 +41,7 @@ namespace Shelngn.Api.Workspaces
             WorkspaceState state = await GetWorkspaceStateAsync();
             var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
 
-            await reducer.FileUploaded(state.ProjectFiles, this.WorkspaceIdGuid);
+            await reducer.FileUploadedAsync(state.ProjectFiles, this.WorkspaceIdGuid);
 
             await DispatchToWorkspaceAsync(new
             {

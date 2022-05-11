@@ -1,10 +1,11 @@
-import { flushCallsRecorder } from "./shelngn";
+import { __flushCallsRecorder, __mergeState } from "Shelngn";
 import { draw } from "./main";
 
-onmessage = function (e) {
-  console.log("e", e);
+onmessage = function ({ data: { type, stateIncr } }) {
+  if (type === "draw") {
+    __mergeState(stateIncr);
 
-  draw();
-
-  flushCallsRecorder();
+    draw();
+    __flushCallsRecorder();
+  }
 };

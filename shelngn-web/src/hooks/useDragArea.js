@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-const useDragArea = ({ onDropped, name } = {}) => {
+const useDragArea = ({ onDropped } = {}) => {
   const [isDraggingOver, setDraggingOver] = useState(false);
   const dragCountRef = useRef(0);
 
@@ -16,7 +16,12 @@ const useDragArea = ({ onDropped, name } = {}) => {
       onDragOver: (ev) => {
         ev.preventDefault();
         ev.stopPropagation();
-        ev.dataTransfer.dropEffect = "move";
+
+        const allowed = ev.dataTransfer.effectAllowed;
+        console.log(allowed)
+        ev.dataTransfer.dropEffect = ('move' === allowed || 'linkMove' === allowed) ? 'move' : 'copy';
+
+        // ev.dataTransfer.dropEffect = "move";
       },
       onDragLeave: (ev) => {
         ev.preventDefault();
@@ -26,6 +31,7 @@ const useDragArea = ({ onDropped, name } = {}) => {
         }
       },
       onDrop: (ev) => {
+        console.log('DROP')
         ev.preventDefault();
         ev.stopPropagation();
         setDraggingOver(false);

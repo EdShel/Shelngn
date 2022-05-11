@@ -9,12 +9,15 @@ import useWorkspaceId from "../WorkspacePage/hooks/useWorkspaceId";
 import { addFpsChangeListener, updateFps } from "../core/rendering/Fps";
 import { getBuiltJsBundle, getBuiltResourceFile } from "../api";
 import styles from "./styles.module.css";
+import { deepEqual } from "./util";
+import { useShowAlertNotification } from "../InfoAlert";
 
 const DebugPage = () => {
   const workspaceId = useWorkspaceId();
   const [fps, setFps] = useState(0);
   const gameWebWorkerRef = useRef(null);
   const canvasRef = useRef();
+  const { showError } = useShowAlertNotification();
 
   useEffect(() => {
     let running = true;
@@ -34,29 +37,36 @@ const DebugPage = () => {
         return (loadedTextures[textureUrl] = Texture.loadLazy(textureAbsoluteUrl));
       };
 
-      const drawObjects = {
+      const proxyObjects = {
         Draw: {
           texture(textureUrl, x, y) {
             const txt = getTexture(textureUrl);
             Draw.texture(txt, x, y);
           },
+          stretchedTexture(textureUrl, x, y, width, height, rotation, origin) {
+            const txt = getTexture(textureUrl);
+            Draw.stretchedTexture(txt, x, y, width, height, rotation, origin);
+          },
         },
-        Texture: {},
+      };
+
+      let state = {
+        screenDimensions: { width: 0, height: 0 },
       };
 
       const bundleSourceCode = await getBuiltJsBundle(workspaceId);
       const bundleBlob = new Blob([bundleSourceCode]);
       const scriptUrl = URL.createObjectURL(bundleBlob);
       gameWebWorkerRef.current = new Worker(scriptUrl);
+      gameWebWorkerRef.current.onerror = e => {
+        showError(e.message);
+      }
       gameWebWorkerRef.current.onmessage = ({ data }) => {
-        updateFps();
-        const screenDimensions = GameScreen.getDimensions();
-
         const camera = new Camera2D(
-          -screenDimensions.width / 2,
-          -screenDimensions.height / 2,
-          screenDimensions.width,
-          screenDimensions.height
+          -state.screenDimensions.width / 2,
+          -state.screenDimensions.height / 2,
+          state.screenDimensions.width,
+          state.screenDimensions.height
         );
         Draw.applyCamera(camera);
 
@@ -66,7 +76,7 @@ const DebugPage = () => {
 
         for (const drawCall of data) {
           const [objectName, functionName, ...args] = drawCall;
-          drawObjects[objectName][functionName](...args);
+          proxyObjects[objectName][functionName](...args);
         }
         flush();
         if (running) {
@@ -79,7 +89,18 @@ const DebugPage = () => {
         if (!gameWebWorkerRef.current) {
           return;
         }
-        gameWebWorkerRef.current.postMessage("draw");
+
+        updateFps();
+
+        let stateIncr = {};
+
+        const screenDimensions = GameScreen.getDimensions();
+        if (!deepEqual(state.screenDimensions, screenDimensions)) {
+          state.screenDimensions = screenDimensions;
+          stateIncr = { screenDimensions };
+        }
+
+        gameWebWorkerRef.current.postMessage({ type: "draw", stateIncr });
       };
       window.requestAnimationFrame(render);
     };

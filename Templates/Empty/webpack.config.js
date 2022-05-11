@@ -3,7 +3,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = (env) => ({
   entry: path.resolve(__dirname, "index.js"),
-  mode: "production",
+  mode: env.production ? "production" : "development",
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "index.js",
@@ -16,13 +16,13 @@ module.exports = (env) => ({
           from: "**/*.{jpg,png}",
           noErrorOnMissing: true,
           globOptions: {
-            ignore: ["**/dist/**"],
-          },
+            ignore: ['**/dist/**']
+          }
         },
       ],
     }),
   ],
   resolve: {
-    alias: { Shelgn: path.resolve(__dirname, "shelngn.js") },
-  },
+    alias: { Shelngn: path.resolve(__dirname, 'shelngn.js') }
+  }
 });

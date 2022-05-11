@@ -16,21 +16,27 @@ namespace Shelngn.Services.Workspaces.ProjectFiles
             this.fileSystem = fileSystem;
         }
 
-        public async Task<ProjectFilesWorkspaceState> GetInitialState(Guid workspaceId)
+        public async Task<ProjectFilesWorkspaceState> GetInitialStateAsync(Guid workspaceId)
         {
             string workspaceFolder = await GetWorkspaceRootFolderAsync(workspaceId);
-            ProjectDirectory rootDirectory = await this.fileSystem.ListDirectoryFilesAsync(workspaceFolder)
-                ?? throw new NotFoundException("Project directory");
-
-            var rootDir = MapDirectory(rootDirectory, workspaceFolder);
-            rootDir.Directories = rootDir.Directories.Where(f => !IsReservedId(f.Id)).ToList();
-            rootDir.Files = rootDir.Files.Where(f => !IsReservedId(f.Id)).ToList();
+            WorkspaceDirectory rootDir = await GetRootAsync(workspaceFolder);
 
             return new ProjectFilesWorkspaceState
             {
                 ProjectFilesRoot = workspaceFolder,
                 Root = rootDir
             };
+        }
+
+        private async Task<WorkspaceDirectory> GetRootAsync(string workspaceFolder)
+        {
+            ProjectDirectory rootDirectory = await this.fileSystem.ListDirectoryFilesAsync(workspaceFolder)
+                ?? throw new NotFoundException("Project directory");
+
+            var rootDir = MapDirectory(rootDirectory, workspaceFolder);
+            rootDir.Directories = rootDir.Directories.Where(f => !IsReservedId(f.Id)).ToList();
+            rootDir.Files = rootDir.Files.Where(f => !IsReservedId(f.Id)).ToList();
+            return rootDir;
         }
 
         private bool IsReservedId(string id)
@@ -78,13 +84,11 @@ namespace Shelngn.Services.Workspaces.ProjectFiles
             return Path.Combine(workspaceFolder, id);
         }
 
-        public async Task FileUploaded(ProjectFilesWorkspaceState state, Guid workspaceId)
+        public async Task FileUploadedAsync(ProjectFilesWorkspaceState state, Guid workspaceId)
         {
             string workspaceFolder = await GetWorkspaceRootFolderAsync(workspaceId);
-            ProjectDirectory rootDirectory = await this.fileSystem.ListDirectoryFilesAsync(workspaceFolder)
-                ?? throw new NotFoundException("Project directory");
 
-            state.Root = MapDirectory(rootDirectory, workspaceFolder);
+            state.Root = await GetRootAsync(workspaceFolder);
         }
 
         public Task CreateEmptyFileAsync(ProjectFilesWorkspaceState state, string folderId, string fileName)

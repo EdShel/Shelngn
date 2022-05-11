@@ -9,9 +9,25 @@ const handler = {
 };
 
 export const Draw = new Proxy({ name: "Draw" }, handler);
-export const Texture = new Proxy({ name: "Texture" }, handler);
 
-export const flushCallsRecorder = () => {
+//
+let state = {
+  screenDimensions: { width: 0, height: 0 },
+};
+export const __mergeState = (stateIncr) => {
+  state = {
+    ...state,
+    ...stateIncr,
+  };
+};
+
+export const GameScreen = {
+  getDimensions() {
+    return state.screenDimensions;
+  },
+};
+
+export const __flushCallsRecorder = () => {
   postMessage(callsRecords);
   callsRecords = [];
 };

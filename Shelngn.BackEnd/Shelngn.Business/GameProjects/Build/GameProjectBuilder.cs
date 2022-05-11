@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Shelngn.Services.GameProjects.Build;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace Shelngn.Business.GameProjects.Build
 {
@@ -20,11 +21,11 @@ namespace Shelngn.Business.GameProjects.Build
             var webpackProcess = new ProcessStartInfo
             {
                 FileName = "cmd",
-                WorkingDirectory = projectsDirectory,
+                WorkingDirectory = Path.Combine(projectsDirectory, gameProjectId),
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
-                Arguments = $"/c npx webpack build --config ./{gameProjectId}/webpack.config.js --env workspace={gameProjectId}"
+                Arguments = $"/c npx webpack build --config ./webpack.config.js --env workspace={gameProjectId} --no-color"
             };
 
             Process webpack = Process.Start(webpackProcess)
@@ -32,16 +33,29 @@ namespace Shelngn.Business.GameProjects.Build
 
             webpack.WaitForExit();
 
-            string output = await webpack.StandardOutput.ReadToEndAsync();
-            string error = await webpack.StandardError.ReadToEndAsync();
+            string buildOutput = await webpack.StandardOutput.ReadToEndAsync();
+            string webpackError = await webpack.StandardError.ReadToEndAsync();
+            string? buiildError = ParseError(buildOutput);
+            string error = buiildError ?? webpackError;
 
-            logger.LogInformation("Built project: {output}", output);
+            logger.LogInformation("Built project: {output}", buildOutput);
 
             return new BuildResult
             {
                 Error = error,
                 IsSuccess = string.IsNullOrEmpty(error)
             };
+        }
+
+        private string? ParseError(string webpackOutput)
+        {
+            Regex errorRegex = new Regex(@"ERROR [^\r\n]+\r?\n[^\r\n]+");
+            Match errorMatch = errorRegex.Match(webpackOutput);
+            if (!errorMatch.Success)
+            {
+                return null;
+            }
+            return errorMatch.Value;
         }
     }
 }

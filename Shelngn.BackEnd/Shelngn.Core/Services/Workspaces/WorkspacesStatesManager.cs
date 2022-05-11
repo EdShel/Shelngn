@@ -43,7 +43,7 @@ namespace Shelngn.Services.Workspaces
             Guid workspaceIdGuid = Guids.FromUrlSafeBase64(workspaceId);
             WorkspaceState state = new WorkspaceState(
                activeUsers: await this.activeUsersWorkspaceStateReducer.GetInitialState(),
-               projectFiles: await this.projectFilesWorkspaceStateReducer.GetInitialState(workspaceIdGuid)
+               projectFiles: await this.projectFilesWorkspaceStateReducer.GetInitialStateAsync(workspaceIdGuid)
             );
             return state;
         }

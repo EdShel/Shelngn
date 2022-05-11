@@ -32,8 +32,11 @@ const RunButtons = () => {
       dispatch(dumpFile(currentFileId));
     }
 
-    await workspaceInvoke("build");
-    window.open(UrlTo.debug(workspaceId)).focus();
+    const buildResult = await workspaceInvoke("build");
+    console.log("buildResult", buildResult);
+    if (buildResult.shouldOpenProject) {
+      window.open(UrlTo.debug(workspaceId)).focus();
+    }
   };
 
   return (

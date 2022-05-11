@@ -1,4 +1,4 @@
-import { mat4 } from "gl-matrix";
+import { mat4, vec2, vec3 } from "gl-matrix";
 import { addElement, setShader, setTexture } from "./draw-batch";
 import { gl } from "./global";
 import Shader from "./shader";
@@ -93,6 +93,62 @@ const Draw = {
       [0, 1, 2, 2, 3, 0]
     );
   },
+  stretchedTexture(texture, x, y, width, height, rotation, origin) {
+    initializeIfNeed();
+    setShader(drawingShader);
+    setTexture(texture);
+    const rotationMatrix = mat4.create();
+    let coords = [
+      [x, y],
+      [x + width, y],
+      [x + width, y + height],
+      [x, y + height],
+    ];
+    if (rotation) {
+      let originX = 0;
+      let originY = 0;
+      if (origin === "center") {
+        originX = width / 2;
+        originY = height / 2;
+      } else if (Array.isArray(origin)) {
+        [originX = 0, originY = 0] = origin;
+      }
+      const originVec = vec3.fromValues(originX, originY, 0);
+      mat4.translate(rotationMatrix, rotationMatrix, originVec);
+      mat4.rotateZ(rotationMatrix, rotationMatrix, degToRad(rotation));
+      vec3.negate(originVec, originVec);
+      mat4.translate(rotationMatrix, rotationMatrix, originVec);
+      
+      let vec = vec2.create();
+      coords = coords.map(([x, y]) => {
+        vec[0] = x;
+        vec[1] = y;
+        vec2.transformMat4(vec, vec, rotationMatrix);
+        return [vec[0], vec[1]];
+      });
+    }
+    addElement(
+      [
+        {
+          a_position: coords[0],
+          a_textureCoord: [0, 0],
+        },
+        {
+          a_position: coords[1],
+          a_textureCoord: [1, 0],
+        },
+        {
+          a_position: coords[2],
+          a_textureCoord: [1, 1],
+        },
+        {
+          a_position: coords[3],
+          a_textureCoord: [0, 1],
+        },
+      ],
+      [0, 1, 2, 2, 3, 0]
+    );
+  },
   /**
    *
    * @param {Camera2D} camera2D
@@ -104,18 +160,10 @@ const Draw = {
     const projectionMatrix = mat4.create();
     mat4.ortho(projectionMatrix, x, x + width, y + height, y, 0, 10);
     if (camera2D.rotation) {
-      mat4.rotateZ(
-        projectionMatrix,
-        projectionMatrix,
-        degToRad(camera2D.rotation)
-      );
+      mat4.rotateZ(projectionMatrix, projectionMatrix, degToRad(camera2D.rotation));
     }
     if (camera2D.zoom !== 1) {
-      mat4.scale(projectionMatrix, projectionMatrix, [
-        camera2D.zoom,
-        camera2D.zoom,
-        camera2D.zoom,
-      ]);
+      mat4.scale(projectionMatrix, projectionMatrix, [camera2D.zoom, camera2D.zoom, camera2D.zoom]);
     }
     drawingShader.setUniform("u_transformation", projectionMatrix);
   },
