@@ -1,4 +1,4 @@
-﻿namespace Shelngn.Business.GameProjects
+﻿namespace Shelngn.Business.GameProjects.Crud
 {
     public class GameProjectCreateSettings
     {

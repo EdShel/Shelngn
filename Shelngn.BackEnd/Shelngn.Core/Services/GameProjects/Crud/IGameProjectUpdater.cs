@@ -1,4 +1,4 @@
-﻿namespace Shelngn.Services.GameProjects
+﻿namespace Shelngn.Services.GameProjects.Crud
 {
     public interface IGameProjectUpdater
     {

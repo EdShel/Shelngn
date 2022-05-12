@@ -2,6 +2,7 @@
 {
     public interface IGameProjectBuilder
     {
-        Task<BuildResult> BuildProjectAsync(string gameProjectId);
+        Task<BuildResult> BuildDebugProjectAsync(string gameProjectId);
+        Task<BuildResult> BuildProductionProjectAsync(string gameProjectId);
     }
 }

@@ -16,7 +16,7 @@ namespace Shelngn.Api.Workspaces
             });
 
             string workspaceId = this.WorkspaceId;
-            BuildResult result = await builder.BuildProjectAsync(workspaceId);
+            BuildResult result = await builder.BuildDebugProjectAsync(workspaceId);
 
             if (result.IsSuccess)
             {

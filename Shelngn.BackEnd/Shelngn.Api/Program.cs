@@ -9,19 +9,21 @@ using Shelngn.Api.Workspaces;
 using Shelngn.Business;
 using Shelngn.Business.Auth;
 using Shelngn.Business.FileUpload;
-using Shelngn.Business.GameProjects;
 using Shelngn.Business.GameProjects.Build;
+using Shelngn.Business.GameProjects.Crud;
 using Shelngn.Business.GameProjects.Files;
+using Shelngn.Business.GameProjects.Publishing;
 using Shelngn.Data;
 using Shelngn.Data.Repositories;
 using Shelngn.Repositories;
 using Shelngn.Services;
 using Shelngn.Services.Auth;
 using Shelngn.Services.FileUpload;
-using Shelngn.Services.GameProjects;
 using Shelngn.Services.GameProjects.Authorization;
 using Shelngn.Services.GameProjects.Build;
+using Shelngn.Services.GameProjects.Crud;
 using Shelngn.Services.GameProjects.Files;
+using Shelngn.Services.GameProjects.Publishing;
 using Shelngn.Services.Workspaces;
 using Shelngn.Services.Workspaces.ActiveUsers;
 using Shelngn.Services.Workspaces.ProjectFiles;
@@ -36,6 +38,7 @@ services.Configure<ConnectionStringProvider>(builder.Configuration.GetSection("C
 services.Configure<AuthenticationSettings>(builder.Configuration.GetSection("AuthenticationSettings"));
 AuthenticationSettings jwtSettings = configuration.GetSection("AuthenticationSettings").Get<AuthenticationSettings>();
 services.Configure<GameProjectCreateSettings>(configuration.GetSection("GameProjectCreationSettings"));
+string[] corsAllowedOrigins = configuration.GetValue<string>("CorsAllowedOrigins").Split(";");
 
 TokenValidationParameters? jwtValidationOptions = new TokenValidationParameters
 {
@@ -81,6 +84,7 @@ services.AddAuthorization(options =>
     options.AddPolicy(GameProjectAuthPolicy.JustBeingMember, b => b.AddRequirements(new GameProjectMemberRequirement(new GameProjectRights())));
     options.AddPolicy(GameProjectAuthPolicy.ChangeMembers, b => b.AddRequirements(new GameProjectMemberRequirement(new GameProjectRights { ChangeMembers = true })));
     options.AddPolicy(GameProjectAuthPolicy.WorkspaceWrite, b => b.AddRequirements(new GameProjectMemberRequirement(new GameProjectRights { Workspace = true })));
+    options.AddPolicy(GameProjectAuthPolicy.Publishing, b => b.AddRequirements(new GameProjectMemberRequirement(new GameProjectRights { Publishing = true })));
 });
 services.AddTransient<IAuthorizationHandler, GameProjectMemberAuthorizationHandler>();
 
@@ -106,6 +110,8 @@ services.AddTransient<IRepositoryFactory, RepositoryFactory>();
 services.AddTransient<IAppUserRepository, AppUserRepository>();
 services.AddTransient<IRefreshTokenRepository, RefreshTokenRepository>();
 services.AddTransient<IGameProjectRepository, GameProjectRepository>();
+services.AddTransient<IGameProjectPublicationRepository, GameProjectPublicationRepository>();
+services.AddTransient<IGameProjectScreenshotRepository, GameProjectScreenshotRepository>();
 
 // Services
 services.AddSingleton<IPasswordHasher, IdentityPasswordHasher>();
@@ -125,6 +131,7 @@ services.AddTransient<IGameProjectAuthorizer, GameProjectAuthorizer>();
 services.AddSingleton<IFileUploadUrlSigning, FileUploadUrlSigning>(opt => new FileUploadUrlSigning(configuration.GetValue<string>("SigningPrivateKey")));
 services.AddTransient<IGameProjectDeleter, GameProjectDeleter>();
 services.AddTransient<IContentTypeProvider, FileExtensionContentTypeProvider>();
+services.AddTransient<IGameProjectPublisher, GameProjectPublisher>();
 
 services.AddSingleton<WorkspacesStatesManager>();
 services.AddTransient<ActiveUsersWorkspaceStateReducer>();
@@ -142,7 +149,7 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseCors(builder => builder
-    .WithOrigins("http://localhost:3000")
+    .WithOrigins(corsAllowedOrigins)
     .AllowCredentials()
     .AllowAnyMethod()
     .AllowAnyHeader());

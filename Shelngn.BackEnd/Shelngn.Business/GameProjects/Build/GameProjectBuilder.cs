@@ -16,7 +16,17 @@ namespace Shelngn.Business.GameProjects.Build
             this.logger = logger;
         }
 
-        public async Task<BuildResult> BuildProjectAsync(string gameProjectId)
+        public async Task<BuildResult> BuildProductionProjectAsync(string gameProjectId)
+        {
+            return await BuildForEnvironmentAsync(gameProjectId, isProduction: true);
+        }
+
+        public async Task<BuildResult> BuildDebugProjectAsync(string gameProjectId)
+        {
+            return await BuildForEnvironmentAsync(gameProjectId, isProduction: false);
+        }
+
+        private async Task<BuildResult> BuildForEnvironmentAsync(string gameProjectId, bool isProduction)
         {
             var webpackProcess = new ProcessStartInfo
             {
@@ -25,7 +35,7 @@ namespace Shelngn.Business.GameProjects.Build
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
-                Arguments = $"/c npx webpack build --config ./webpack.config.js --env workspace={gameProjectId} --no-color"
+                Arguments = $"/c npx webpack build --config ./webpack.config.js --env workspace={gameProjectId} {(isProduction ? "--env production=true" : "")} --no-color"
             };
 
             Process webpack = Process.Start(webpackProcess)

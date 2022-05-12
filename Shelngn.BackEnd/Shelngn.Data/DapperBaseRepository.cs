@@ -23,5 +23,10 @@ namespace Shelngn.Data
         {
             return await this.UnitOfWork.Connection.QueryAsync<T>(sql, param, this.UnitOfWork.Transaction);
         }
+
+        public async Task<T> ExecuteScalarAsync<T>(string sql, object? param = null)
+        {
+            return await this.UnitOfWork.Connection.ExecuteScalarAsync<T>(sql, param, this.UnitOfWork.Transaction);
+        }
     }
 }

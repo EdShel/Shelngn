@@ -1,28 +1,26 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
-using Shelngn.Api.Filters;
 using Shelngn.Exceptions;
 using Shelngn.Services.GameProjects.Build;
 
 namespace Shelngn.Api.Workspaces
 {
-    [Authorize]
+    [AllowAnonymous]
     [ApiController]
-    [Route("workspace/build")]
-    public class WorkspaceBuildController : ControllerBase
+    [Route("workspace/prod")]
+    public class WorkspacePublicationController : ControllerBase
     {
         private readonly IGameProjectBuildResultAccessor gameProjectBuildResultAccessor;
         private readonly IContentTypeProvider contentTypeProvider;
 
-        public WorkspaceBuildController(IGameProjectBuildResultAccessor gameProjectBuildResultAccessor)
+        public WorkspacePublicationController(IGameProjectBuildResultAccessor gameProjectBuildResultAccessor)
         {
             this.gameProjectBuildResultAccessor = gameProjectBuildResultAccessor;
             this.contentTypeProvider = new FileExtensionContentTypeProvider();
         }
 
         [HttpGet("{gameProjectId}/bundle.js")]
-        [Authorize(GameProjectAuthPolicy.WorkspaceWrite)]
         public IActionResult GetBuildJsBundle(
             [FromRoute] string gameProjectId)
         {
@@ -34,7 +32,6 @@ namespace Shelngn.Api.Workspaces
         }
 
         [HttpGet("{workspaceId}/{*filePath}")]
-        [AllowAnonymous]
         public IActionResult GetFile(
             [FromRoute] string workspaceId,
             [FromRoute] string filePath)

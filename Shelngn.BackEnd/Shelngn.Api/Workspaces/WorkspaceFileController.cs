@@ -14,7 +14,6 @@ namespace Shelngn.Api.Workspaces
     public class WorkspaceFileController : ControllerBase
     {
         private readonly IFileUploadUrlSigning fileUploadUrlSigning;
-        private readonly IGameProjectAuthorizer gameProjectAuthorizer;
         private readonly IProjectFileAccessor projectFileAccessor;
         private readonly IConfiguration configuration;
         private readonly IContentTypeProvider contentTypeProvider;
@@ -22,13 +21,11 @@ namespace Shelngn.Api.Workspaces
         public WorkspaceFileController(
             IFileUploadUrlSigning fileUploadUrlSigning,
             IConfiguration configuration,
-            IGameProjectAuthorizer gameProjectAuthorizer,
             IProjectFileAccessor projectFileAccessor,
             IContentTypeProvider contentTypeProvider)
         {
             this.fileUploadUrlSigning = fileUploadUrlSigning;
             this.configuration = configuration;
-            this.gameProjectAuthorizer = gameProjectAuthorizer;
             this.projectFileAccessor = projectFileAccessor;
             this.contentTypeProvider = contentTypeProvider;
         }
@@ -53,17 +50,12 @@ namespace Shelngn.Api.Workspaces
         }
 
         [HttpPost("{workspaceId}/{*filePath}")]
-        public async Task<IActionResult> GetUploadUrl(
+        [Authorize(GameProjectAuthPolicy.WorkspaceWrite)]
+        public IActionResult GetUploadUrl(
             [FromRoute] string workspaceId,
             [FromRoute] string filePath,
             [FromHeader(Name = "Content-Type")] string contentType)
         {
-            Guid workspaceIdGuid = Guids.FromUrlSafeBase64(workspaceId);
-            GameProjectRights userRights = await this.gameProjectAuthorizer.GetRightsForUserAsync(this.User.GetIdGuid(), workspaceIdGuid);
-            if (!userRights.Workspace)
-            {
-                return Forbid();
-            }
             string[] forbiddenSequences = new[] { "..", ":", "~", "//" };
             if (forbiddenSequences.Any(banned => filePath.Contains(banned)))
             {

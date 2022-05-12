@@ -1,10 +1,10 @@
 ﻿using Shelngn.Entities;
 using Shelngn.Exceptions;
 using Shelngn.Repositories;
-using Shelngn.Services.GameProjects;
+using Shelngn.Services.GameProjects.Crud;
 using Shelngn.Services.GameProjects.Files;
 
-namespace Shelngn.Business.GameProjects
+namespace Shelngn.Business.GameProjects.Crud
 {
     public class GameProjectDeleter : IGameProjectDeleter
     {

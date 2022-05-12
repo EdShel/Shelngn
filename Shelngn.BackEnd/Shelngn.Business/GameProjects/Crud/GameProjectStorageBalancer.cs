@@ -1,6 +1,6 @@
-﻿using Shelngn.Services.GameProjects;
+﻿using Shelngn.Services.GameProjects.Crud;
 
-namespace Shelngn.Business.GameProjects
+namespace Shelngn.Business.GameProjects.Crud
 {
     public class GameProjectStorageBalancer : IGameProjectStorageBalancer
     {

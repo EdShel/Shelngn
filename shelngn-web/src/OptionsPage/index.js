@@ -1,7 +1,14 @@
 import clsx from "clsx";
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { deleteMember, deleteProject, getProjectInfo, postAddMember } from "../api";
+import {
+  deleteMember,
+  deleteProject,
+  deleteUnpublishProject,
+  getProjectInfo,
+  postAddMember,
+  postPublishProject,
+} from "../api";
 import LineLoader from "../components/LineLoader";
 import ScreenLayout, { contentClassName } from "../components/ScreenLayout";
 import useAuth from "../hooks/useAuth";
@@ -14,6 +21,7 @@ import { useShowAlertNotification } from "../InfoAlert";
 import AddMemberModal from "./AddMemberModal";
 import MemberCard from "./MemberCard";
 import styles from "./styles.module.css";
+import PublishButton from "./PublishButton";
 
 const OptionsPage = () => {
   const workspaceId = useWorkspaceId();
@@ -23,13 +31,34 @@ const OptionsPage = () => {
   const [memberIdToDelete, setMemberIdToDelete] = useState(null);
   const [showAddMember, setShowAddMember] = useState(false);
   const { isLoading: isUserLoading, user } = useAuth();
+  const [isPublishLoading, setPublishLoading] = useState(false);
   const navigate = useNavigate();
   const { showError, showInfo } = useShowAlertNotification();
 
   const fetchProjectInfo = useCallback(async () => {
-    const projectResponse = await getProjectInfo(workspaceId);
-    setProject(projectResponse);
-  }, [workspaceId]);
+    try {
+      const projectResponse = await getProjectInfo(workspaceId);
+      setProject(projectResponse);
+    } catch (e) {
+      showError("Error while loading the project information.");
+    }
+  }, [workspaceId, showError]);
+
+  const handleTogglePublish = useCallback(async () => {
+    setPublishLoading(true);
+    try {
+      if (!project.isPublished) {
+        await postPublishProject(workspaceId);
+      } else {
+        await deleteUnpublishProject(workspaceId);
+      }
+      setProject((oldState) => ({ ...oldState, isPublished: !oldState.isPublished }));
+    } catch (e) {
+      const responseError = e.response?.data.error;
+      showError(responseError || "Cannot change state, please try again later");
+    }
+    setPublishLoading(false);
+  }, [project?.isPublished, showError, workspaceId]);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -49,6 +78,11 @@ const OptionsPage = () => {
               <h1 className={styles["header-text"]}>{project.projectName}</h1>
               <p>Created {new Date(project.insertDate).toLocaleString("en")}</p>
               <DeleteButton onPress={() => setShowDeleteProject(true)} />
+              <PublishButton
+                isPublished={project.isPublished}
+                onTogglePublish={handleTogglePublish}
+                isLoading={isPublishLoading}
+              />
             </div>
             <h2>Members ({project.members.length})</h2>
             <div className={styles.members}>

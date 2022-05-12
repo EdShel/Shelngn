@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import crossIcon from "../assets/cross.svg";
 import styles from "./styles.module.css";
 
@@ -12,6 +12,13 @@ export const InfoAlertProvider = ({ children }) => {
     (notification) => setNotifications((oldState) => [...oldState, notification]),
     []
   );
+  const showNotificationsShortcuts = useMemo(
+    () => ({
+      showError: (text) => showNotification({ type: "error", text }),
+      showInfo: (text) => showNotification({ type: "info", text }),
+    }),
+    [showNotification]
+  );
 
   const topMostNotification = notifications[0];
 
@@ -20,7 +27,7 @@ export const InfoAlertProvider = ({ children }) => {
   };
 
   return (
-    <ShowNotificationContext.Provider value={showNotification}>
+    <ShowNotificationContext.Provider value={showNotificationsShortcuts}>
       {children}
       {!!topMostNotification && (
         <div className={clsx(styles.alert, topMostNotification.type === "error" && styles.error)}>
@@ -35,9 +42,5 @@ export const InfoAlertProvider = ({ children }) => {
 };
 
 export const useShowAlertNotification = () => {
-  const showAlert = useContext(ShowNotificationContext);
-  return {
-    showError: (text) => showAlert({ type: "error", text }),
-    showInfo: (text) => showAlert({ type: "info", text }),
-  };
+  return useContext(ShowNotificationContext);
 };

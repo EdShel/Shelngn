@@ -23,7 +23,8 @@ namespace Shelngn.Services.GameProjects.Authorization
             return new GameProjectRights
             {
                 Workspace = true,
-                ChangeMembers = member.MemberRole == MemberRole.Owner
+                ChangeMembers = member.MemberRole == MemberRole.Owner,
+                Publishing = member.MemberRole == MemberRole.Owner
             };
         }
     }

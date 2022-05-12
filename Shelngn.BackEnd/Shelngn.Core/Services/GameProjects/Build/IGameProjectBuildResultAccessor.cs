@@ -2,7 +2,9 @@
 {
     public interface IGameProjectBuildResultAccessor
     {
-        string? GetMainBundle(string gameProjectId);
-        string? GetResource(string gameProjectId, string resourcePath);
+        string? GetDebugMainBundle(string gameProjectId);
+        string? GetDebugResource(string gameProjectId, string resourcePath);
+        string? GetProductionMainBundle(string gameProjectId);
+        string? GetProductionResource(string gameProjectId, string resourcePath);
     }
 }

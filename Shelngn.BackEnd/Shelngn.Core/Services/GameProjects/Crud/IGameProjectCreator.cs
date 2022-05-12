@@ -1,6 +1,6 @@
 ﻿using Shelngn.Entities;
 
-namespace Shelngn.Services.GameProjects
+namespace Shelngn.Services.GameProjects.Crud
 {
     public interface IGameProjectCreator
     {

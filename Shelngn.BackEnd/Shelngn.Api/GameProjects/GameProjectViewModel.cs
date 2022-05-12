@@ -8,6 +8,7 @@ namespace Shelngn.Api.GameProjects
         public string Id { get; set; } = null!;
         public string ProjectName { get; set; } = null!;
         public DateTimeOffset InsertDate { get; set; }
+        public bool IsPublished { get; set; }
         public IEnumerable<GameProjectMemberViewModel> Members { get; set; } = null!;
 
         private class MappongProfile : Profile

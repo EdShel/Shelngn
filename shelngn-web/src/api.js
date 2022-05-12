@@ -66,6 +66,8 @@ export const postAddMember = (gameProjectId, emailOrUserName) =>
   postAuth(`/gameProject/${gameProjectId}/member`, { emailOrUserName });
 export const deleteMember = (gameProjectId, appUserId) =>
   deleteAuth(`/gameProject/${gameProjectId}/member/${appUserId}`);
+export const postPublishProject = (gameProjectId) => postAuth(`/gameProject/publish/${gameProjectId}`);
+export const deleteUnpublishProject = (gameProjectId) => deleteAuth(`/gameProject/publish/${gameProjectId}`);
 
 // --------- Workspace --------- //
 export const postFileUploadRequest = (workspaceId, filePath, fileContentType) =>

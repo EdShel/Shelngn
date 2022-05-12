@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Options;
 using Shelngn.Entities;
 using Shelngn.Repositories;
-using Shelngn.Services.GameProjects;
+using Shelngn.Services.GameProjects.Crud;
 using Shelngn.Services.GameProjects.Files;
 
-namespace Shelngn.Business.GameProjects
+namespace Shelngn.Business.GameProjects.Crud
 {
     public class GameProjectCreator : IGameProjectCreator
     {
