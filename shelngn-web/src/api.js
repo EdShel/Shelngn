@@ -68,6 +68,10 @@ export const deleteMember = (gameProjectId, appUserId) =>
   deleteAuth(`/gameProject/${gameProjectId}/member/${appUserId}`);
 export const postPublishProject = (gameProjectId) => postAuth(`/gameProject/publish/${gameProjectId}`);
 export const deleteUnpublishProject = (gameProjectId) => deleteAuth(`/gameProject/publish/${gameProjectId}`);
+export const postScreenshotUploaded = (gameProjectId, screenshotPath) =>
+  postAuth(`/gameProject/screenshot/${gameProjectId}/${screenshotPath}`);
+export const getScreenshotUrl = (gameProjectId, screenshotPath) =>
+  `${apiUrl}/gameProject/screenshot/${gameProjectId}/${screenshotPath}`;
 
 // --------- Workspace --------- //
 export const postFileUploadRequest = (workspaceId, filePath, fileContentType) =>

@@ -28,5 +28,16 @@ namespace Shelngn.Data.Repositories
             const string sql = "DELETE FROM game_project_screenshot WHERE id = @screenshotId";
             await ExecuteAsync(sql, new { screenshotId });
         }
+
+        public async Task<IEnumerable<GameProjectScreenshot>> GetAllForProjectAsync(Guid gameProjectId, CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+            const string sql =
+                "SELECT id, game_project_id, image_url, insert_date " +
+                "FROM game_project_screenshot " +
+                "WHERE game_project_id = @gameProjectId " +
+                "ORDER BY insert_date DESC;";
+            return await QueryAsync<GameProjectScreenshot>(sql, new { gameProjectId });
+        }
     }
 }

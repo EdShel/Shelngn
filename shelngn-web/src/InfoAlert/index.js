@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import crossIcon from "../assets/cross.svg";
 import styles from "./styles.module.css";
 
@@ -14,17 +14,36 @@ export const InfoAlertProvider = ({ children }) => {
   );
   const showNotificationsShortcuts = useMemo(
     () => ({
-      showError: (text) => showNotification({ type: "error", text }),
-      showInfo: (text) => showNotification({ type: "info", text }),
+      showError: (text, { autoClose } = {}) => showNotification({ type: "error", text, autoClose }),
+      showInfo: (text, { autoClose } = {}) => showNotification({ type: "info", text, autoClose }),
     }),
     [showNotification]
   );
 
   const topMostNotification = notifications[0];
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setNotifications((oldNotifications) => oldNotifications.slice(1));
-  };
+  }, [setNotifications]);
+
+  useEffect(() => {
+    if (!topMostNotification || !topMostNotification.autoClose) {
+      return () => {};
+    }
+
+    let closeTimeOut = setTimeout(() => {
+      if (closeTimeOut) {
+        handleClose();
+        closeTimeOut = null;
+      }
+    }, 2000);
+
+    return () => {
+      if (closeTimeOut) {
+        clearTimeout(closeTimeOut);
+      }
+    };
+  }, [topMostNotification, handleClose]);
 
   return (
     <ShowNotificationContext.Provider value={showNotificationsShortcuts}>

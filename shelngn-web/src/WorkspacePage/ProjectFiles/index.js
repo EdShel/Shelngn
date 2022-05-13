@@ -73,7 +73,6 @@ const ProjectFiles = ({ className }) => {
   };
 
   const handleDrop = async (ev, folder) => {
-    console.log('ev.dataTransfer.items', JSON.stringify(ev.dataTransfer.items, null, 2))
     for (const droppedItem of ev.dataTransfer.items) {
       if (droppedItem.type === "application/x-fileid") {
         droppedItem.getAsString((fileId) => {
@@ -86,7 +85,6 @@ const ProjectFiles = ({ className }) => {
         });
       }
 
-      console.log(droppedItem.kind)
       if (droppedItem.kind === "file") {
         const file = droppedItem.getAsFile();
         let uploadUrl = null;

@@ -23,5 +23,7 @@
         Task MoveDirectoryAsync(string sourcePath, string destinationPath);
 
         Task<byte[]> ReadFileAsync(string uri, CancellationToken ct = default);
+
+        Task<bool> FileExists(string path);
     }
 }

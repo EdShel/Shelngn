@@ -102,5 +102,10 @@ namespace Shelngn.Business.GameProjects.Files
         {
             return File.ReadAllBytesAsync(uri, ct);
         }
+
+        public Task<bool> FileExists(string path)
+        {
+            return Task.FromResult(File.Exists(path));
+        }
     }
 }

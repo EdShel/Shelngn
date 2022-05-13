@@ -10,15 +10,15 @@ namespace Shelngn.Api.GameProjects
         public DateTimeOffset InsertDate { get; set; }
         public bool IsPublished { get; set; }
         public IEnumerable<GameProjectMemberViewModel> Members { get; set; } = null!;
+        public IEnumerable<ScreenshotViewModel> Screenshots { get; set; } = null!;
 
-        private class MappongProfile : Profile
+        private class MappingProfile : Profile
         {
-            public MappongProfile()
+            public MappingProfile()
             {
                 CreateMap<GameProject, GameProjectViewModel>()
                     .ForMember(m => m.Id, opt => opt.MapFrom(g => g.Id.ToUrlSafeBase64()));
             }
         }
     }
-
 }

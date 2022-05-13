@@ -6,5 +6,6 @@ namespace Shelngn.Repositories
     {
         Task<GameProjectScreenshot> CreateScreenshotAsync(GameProjectScreenshot screenshot, CancellationToken ct = default);
         Task DeleteScreenshotAsync(Guid screenshotId, CancellationToken ct = default);
+        Task<IEnumerable<GameProjectScreenshot>> GetAllForProjectAsync(Guid gameProjectId, CancellationToken ct = default);
     }
 }

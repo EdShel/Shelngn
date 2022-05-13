@@ -21,6 +21,7 @@ namespace Shelngn.Api.GameProjects
         private readonly IGameProjectDeleter gameProjectDeleter;
         private readonly IGameProjectAuthorizer gameProjectAuthorizer;
         private readonly IGameProjectPublicationRepository gameProjectPublicationRepository;
+        private readonly IGameProjectScreenshotRepository gameProjectScreenshotRepository;
         private readonly IMapper mapper;
 
         public GameProjectController(
@@ -31,7 +32,8 @@ namespace Shelngn.Api.GameProjects
             IGameProjectDeleter gameProjectDeleter,
             IAppUserRepository appUserRepository,
             IGameProjectAuthorizer gameProjectAuthorizer,
-            IGameProjectPublicationRepository gameProjectPublicationRepository)
+            IGameProjectPublicationRepository gameProjectPublicationRepository,
+            IGameProjectScreenshotRepository gameProjectScreenshotRepository)
         {
             this.gameProjectCreator = gameProjectCreator;
             this.gameProjectSearcher = gameProjectSearcher;
@@ -41,6 +43,7 @@ namespace Shelngn.Api.GameProjects
             this.appUserRepository = appUserRepository;
             this.gameProjectAuthorizer = gameProjectAuthorizer;
             this.gameProjectPublicationRepository = gameProjectPublicationRepository;
+            this.gameProjectScreenshotRepository = gameProjectScreenshotRepository;
         }
 
         [HttpPost]
@@ -80,10 +83,12 @@ namespace Shelngn.Api.GameProjects
             GameProject? gameProject = await this.gameProjectSearcher.GetByIdAsync(projectId)
                 ?? throw new NotFoundException("Game project");
             IEnumerable<GameProjectMemberUser> usersMembers = await this.gameProjectRepository.GetAllMembersAsync(projectId, ct);
+            IEnumerable<GameProjectScreenshot> screenshots = await this.gameProjectScreenshotRepository.GetAllForProjectAsync(projectId, ct);
 
             GameProjectViewModel viewModel = this.mapper.Map<GameProjectViewModel>(gameProject);
             viewModel.IsPublished = await gameProjectPublicationRepository.ExistsAsync(projectId, ct);
             viewModel.Members = this.mapper.Map<IEnumerable<GameProjectMemberViewModel>>(usersMembers);
+            viewModel.Screenshots = this.mapper.Map<IEnumerable<ScreenshotViewModel>>(screenshots);
 
             GameProjectRights? currentUserRights = await this.gameProjectAuthorizer.GetRightsForUserAsync(currentUserId, projectId);
 

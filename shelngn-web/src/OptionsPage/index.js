@@ -6,6 +6,7 @@ import {
   deleteProject,
   deleteUnpublishProject,
   getProjectInfo,
+  getScreenshotUrl,
   postAddMember,
   postPublishProject,
 } from "../api";
@@ -101,6 +102,10 @@ const OptionsPage = () => {
                 Add new member
               </button>
             </div>
+            <h2>Screenshots</h2>
+            {project.screenshots.map((s) => (
+              <img key={s.id} alt="Screenshot" src={getScreenshotUrl(workspaceId, s.imageUrl)} />
+            ))}
           </>
         )}
       </div>

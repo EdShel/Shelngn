@@ -49,20 +49,20 @@ namespace Shelngn.Api.Workspaces
             return File(fs, contentType);
         }
 
-        [HttpPost("{workspaceId}/{*filePath}")]
+        [HttpPost("{gameProjectId}/{*filePath}")]
         [Authorize(GameProjectAuthPolicy.WorkspaceWrite)]
         public IActionResult GetUploadUrl(
-            [FromRoute] string workspaceId,
+            [FromRoute] string gameProjectId,
             [FromRoute] string filePath,
             [FromHeader(Name = "Content-Type")] string contentType)
         {
             string[] forbiddenSequences = new[] { "..", ":", "~", "//" };
-            if (forbiddenSequences.Any(banned => filePath.Contains(banned)))
+                if (forbiddenSequences.Any(banned => filePath.Contains(banned)))
             {
                 return BadRequest("File path is forbidden.");
             }
 
-            string fileServerPath = $"{workspaceId}/{filePath}" ?? throw new ArgumentNullException("Path can't be null.");
+            string fileServerPath = $"{gameProjectId}/{filePath}" ?? throw new ArgumentNullException("Path can't be null.");
             string signature = this.fileUploadUrlSigning.CreateSignature(fileServerPath, contentType);
             string fileUploadServer = this.configuration.GetValue<string>("FileUploadServer")
                 ?? throw new InvalidOperationException("No file upload server specified.");
