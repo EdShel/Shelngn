@@ -1,0 +1,30 @@
+.container {
+  margin-top: 20px;
+  position: relative;
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.container h2 {
+  text-align: center;
+  background-color: #36394ab1;
+  padding: 5px 10px 10px 5px;
+  color: var(--primary);
+}
+
+.container p {
+  text-align: center;
+  background-color: #36394ace;
+  padding: 5px 10px 10px 5px;
+}
+
+.container b {
+    color: var(--secondary);
+}

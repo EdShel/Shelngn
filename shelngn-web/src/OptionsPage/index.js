@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {
   deleteMember,
   deleteProject,
+  deleteScreenshot,
   deleteUnpublishProject,
   getProjectInfo,
   getScreenshotUrl,
@@ -23,6 +24,8 @@ import AddMemberModal from "./AddMemberModal";
 import MemberCard from "./MemberCard";
 import styles from "./styles.module.css";
 import PublishButton from "./PublishButton";
+import ScreenshotsList from "./ScreenshotsList";
+import Scrollable from "../components/Scrollable";
 
 const OptionsPage = () => {
   const workspaceId = useWorkspaceId();
@@ -30,6 +33,7 @@ const OptionsPage = () => {
   const [isLoading, setLoading] = useState(true);
   const [showDeleteProject, setShowDeleteProject] = useState(false);
   const [memberIdToDelete, setMemberIdToDelete] = useState(null);
+  const [screenshotIdToDelete, setScreenshotIdToDelete] = useState(null);
   const [showAddMember, setShowAddMember] = useState(false);
   const { isLoading: isUserLoading, user } = useAuth();
   const [isPublishLoading, setPublishLoading] = useState(false);
@@ -72,7 +76,7 @@ const OptionsPage = () => {
   return (
     <ScreenLayout>
       <LineLoader isLoading={isLoading || isUserLoading} />
-      <div className={clsx(contentClassName, styles.container)}>
+      <Scrollable className={clsx(contentClassName, styles.container)}>
         {project && (
           <>
             <div className={styles.header}>
@@ -94,6 +98,7 @@ const OptionsPage = () => {
                   email={member.email}
                   role={member.memberRole}
                   isMe={member.id === user.id}
+                  canBeDeleted={member.canBeDeleted}
                   onRemove={() => setMemberIdToDelete(member.id)}
                 />
               ))}
@@ -102,13 +107,13 @@ const OptionsPage = () => {
                 Add new member
               </button>
             </div>
-            <h2>Screenshots</h2>
-            {project.screenshots.map((s) => (
-              <img key={s.id} alt="Screenshot" src={getScreenshotUrl(workspaceId, s.imageUrl)} />
-            ))}
+            <ScreenshotsList
+              onDeleteScreenshot={(id) => setScreenshotIdToDelete(id)}
+              screenshots={project.screenshots}
+            />
           </>
         )}
-      </div>
+      </Scrollable>
       {showDeleteProject && (
         <ConfirmModal
           title="Delete project"
@@ -139,6 +144,26 @@ const OptionsPage = () => {
             }
           }}
           onCancel={() => setMemberIdToDelete(null)}
+        />
+      )}
+      {screenshotIdToDelete && (
+        <ConfirmModal
+          title="Delete screenshot"
+          text="Do you really want to delete the screenshot? It will be lost completely"
+          onOk={async () => {
+            try {
+              await deleteScreenshot(workspaceId, screenshotIdToDelete);
+              showInfo("Removed screenshot");
+              setScreenshotIdToDelete(null);
+              setProject((oldProj) => ({
+                ...oldProj,
+                screenshots: oldProj.screenshots.filter((s) => s.id !== screenshotIdToDelete),
+              }));
+            } catch (ex) {
+              showError("Couldn't delete the screenshot");
+            }
+          }}
+          onCancel={() => setScreenshotIdToDelete(null)}
         />
       )}
       {showAddMember && (

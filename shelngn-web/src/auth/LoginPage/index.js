@@ -1,22 +1,20 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import InputField from "../../components/InputField";
 import Button from "../../components/Button";
 import Form from "../Form";
 import { useNavigate } from "react-router-dom";
-import { login } from "../reducer";
 import UrlTo from "../../UrlTo";
 import styles from "./styles.module.css";
 import ButtonBack from "../../components/ButtonBack";
 import ScreenLayout, { contentClassName } from "../../components/ScreenLayout";
+import { postLogin } from "../../api";
 
 const LoginPage = () => {
   const emailField = "email";
   const passwordField = "password";
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const formik = useFormik({
     initialValues: {
@@ -24,7 +22,7 @@ const LoginPage = () => {
       [passwordField]: "",
     },
     onSubmit: async ({ email, password }) => {
-      await dispatch(login({ email, password })).unwrap();
+      await postLogin({ email, password });
       navigate(UrlTo.home());
     },
   });

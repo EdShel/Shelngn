@@ -24,6 +24,11 @@ namespace Shelngn.Data
             return await this.UnitOfWork.Connection.QueryAsync<T>(sql, param, this.UnitOfWork.Transaction);
         }
 
+        public async Task<IEnumerable<TOut>> QueryAsync<T1, T2, T3, TOut>(string sql, Func<T1, T2, T3, TOut> map,string splitOn, object? param = null)
+        {
+            return await this.UnitOfWork.Connection.QueryAsync(sql: sql, param: param, map: map, splitOn: splitOn);
+        }
+
         public async Task<T> ExecuteScalarAsync<T>(string sql, object? param = null)
         {
             return await this.UnitOfWork.Connection.ExecuteScalarAsync<T>(sql, param, this.UnitOfWork.Transaction);

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Shelngn.Api.Filters;
+using Shelngn.Entities;
 using Shelngn.Exceptions;
 using Shelngn.Repositories;
 using Shelngn.Services.GameProjects.Files;
@@ -15,12 +16,17 @@ namespace Shelngn.Api.GameProjects.Screenshots
         private readonly IGameProjectScreenshotRepository gameProjectScreenshotRepository;
         private readonly IProjectFileAccessor projectFileAccessor;
         private readonly IContentTypeProvider contentTypeProvider;
+        private readonly IFileSystem fileSystem;
 
-        public GameProjectScreenshotController(IGameProjectScreenshotRepository gameProjectScreenshotRepository, IProjectFileAccessor projectFileAccessor)
+        public GameProjectScreenshotController(
+            IGameProjectScreenshotRepository gameProjectScreenshotRepository,
+            IProjectFileAccessor projectFileAccessor,
+            IFileSystem fileSystem)
         {
             this.gameProjectScreenshotRepository = gameProjectScreenshotRepository;
             this.projectFileAccessor = projectFileAccessor;
             this.contentTypeProvider = new FileExtensionContentTypeProvider();
+            this.fileSystem = fileSystem;
         }
 
         [HttpPost("{gameProjectId}/{*screenshotPath}")]
@@ -38,6 +44,27 @@ namespace Shelngn.Api.GameProjects.Screenshots
                 GameProjectId = projectId,
                 ImageUrl = screenshotPath,
             });
+            return NoContent();
+        }
+
+        [HttpDelete("{gameProjectId}/{screenshotId}")]
+        [Authorize(GameProjectAuthPolicy.WorkspaceWrite)]
+        public async Task<IActionResult> DeleteScreenshot(
+            [FromRoute] string gameProjectId,
+            [FromRoute] string screenshotId)
+        {
+            Guid screenshotIdGuid = Guids.FromUrlSafeBase64(screenshotId);
+            GameProjectScreenshot screenshot = await  gameProjectScreenshotRepository.GetByIdAsync(screenshotIdGuid)
+                ?? throw new NotFoundException("Game project screenshot");
+
+            string? screenshotPath = projectFileAccessor.GetFilePath(gameProjectId, screenshot.ImageUrl);
+            if (screenshotPath != null)
+            {
+                await fileSystem.DeleteFileIfExistsAsync(screenshotPath);
+            }
+
+            await gameProjectScreenshotRepository.DeleteScreenshotAsync(screenshotIdGuid);
+
             return NoContent();
         }
 

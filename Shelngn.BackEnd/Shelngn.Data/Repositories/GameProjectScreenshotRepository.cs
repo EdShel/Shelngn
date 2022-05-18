@@ -39,5 +39,15 @@ namespace Shelngn.Data.Repositories
                 "ORDER BY insert_date DESC;";
             return await QueryAsync<GameProjectScreenshot>(sql, new { gameProjectId });
         }
+
+        public async Task<GameProjectScreenshot?> GetByIdAsync(Guid screenshotId, CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+            const string sql =
+                "SELECT id, game_project_id, image_url, insert_date " +
+                "FROM game_project_screenshot " +
+                "WHERE id = @screenshotId;";
+            return await QueryFirstOrDefaultAsync<GameProjectScreenshot?>(sql, new { screenshotId });
+        }
     }
 }

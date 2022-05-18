@@ -70,7 +70,7 @@ namespace Shelngn.Api.GameProjects
             IEnumerable<GameProjectListModel>? myProjectsModel = this.mapper.Map<IEnumerable<GameProjectListModel>>(myProjects);
             return Ok(new
             {
-                GameProjects = myProjectsModel
+                Data = myProjectsModel
             });
         }
 

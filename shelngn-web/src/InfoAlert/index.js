@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import crossIcon from "../assets/cross.svg";
+import LineLoader from "../components/LineLoader";
 import styles from "./styles.module.css";
 
 const ShowNotificationContext = React.createContext();
@@ -14,8 +15,8 @@ export const InfoAlertProvider = ({ children }) => {
   );
   const showNotificationsShortcuts = useMemo(
     () => ({
-      showError: (text, { autoClose } = {}) => showNotification({ type: "error", text, autoClose }),
-      showInfo: (text, { autoClose } = {}) => showNotification({ type: "info", text, autoClose }),
+      showError: (text, { autoClose = false } = {}) => showNotification({ type: "error", text, autoClose }),
+      showInfo: (text, { autoClose = true } = {}) => showNotification({ type: "info", text, autoClose }),
     }),
     [showNotification]
   );
@@ -36,7 +37,7 @@ export const InfoAlertProvider = ({ children }) => {
         handleClose();
         closeTimeOut = null;
       }
-    }, 2000);
+    }, 3000);
 
     return () => {
       if (closeTimeOut) {
@@ -50,6 +51,11 @@ export const InfoAlertProvider = ({ children }) => {
       {children}
       {!!topMostNotification && (
         <div className={clsx(styles.alert, topMostNotification.type === "error" && styles.error)}>
+          {topMostNotification.autoClose && (
+            <div className={styles.loading}>
+              <LineLoader loadTimeMilliseconds={2500} isLoading />
+            </div>
+          )}
           {notifications.length > 1 && `(1/${notifications.length})`} {topMostNotification.text}
           <button onClick={handleClose} className={styles.close}>
             <img src={crossIcon} alt="Close" />

@@ -1,16 +1,15 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import InputField from "../../components/InputField";
 import Button from "../../components/Button";
 import Form from "../Form";
 import { useNavigate } from "react-router-dom";
-import { login, register } from "../reducer";
 import UrlTo from "../../UrlTo";
 import styles from "./styles.module.css";
 import ButtonBack from "../../components/ButtonBack";
 import ScreenLayout, { contentClassName } from "../../components/ScreenLayout";
 import { useShowAlertNotification } from "../../InfoAlert";
+import { postLogin, postRegister } from "../../api";
 
 const RegisterPage = () => {
   const emailField = "email";
@@ -18,8 +17,7 @@ const RegisterPage = () => {
   const userNameField = "userName";
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const {showError} = useShowAlertNotification();
+  const { showError } = useShowAlertNotification();
 
   const formik = useFormik({
     initialValues: {
@@ -29,12 +27,12 @@ const RegisterPage = () => {
     },
     onSubmit: async ({ email, password, userName }) => {
       try {
-        await dispatch(register({ email, password, userName })).unwrap();
-        await dispatch(login({ email, password })).unwrap();
+        await postRegister({ email, password, userName });
+        await postLogin({ email, password });
         navigate(UrlTo.home());
-      } catch(e){
+      } catch (e) {
         const text = e.response?.data.Message;
-        showError(text || 'An error occurred')
+        showError(text || "An error occurred");
       }
     },
   });

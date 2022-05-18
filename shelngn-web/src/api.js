@@ -34,6 +34,7 @@ const deleteAuth = async (url, config) => (await api.delete(url, config)).data;
 const apiAnonymous = axios.create({
   baseURL: apiUrl,
 });
+const getAnonymous = async (url, data) => (await apiAnonymous.get(url, data)).data;
 const postAnonymous = async (url, data) => (await apiAnonymous.post(url, data)).data;
 
 // --------- Auth --------- //
@@ -72,6 +73,8 @@ export const postScreenshotUploaded = (gameProjectId, screenshotPath) =>
   postAuth(`/gameProject/screenshot/${gameProjectId}/${screenshotPath}`);
 export const getScreenshotUrl = (gameProjectId, screenshotPath) =>
   `${apiUrl}/gameProject/screenshot/${gameProjectId}/${screenshotPath}`;
+export const deleteScreenshot = (gameProjectId, screenshotId) =>
+  deleteAuth(`/gameProject/screenshot/${gameProjectId}/${screenshotId}`);
 
 // --------- Workspace --------- //
 export const postFileUploadRequest = (workspaceId, filePath, fileContentType) =>
@@ -84,3 +87,6 @@ export const getFileSource = (workspaceId, filePath) =>
   getAuth(`workspace/file/${workspaceId}/${filePath}`, { responseType: "blob" });
 export const getBuiltJsBundle = (workspaceId) => getAuth(`workspace/build/${workspaceId}/bundle.js`);
 export const getBuiltResourceFile = (workspaceId, url) => `${apiUrl}/workspace/build/${workspaceId}/${url}`;
+
+// --------- Home --------- //
+export const getHomeGameProjects = (until) => getAnonymous("/home/projects", { until });

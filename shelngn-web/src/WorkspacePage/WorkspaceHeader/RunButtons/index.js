@@ -5,7 +5,7 @@ import { getCurrentFileId, getOpenFiles, getProjectBuildError, getProjectBuildPr
 import { useWorkspaceDispatch } from "../../WorkspaceContext";
 import { buildErrorShown, dumpFile } from "../../reducer";
 import { useShowAlertNotification } from "../../../InfoAlert";
-import { ReactComponent as PlayIcon } from "./play.svg";
+import { ReactComponent as PlayIcon } from "../../../assets/play.svg";
 import UrlTo from "../../../UrlTo";
 import styles from "./styles.module.css";
 

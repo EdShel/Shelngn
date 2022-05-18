@@ -7,6 +7,7 @@
     "sidebar page-content";
   grid-template-columns: max-content 1fr;
   grid-template-rows: max-content 1fr;
+  overflow: hidden;
 }
 
 .side-bar {

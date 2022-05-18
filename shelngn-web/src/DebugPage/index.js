@@ -42,7 +42,7 @@ const DebugPage = () => {
         await postScreenshotUploaded(workspaceId, filePath);
         showInfo("Saved screenshot", { autoClose: true });
       } catch (ex) {
-        showError("Error while uploading the file.");
+        showError("Error while uploading the screenshot.");
       }
     },
     [workspaceId, showError, showInfo]

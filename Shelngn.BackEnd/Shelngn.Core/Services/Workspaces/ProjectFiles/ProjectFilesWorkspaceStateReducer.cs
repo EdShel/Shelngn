@@ -42,6 +42,8 @@ namespace Shelngn.Services.Workspaces.ProjectFiles
         private bool IsReservedId(string id)
         {
             return id == "dist"
+                || id == "publ"
+                || id == "screenshots"
                 || id == "index.js"
                 || id == "webpack.config.js"
                 || id == "shelngn.js";
@@ -228,13 +230,14 @@ namespace Shelngn.Services.Workspaces.ProjectFiles
         public async Task DeleteFolderAsync(ProjectFilesWorkspaceState state, string folderId)
         {
             WorkspaceDirectory containingFolder = FindContainingDirectoryState(state, folderId);
-            if (containingFolder == state.Root)
-            {
-                throw new InvalidOperationException("Cannot delete the folder.");
-            }
 
             WorkspaceDirectory folderToDelete = containingFolder.Directories.FirstOrDefault(d => d.Id == folderId)
                 ?? throw new InvalidOperationException("The folder doesn't exist.");
+
+            if (folderToDelete == state.Root)
+            {
+                throw new InvalidOperationException("Cannot delete the root folder.");
+            }
 
             containingFolder.Directories.Remove(folderToDelete);
 

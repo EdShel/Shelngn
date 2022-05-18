@@ -1,0 +1,63 @@
+.placeholder {
+  color: var(--background-light);
+  font-size: 1.5rem;
+}
+
+.placeholder b {
+  color: var(--secondary);
+}
+
+.list {
+  --columns-count: 1;
+  display: grid;
+  grid-template-columns: repeat(var(--columns-count), minmax(0, 1fr));
+  column-gap: 16px;
+  row-gap: 12px;
+}
+
+@media screen and (min-width: 576px) {
+  .list {
+    --columns-count: 2;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .list {
+    --columns-count: 3;
+  }
+}
+
+@media screen and (min-width: 1280px) {
+  .list {
+    --columns-count: 4;
+  }
+}
+
+.screenshot {
+  width: 100%;
+  height: 100%;
+  background-color: var(--background);
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
+}
+
+.screenshot-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.delete-icon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+  padding: 10px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.screenshot:hover .delete-icon {
+  opacity: 1;
+}

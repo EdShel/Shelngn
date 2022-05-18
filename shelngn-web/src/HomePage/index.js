@@ -1,35 +1,45 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "./Header";
 import Button from "../components/Button";
 import ScreenLayout, { headerClassName, contentClassName } from "../components/ScreenLayout";
 import Scrollable from "../components/Scrollable";
-import { postCreateNewProject } from "../api";
+import { getHomeGameProjects, getMyGameProjects, postCreateNewProject } from "../api";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { getMyGameProjects } from "./selectors";
 import UrlTo from "../UrlTo";
-import AppStorage from "../AppStorage";
-import { loadMyGameProjects } from "./reducer";
 import GameProjectsList from "./GameProjectsList";
-import pixelArtImage from "./assets/pixelArt.webp";
+import useAuth from "../hooks/useAuth";
+import { useShowAlertNotification } from "../InfoAlert";
+import LineLoader from "../components/LineLoader";
 import styles from "./styles.module.css";
+import PublishedGames from "./PublishedGames";
+import TipOfTheDay from "./TipOfTheDay";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const myGameProjects = useSelector(getMyGameProjects);
-  const dispatch = useDispatch();
-
-  const isAuthenticated = !!AppStorage.accessToken;
+  const [myGameProjects, setMyGameProjects] = useState([]);
+  const [otherGameProjects, setOtherGameProjects] = useState(null);
+  const [isLoading, setLoading] = useState(true);
+  const { isAuthenticated } = useAuth();
+  const { showError } = useShowAlertNotification();
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      return;
-    }
-    if (myGameProjects.loading) {
-      return;
-    }
-    dispatch(loadMyGameProjects());
-  }, [isAuthenticated]);
+    const loadData = async () => {
+      setLoading(true);
+
+      try {
+        if (isAuthenticated) {
+          setMyGameProjects(await getMyGameProjects());
+        }
+        setOtherGameProjects(await getHomeGameProjects());
+      } catch (e) {
+        showError("Error while loading home screen. Please try again later.");
+      }
+
+      setLoading(false);
+    };
+
+    loadData();
+  }, [isAuthenticated, showError]);
 
   const handleCreateProject = async () => {
     try {
@@ -44,15 +54,21 @@ const HomePage = () => {
     <ScreenLayout>
       <Header className={headerClassName} />
       <Scrollable className={contentClassName}>
-      <div className={styles["main-container"]}>
-        <h1>Shelngn</h1>
-        <h2>Collaborative gameplay prototyping tool</h2>
-        {isAuthenticated && <Button text="Create new project for free" onPress={handleCreateProject} />}
+        <div className={styles["main-container"]}>
+          <LineLoader isLoading={isLoading} />
+          <h1>Shelngn</h1>
+          <h2>Collaborative gameplay prototyping tool</h2>
+          <TipOfTheDay />
 
-        <img src={pixelArtImage} alt="Adventure" className={styles.picture} />
-
-        <GameProjectsList gameProjects={myGameProjects.data} className={styles["game-projects-list"]} />
-      </div>
+          {isAuthenticated && !!myGameProjects && (
+            <GameProjectsList
+              gameProjects={myGameProjects.data}
+              onCreateProject={handleCreateProject}
+              className={styles["game-projects-list"]}
+            />
+          )}
+          {!!otherGameProjects && <PublishedGames games={otherGameProjects.data} />}
+        </div>
       </Scrollable>
     </ScreenLayout>
   );

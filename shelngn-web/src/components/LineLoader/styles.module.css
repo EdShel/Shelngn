@@ -1,4 +1,5 @@
 .line-loader {
+  --load-time: 0.5s;
   height: 4px;
   width: 100%;
   background: transparent;
@@ -13,7 +14,7 @@
 }
 
 .animate::before {
-  animation: go-to-100-percent-width 0.5s ease-in forwards;
+  animation: go-to-100-percent-width var(--load-time) ease-in forwards;
 }
 
 .hide::before {

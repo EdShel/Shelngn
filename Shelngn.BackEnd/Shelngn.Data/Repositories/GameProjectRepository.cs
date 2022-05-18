@@ -92,5 +92,55 @@ namespace Shelngn.Data.Repositories
                 "ORDER BY m.insert_date ASC";
             return QueryAsync<GameProjectMemberUser>(sql, new { gameProjectId });
         }
+
+        public async Task<IEnumerable<PublishedGameProject>> GetMostRecentGameProjectsAsync(DateTimeOffset until, int take, CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+            const string sql =
+                @"SELECT TOP(@take)
+                    p.id, 
+                    p.project_name,
+                    p.insert_date,
+                    '' AS Screenshot, 
+                    s.id,
+                    s.image_url,
+                    '' AS AppUser,
+                    u.id,
+                    u.user_name
+                FROM game_project p
+                LEFT JOIN game_project_screenshot s ON s.game_project_id = p.id
+                JOIN game_project_member m ON m.game_project_id = p.id
+                JOIN app_user u ON m.app_user_id = u.id
+                WHERE p.insert_date <= @until
+                ORDER BY p.insert_date DESC;";
+            var projLookup = new Dictionary<Guid, PublishedGameProject>();
+            var picLookup = new Dictionary<Guid, PublishedGameProjectScreenshot>();
+            await QueryAsync<PublishedGameProject, PublishedGameProjectScreenshot, PublishedGameProjectUserMember, PublishedGameProject>(
+                sql, 
+                map: (proj, pic, user) =>
+                {
+                    PublishedGameProject? result;
+                    if (!projLookup.TryGetValue(proj.Id, out result))
+                    {
+                        result = proj;
+                        result.Screenshots = new List<PublishedGameProjectScreenshot>();
+                        result.Members = new List<PublishedGameProjectUserMember>();
+                        projLookup.Add(result.Id, result);
+                    }
+                    if (pic.ImageUrl != null && !picLookup.ContainsKey(pic.Id))
+                    {
+                        result.Screenshots.Add(pic);
+                        picLookup.Add(pic.Id, pic);
+                    }
+                    if (user.UserName != null && !result.Members.Any(u => u.Id == user.Id))
+                    {
+                        result.Members.Add(user);
+                    }
+                    return result;
+                }, 
+                splitOn: "Screenshot,AppUser", 
+                param: new { until, take });
+            return projLookup.Values.OrderByDescending(p => p.InsertDate).ToList();
+        }
     }
 }

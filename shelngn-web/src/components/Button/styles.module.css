@@ -6,6 +6,7 @@
   border: none;
   font-family: "Quicksand";
   font-size: 1rem;
+  user-select: none;
 }
 
 .button:not([disabled]):hover {

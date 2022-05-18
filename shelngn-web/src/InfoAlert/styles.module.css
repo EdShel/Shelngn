@@ -16,6 +16,13 @@
   background-color: #dc5858;
 }
 
+.loading {
+  position: absolute;  
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
 .close {
   background: none;
   border: none;

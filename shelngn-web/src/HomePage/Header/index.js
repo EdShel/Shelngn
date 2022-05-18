@@ -2,17 +2,14 @@ import React from "react";
 import Button from "../../components/Button";
 import { Link } from "react-router-dom";
 import UrlTo from "../../UrlTo";
-import styles from "./styles.module.css";
 import AppStorage from "../../AppStorage";
-import { useDispatch } from "react-redux";
-import { revokeRefreshToken } from "../../auth/reducer";
 import clsx from "clsx";
+import { postRevoke } from "../../api";
+import styles from "./styles.module.css";
 
 const Header = ({ className }) => {
-  const dispatch = useDispatch();
-
-  const handleSignOut = () => {
-    dispatch(revokeRefreshToken());
+  const handleSignOut = async () => {
+    await postRevoke();
   };
 
   const isAuthenticated = !!AppStorage.accessToken;
