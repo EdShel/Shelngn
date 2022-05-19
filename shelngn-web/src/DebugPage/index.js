@@ -9,16 +9,16 @@ import useScreenshot from "../hooks/useScreenshot";
 
 const DebugPage = () => {
   const workspaceId = useWorkspaceId();
-  const [fps, setFps] = useState(0);
   const canvasRef = useRef();
   const { showError, showInfo } = useShowAlertNotification();
+  const [fps, setFps] = useState(0);
 
   const handleScreenshot = useCallback(
     async (screenshotBlob) => {
       let uploadUrl = null;
       let filePath;
       try {
-        const fileName = new Date().toISOString().replace(/[-:Z.]/g, '') + ".png";
+        const fileName = new Date().toISOString().replace(/[-:Z.]/g, "") + ".png";
         filePath = `screenshots/${fileName}`;
         const responseData = await postFileUploadRequest(workspaceId, filePath, "image/png");
         uploadUrl = responseData.signedUrl;
@@ -53,11 +53,11 @@ const DebugPage = () => {
   useEffect(() => {
     const loadBundle = () => getBuiltJsBundle(workspaceId);
     const textureUriResolver = (url) => getBuiltResourceFile(workspaceId, url);
-    const onError = (e) => showError(e);
     const gameInstance = runner(canvasRef.current, {
       loadBundle,
       textureUriResolver,
-      onError,
+      onError: showError,
+      onInfo: showInfo,
     });
     return gameInstance.cleanup;
   }, [workspaceId]);

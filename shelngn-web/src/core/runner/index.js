@@ -8,7 +8,7 @@ import GameScreen from "../rendering/GameScreen";
 import Texture from "../rendering/texture";
 import { deepEqual } from "../util/deepEqual";
 
-export function runner(canvas, { loadBundle, textureUriResolver, onError }) {
+export function runner(canvas, { loadBundle, textureUriResolver, onError, onInfo }) {
   let running = true;
   let gameWebWorker = null;
 
@@ -39,6 +39,10 @@ export function runner(canvas, { loadBundle, textureUriResolver, onError }) {
           const txt = getTexture(textureUrl);
           Draw.stretchedTexture(txt, x, y, width, height, rotation, origin);
         },
+      },
+      Alert: {
+        error: onError,
+        info: onInfo,
       },
     };
 
@@ -78,6 +82,7 @@ export function runner(canvas, { loadBundle, textureUriResolver, onError }) {
     };
     URL.revokeObjectURL(scriptUrl);
 
+    let init = false;
     const render = () => {
       if (!gameWebWorker) {
         return;
@@ -97,9 +102,12 @@ export function runner(canvas, { loadBundle, textureUriResolver, onError }) {
       if (!deepEqual(state.input, newInputState)) {
         state.input = newInputState;
         stateIncr = { ...stateIncr, input: newInputState };
-        console.log('SENDING', newInputState)
       }
 
+      if (!init) {
+        gameWebWorker.postMessage({ type: "init", stateIncr });
+        init = true;
+      }
       gameWebWorker.postMessage({ type: "draw", stateIncr });
     };
     window.requestAnimationFrame(render);

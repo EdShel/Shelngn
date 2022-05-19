@@ -1,5 +1,5 @@
 import { assertParamNotFalse } from "../errors";
-import { gl, canvas } from "./global";
+import { gl } from "./global";
 import Shader from "./shader"; // eslint-disable-line no-unused-vars
 
 let began = false;
@@ -47,6 +47,7 @@ export const flush = () => {
   }
   currentShader.bindShader();
 
+  currentTexture.activate();
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
   gl.drawElements(gl.TRIANGLES, queuedIndicesBuffer.length, gl.UNSIGNED_SHORT, 0);
 

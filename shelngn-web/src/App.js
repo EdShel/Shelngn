@@ -11,6 +11,7 @@ import DebugPage from "./DebugPage";
 import OptionsPage from "./OptionsPage";
 import UrlTo from "./UrlTo";
 import { AuthenticationProvider } from "./hooks/useAuth";
+import PlayPage from "./PlayPage";
 
 const App = () => {
   return (
@@ -25,6 +26,7 @@ const App = () => {
               <Route path={UrlTo.workspace(":id")} element={<WorkspacePage />} />
               <Route path={UrlTo.debug(":id")} element={<DebugPage />} />
               <Route path={UrlTo.options(":id")} element={<OptionsPage />} />
+              <Route path={UrlTo.play(":id")} element={<PlayPage />} />
             </Routes>
           </AuthenticationProvider>
         </BrowserRouter>

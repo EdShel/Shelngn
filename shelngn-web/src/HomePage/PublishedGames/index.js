@@ -1,7 +1,9 @@
 import clsx from "clsx";
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { getScreenshotUrl } from "../../api";
 import { ReactComponent as PlayIcon } from "../../assets/play.svg";
+import UrlTo from "../../UrlTo";
 import styles from "./styles.module.css";
 
 const PublishedGames = ({ games }) => {
@@ -10,7 +12,7 @@ const PublishedGames = ({ games }) => {
       <h2 id="publishedGamesHeader">Check out all games</h2>
       <div className={styles["projects-grid"]}>
         {games.map((game) => (
-          <Game game={game} />
+          <Game game={game} key={game.id} />
         ))}
       </div>
     </section>
@@ -40,9 +42,14 @@ const Game = ({ game }) => {
           />
         ))}
         {game.screenshots.length === 0 && <p className={styles["no-screenshots"]}>No screenshots</p>}
-        <button className={styles["play-button"]}>
+        <Link
+          to={UrlTo.play(game.id)}
+          className={styles["play-button"]}
+          onClick={(e) => e.stopPropagation()}
+          target="_blank"
+        >
           <PlayIcon />
-        </button>
+        </Link>
       </div>
       <p className={styles["game-name"]}>{game.projectName}</p>
       <p className={styles.members}>

@@ -87,6 +87,8 @@ export const getFileSource = (workspaceId, filePath) =>
   getAuth(`workspace/file/${workspaceId}/${filePath}`, { responseType: "blob" });
 export const getBuiltJsBundle = (workspaceId) => getAuth(`workspace/build/${workspaceId}/bundle.js`);
 export const getBuiltResourceFile = (workspaceId, url) => `${apiUrl}/workspace/build/${workspaceId}/${url}`;
+export const getPublishJsBundle = (workspaceId) => getAnonymous(`/workspace/prod/${workspaceId}/bundle.js`);
+export const getPublishResourceFile = (workspaceId, url) => `${apiUrl}/workspace/prod/${workspaceId}/${url}`;
 
 // --------- Home --------- //
 export const getHomeGameProjects = (until) => getAnonymous("/home/projects", { until });

@@ -14,6 +14,10 @@ export default class Texture {
     this.height = height;
   }
 
+  activate() {
+    gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
+  }
+
   static loadLazy(textureUrl) {
     assertParamNotFalse("textureUrl", textureUrl);
 
@@ -55,6 +59,7 @@ export default class Texture {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
       }
+      gl.bindTexture(gl.TEXTURE_2D, null);
 
       loadingTextures = loadingTextures.filter((t) => t !== textureEntry);
       loadedTextures.push(textureEntry);
