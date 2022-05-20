@@ -7,5 +7,6 @@ namespace Shelngn.Repositories
         Task CreatePublicationAsync(GameProjectPublication publication, CancellationToken ct = default);
         Task DeletePublicationAsync(Guid gameProjectId, CancellationToken ct = default);
         Task<bool> ExistsAsync(Guid gameProjectId, CancellationToken ct = default);
+        Task<GameProjectPublication?> GetByIdAsync(Guid gameProjectId, CancellationToken ct = default);
     }
 }

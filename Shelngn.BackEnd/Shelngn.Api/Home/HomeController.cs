@@ -25,7 +25,7 @@ namespace Shelngn.Api.Home
         {
             DateTimeOffset until = optionalUntil ?? DateTimeOffset.UtcNow;
             const int take = 10;
-            var gameProjects = await gameProjectRepository.GetMostRecentGameProjectsAsync(until, take + 1, ct);
+            var gameProjects = await gameProjectRepository.GetMostRecentPublishedGameProjectsAsync(until, take + 1, ct);
             var model = mapper.Map<IEnumerable<PublishedGameProjectModel>>(gameProjects.Take(take));
             bool hasMore = gameProjects.Count() > take;
             return Ok(new

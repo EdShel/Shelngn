@@ -84,9 +84,10 @@ namespace Shelngn.Api.GameProjects
                 ?? throw new NotFoundException("Game project");
             IEnumerable<GameProjectMemberUser> usersMembers = await this.gameProjectRepository.GetAllMembersAsync(projectId, ct);
             IEnumerable<GameProjectScreenshot> screenshots = await this.gameProjectScreenshotRepository.GetAllForProjectAsync(projectId, ct);
+            GameProjectPublication? publicationInfo = await this.gameProjectPublicationRepository.GetByIdAsync(projectId, ct);
 
             GameProjectViewModel viewModel = this.mapper.Map<GameProjectViewModel>(gameProject);
-            viewModel.IsPublished = await gameProjectPublicationRepository.ExistsAsync(projectId, ct);
+            viewModel.Publication = this.mapper.Map<GameProjectPublication?, PublicationInfoModel>(publicationInfo);
             viewModel.Members = this.mapper.Map<IEnumerable<GameProjectMemberViewModel>>(usersMembers);
             viewModel.Screenshots = this.mapper.Map<IEnumerable<ScreenshotViewModel>>(screenshots);
 

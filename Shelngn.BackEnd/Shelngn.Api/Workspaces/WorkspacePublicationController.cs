@@ -24,7 +24,7 @@ namespace Shelngn.Api.Workspaces
         public IActionResult GetBuildJsBundle(
             [FromRoute] string gameProjectId)
         {
-            string? bundle = this.gameProjectBuildResultAccessor.GetDebugMainBundle(gameProjectId)
+            string? bundle = this.gameProjectBuildResultAccessor.GetProductionMainBundle(gameProjectId)
                 ?? throw new BadRequestException("Not built");
 
             var fs = new FileStream(bundle, FileMode.Open, FileAccess.Read);
@@ -36,7 +36,7 @@ namespace Shelngn.Api.Workspaces
             [FromRoute] string workspaceId,
             [FromRoute] string filePath)
         {
-            string? filePhysicalPath = this.gameProjectBuildResultAccessor.GetDebugResource(workspaceId, filePath)
+            string? filePhysicalPath = this.gameProjectBuildResultAccessor.GetProductionResource(workspaceId, filePath)
                 ?? throw new NotFoundException("Resource file");
 
             if (!this.contentTypeProvider.TryGetContentType(filePath, out var contentType))

@@ -15,6 +15,9 @@ const PublishedGames = ({ games }) => {
           <Game game={game} key={game.id} />
         ))}
       </div>
+      {games.length === 0 && (
+        <p>No games are currently published. Be the first one who shares their prototype!</p>
+      )}
     </section>
   );
 };

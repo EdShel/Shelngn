@@ -51,19 +51,33 @@ const OptionsPage = () => {
 
   const handleTogglePublish = useCallback(async () => {
     setPublishLoading(true);
+    const isPublished = project.publication.isPublished;
     try {
-      if (!project.isPublished) {
+      if (!isPublished) {
         await postPublishProject(workspaceId);
+        setProject((oldState) => ({
+          ...oldState,
+          publication: {
+            isPublished: true,
+            date: new Date().toISOString(),
+          },
+        }));
       } else {
         await deleteUnpublishProject(workspaceId);
+        setProject((oldState) => ({
+          ...oldState,
+          publication: {
+            isPublished: false,
+            date: null,
+          },
+        }));
       }
-      setProject((oldState) => ({ ...oldState, isPublished: !oldState.isPublished }));
     } catch (e) {
       const responseError = e.response?.data.error;
       showError(responseError || "Cannot change state, please try again later");
     }
     setPublishLoading(false);
-  }, [project?.isPublished, showError, workspaceId]);
+  }, [project?.publication, showError, workspaceId]);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -81,32 +95,41 @@ const OptionsPage = () => {
           <>
             <div className={styles.header}>
               <h1 className={styles["header-text"]}>{project.projectName}</h1>
-              <p>Created {new Date(project.insertDate).toLocaleString("en")}</p>
               <DeleteButton onPress={() => setShowDeleteProject(true)} />
-              <PublishButton
-                isPublished={project.isPublished}
-                onTogglePublish={handleTogglePublish}
-                isLoading={isPublishLoading}
-              />
-            </div>
-            <h2>Members ({project.members.length})</h2>
-            <div className={styles.members}>
-              {project.members.map((member) => (
-                <MemberCard
-                  key={member.id}
-                  userName={member.userName}
-                  email={member.email}
-                  role={member.memberRole}
-                  isMe={member.id === user.id}
-                  canBeDeleted={member.canBeDeleted}
-                  onRemove={() => setMemberIdToDelete(member.id)}
+              <div className={styles["publish-button-container"]}>
+                {project.publication.isPublished && (
+                  <p>
+                    Currently published version <b>{new Date(project.publication.date).toLocaleString("en")}</b>
+                  </p>
+                )}
+                <PublishButton
+                  isPublished={project.publication.isPublished}
+                  onTogglePublish={handleTogglePublish}
+                  isLoading={isPublishLoading}
                 />
-              ))}
-              <button className={styles["create-user-card"]} onClick={() => setShowAddMember(true)}>
-                <img src={plusIcon} alt="Add" />
-                Add new member
-              </button>
+              </div>
             </div>
+
+            <section>
+              <h2>Members ({project.members.length})</h2>
+              <div className={styles.members}>
+                {project.members.map((member) => (
+                  <MemberCard
+                    key={member.id}
+                    userName={member.userName}
+                    email={member.email}
+                    role={member.memberRole}
+                    isMe={member.id === user.id}
+                    canBeDeleted={member.canBeDeleted}
+                    onRemove={() => setMemberIdToDelete(member.id)}
+                  />
+                ))}
+                <button className={styles["create-user-card"]} onClick={() => setShowAddMember(true)}>
+                  <img src={plusIcon} alt="Add" />
+                  Add new member
+                </button>
+              </div>
+            </section>
             <ScreenshotsList
               onDeleteScreenshot={(id) => setScreenshotIdToDelete(id)}
               screenshots={project.screenshots}

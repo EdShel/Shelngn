@@ -33,5 +33,13 @@ namespace Shelngn.Data.Repositories
 
             return await ExecuteScalarAsync<int>(sql, new { gameProjectId }) == 1;
         }
+
+        public async Task<GameProjectPublication?> GetByIdAsync(Guid gameProjectId, CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+            const string sql =
+                @"SELECT game_project_id, insert_date FROM game_project_publication WHERE game_project_id = @gameProjectId;";
+            return await QueryFirstOrDefaultAsync<GameProjectPublication?>(sql, new { gameProjectId });
+        }
     }
 }

@@ -16,6 +16,14 @@
   top: 5px;
 }
 
+.publish-button-container {
+  flex-grow: 1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  align-items: center;
+}
+
 .members {
   --columns: 1;
   display: grid;
@@ -52,7 +60,7 @@
   font-family: inherit;
   font-size: inherit;
   cursor: pointer;
-  border:none;
+  border: none;
 }
 
 .create-user-card:hover,

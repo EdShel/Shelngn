@@ -19,7 +19,7 @@ const ScreenshotsList = ({ screenshots, onDeleteScreenshot }) => {
 
       <div className={styles.list}>
         {screenshots.map((s) => (
-          <div className={styles.screenshot}>
+          <div key={s.id} className={styles.screenshot}>
             <img
               className={styles["screenshot-image"]}
               key={s.id}

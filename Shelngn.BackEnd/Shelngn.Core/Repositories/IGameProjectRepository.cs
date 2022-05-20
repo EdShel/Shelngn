@@ -13,6 +13,6 @@ namespace Shelngn.Repositories
         Task RemoveMemberAsync(Guid gameProjectId, Guid appUserId, CancellationToken ct = default);
         Task<GameProjectMember?> GetMemberAsync(Guid gameProjectId, Guid appUserId, CancellationToken ct = default);
         Task<IEnumerable<GameProjectMemberUser>> GetAllMembersAsync(Guid gameProjectId, CancellationToken ct = default);
-        Task<IEnumerable<PublishedGameProject>> GetMostRecentGameProjectsAsync(DateTimeOffset until, int take, CancellationToken ct = default);
+        Task<IEnumerable<PublishedGameProject>> GetMostRecentPublishedGameProjectsAsync(DateTimeOffset until, int take, CancellationToken ct = default);
     }
 }

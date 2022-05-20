@@ -42,7 +42,7 @@ namespace Shelngn.Data.Repositories
                 "FROM game_project g " +
                 "JOIN game_project_member gp ON g.id = gp.game_project_id " +
                 "WHERE gp.app_user_id = @appUserId " +
-                "ORDER BY gp.insert_date;";
+                "ORDER BY gp.insert_date DESC;";
             return await QueryAsync<GameProject>(sql, new { appUserId });
         }
 
@@ -93,7 +93,7 @@ namespace Shelngn.Data.Repositories
             return QueryAsync<GameProjectMemberUser>(sql, new { gameProjectId });
         }
 
-        public async Task<IEnumerable<PublishedGameProject>> GetMostRecentGameProjectsAsync(DateTimeOffset until, int take, CancellationToken ct = default)
+        public async Task<IEnumerable<PublishedGameProject>> GetMostRecentPublishedGameProjectsAsync(DateTimeOffset until, int take, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
             const string sql =
@@ -111,7 +111,8 @@ namespace Shelngn.Data.Repositories
                 LEFT JOIN game_project_screenshot s ON s.game_project_id = p.id
                 JOIN game_project_member m ON m.game_project_id = p.id
                 JOIN app_user u ON m.app_user_id = u.id
-                WHERE p.insert_date <= @until
+                LEFT JOIN game_project_publication pb ON pb.game_project_id = p.id
+                WHERE p.insert_date <= @until AND pb.game_project_id IS NOT NULL
                 ORDER BY p.insert_date DESC;";
             var projLookup = new Dictionary<Guid, PublishedGameProject>();
             var picLookup = new Dictionary<Guid, PublishedGameProjectScreenshot>();
