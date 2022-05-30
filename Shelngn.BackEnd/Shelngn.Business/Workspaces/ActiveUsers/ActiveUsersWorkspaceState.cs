@@ -1,6 +1,9 @@
-﻿namespace Shelngn.Services.Workspaces.ActiveUsers
+﻿using Shelngn.Services.Workspaces;
+using Shelngn.Services.Workspaces.ActiveUsers;
+
+namespace Shelngn.Business.Workspaces.ActiveUsers
 {
-    public class ActiveUsersWorkspaceState
+    public class ActiveUsersWorkspaceState : IActiveUsersWorkspaceState
     {
         private readonly List<WorkspaceUser> connectedUsers = new List<WorkspaceUser>();
         private readonly ReaderWriterLockSlim rwLock = new();

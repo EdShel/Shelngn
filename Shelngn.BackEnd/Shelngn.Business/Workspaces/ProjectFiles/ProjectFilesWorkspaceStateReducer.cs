@@ -2,10 +2,11 @@
 using Shelngn.Exceptions;
 using Shelngn.Services.GameProjects.Crud;
 using Shelngn.Services.GameProjects.Files;
+using Shelngn.Services.Workspaces.ProjectFiles;
 
-namespace Shelngn.Services.Workspaces.ProjectFiles
+namespace Shelngn.Business.Workspaces.ProjectFiles
 {
-    public class ProjectFilesWorkspaceStateReducer
+    public class ProjectFilesWorkspaceStateReducer : IProjectFilesWorkspaceStateReducer
     {
         private readonly IGameProjectSearcher gameProjectSearcher;
         private readonly IFileSystem fileSystem;
@@ -16,7 +17,7 @@ namespace Shelngn.Services.Workspaces.ProjectFiles
             this.fileSystem = fileSystem;
         }
 
-        public async Task<ProjectFilesWorkspaceState> GetInitialStateAsync(Guid workspaceId)
+        public async Task<IProjectFilesWorkspaceState> GetInitialStateAsync(Guid workspaceId)
         {
             string workspaceFolder = await GetWorkspaceRootFolderAsync(workspaceId);
             WorkspaceDirectory rootDir = await GetRootAsync(workspaceFolder);
@@ -39,7 +40,7 @@ namespace Shelngn.Services.Workspaces.ProjectFiles
             return rootDir;
         }
 
-        private bool IsReservedId(string id)
+        private static bool IsReservedId(string id)
         {
             return id == "dist"
                 || id == "publ"
@@ -86,14 +87,14 @@ namespace Shelngn.Services.Workspaces.ProjectFiles
             return Path.Combine(workspaceFolder, id);
         }
 
-        public async Task FileUploadedAsync(ProjectFilesWorkspaceState state, Guid workspaceId)
+        public async Task FileUploadedAsync(IProjectFilesWorkspaceState state, Guid workspaceId)
         {
             string workspaceFolder = await GetWorkspaceRootFolderAsync(workspaceId);
 
             state.Root = await GetRootAsync(workspaceFolder);
         }
 
-        public Task CreateEmptyFileAsync(ProjectFilesWorkspaceState state, string folderId, string fileName)
+        public Task CreateEmptyFileAsync(IProjectFilesWorkspaceState state, string folderId, string fileName)
         {
             var containingDirectory = FindDirectoryState(state, folderId)
                 ?? throw new InvalidOperationException("Directory doesn't exist.");
@@ -114,10 +115,8 @@ namespace Shelngn.Services.Workspaces.ProjectFiles
             return Task.CompletedTask;
         }
 
-        public async Task DeleteFileAsync(ProjectFilesWorkspaceState state, string fileId)
+        public async Task DeleteFileAsync(IProjectFilesWorkspaceState state, string fileId)
         {
-            // TODO: add write lock
-            // TODO: add rollback
             (WorkspaceDirectory containingDir, WorkspaceFile file) = FindFileAndItsDirectoryState(state, fileId);
             containingDir.Files.Remove(file);
 
@@ -126,7 +125,7 @@ namespace Shelngn.Services.Workspaces.ProjectFiles
             await fileSystem.DeleteFileIfExistsAsync(fileFullPath);
         }
 
-        private (WorkspaceDirectory, WorkspaceFile) FindFileAndItsDirectoryState(ProjectFilesWorkspaceState state, string fileId)
+        private (WorkspaceDirectory, WorkspaceFile) FindFileAndItsDirectoryState(IProjectFilesWorkspaceState state, string fileId)
         {
             string[] fileAddress = fileId.Split('/');
             WorkspaceDirectory currentDir = state.Root;
@@ -142,7 +141,7 @@ namespace Shelngn.Services.Workspaces.ProjectFiles
             return (currentDir, file);
         }
 
-        private WorkspaceDirectory FindDirectoryState(ProjectFilesWorkspaceState state, string folderId)
+        private WorkspaceDirectory FindDirectoryState(IProjectFilesWorkspaceState state, string folderId)
         {
             if (folderId == ".")
             {
@@ -159,7 +158,7 @@ namespace Shelngn.Services.Workspaces.ProjectFiles
             return currentDir;
         }
 
-        private WorkspaceDirectory FindContainingDirectoryState(ProjectFilesWorkspaceState state, string folderOrFileId)
+        private WorkspaceDirectory FindContainingDirectoryState(IProjectFilesWorkspaceState state, string folderOrFileId)
         {
             if (folderOrFileId == ".")
             {
@@ -176,7 +175,7 @@ namespace Shelngn.Services.Workspaces.ProjectFiles
             return currentDir;
         }
 
-        public async Task MoveFileAsync(ProjectFilesWorkspaceState state, string fileId, string folderId)
+        public async Task MoveFileAsync(IProjectFilesWorkspaceState state, string fileId, string folderId)
         {
             (WorkspaceDirectory sourceDir, WorkspaceFile sourceFile) = FindFileAndItsDirectoryState(state, fileId);
             if (sourceDir.Id == folderId)
@@ -204,7 +203,7 @@ namespace Shelngn.Services.Workspaces.ProjectFiles
             await fileSystem.MoveFileAsync(sourceUri, destinationUri);
         }
 
-        public async Task CreateFolderAsync(ProjectFilesWorkspaceState state, string containingFolderId, string folderName)
+        public async Task CreateFolderAsync(IProjectFilesWorkspaceState state, string containingFolderId, string folderName)
         {
             WorkspaceDirectory containgFolder = FindDirectoryState(state, containingFolderId);
             bool alredyContainsSuchDir = containgFolder.Directories.Any(d =>
@@ -227,7 +226,7 @@ namespace Shelngn.Services.Workspaces.ProjectFiles
             await fileSystem.CreateDirectoryOrDoNothingIfExistsAsync(directoryPath);
         }
 
-        public async Task DeleteFolderAsync(ProjectFilesWorkspaceState state, string folderId)
+        public async Task DeleteFolderAsync(IProjectFilesWorkspaceState state, string folderId)
         {
             WorkspaceDirectory containingFolder = FindContainingDirectoryState(state, folderId);
 
@@ -245,7 +244,7 @@ namespace Shelngn.Services.Workspaces.ProjectFiles
             await fileSystem.DeleteDirectoryIfExistsAsync(deletedDirectoryPath);
         }
 
-        public async Task MoveFolderAsync(ProjectFilesWorkspaceState state, string movedFolderId, string newContainingFolderId)
+        public async Task MoveFolderAsync(IProjectFilesWorkspaceState state, string movedFolderId, string newContainingFolderId)
         {
             WorkspaceDirectory dirToMoveFrom = FindContainingDirectoryState(state, movedFolderId);
             if (dirToMoveFrom == state.Root)

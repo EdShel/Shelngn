@@ -14,10 +14,10 @@ namespace Shelngn.Api.Workspaces
     public partial class WorkspaceHub : Hub
     {
         private readonly ILogger<WorkspaceHub> logger;
-        private readonly WorkspacesStatesManager workspacesStatesManager;
+        private readonly IWorkspacesStatesManager workspacesStatesManager;
         private readonly IServiceProvider serviceProvider;
 
-        public WorkspaceHub(ILogger<WorkspaceHub> logger, WorkspacesStatesManager workspacesStatesManager, IServiceProvider serviceProvider)
+        public WorkspaceHub(ILogger<WorkspaceHub> logger, IWorkspacesStatesManager workspacesStatesManager, IServiceProvider serviceProvider)
         {
             this.logger = logger;
             this.workspacesStatesManager = workspacesStatesManager;

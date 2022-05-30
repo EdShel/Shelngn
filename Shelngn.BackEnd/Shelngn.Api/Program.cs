@@ -13,6 +13,9 @@ using Shelngn.Business.GameProjects.Build;
 using Shelngn.Business.GameProjects.Crud;
 using Shelngn.Business.GameProjects.Files;
 using Shelngn.Business.GameProjects.Publishing;
+using Shelngn.Business.Workspaces;
+using Shelngn.Business.Workspaces.ActiveUsers;
+using Shelngn.Business.Workspaces.ProjectFiles;
 using Shelngn.Data;
 using Shelngn.Data.Repositories;
 using Shelngn.Repositories;
@@ -88,10 +91,7 @@ services.AddAuthorization(options =>
 });
 services.AddTransient<IAuthorizationHandler, GameProjectMemberAuthorizationHandler>();
 
-services.AddControllers(options =>
-{
-    //options.Filters.Add<ExceptionCatchingFilter>();
-});
+services.AddControllers();
 services.AddHttpContextAccessor();
 
 services.AddSignalR();
@@ -133,18 +133,15 @@ services.AddTransient<IGameProjectDeleter, GameProjectDeleter>();
 services.AddTransient<IContentTypeProvider, FileExtensionContentTypeProvider>();
 services.AddTransient<IGameProjectPublisher, GameProjectPublisher>();
 
-services.AddSingleton<WorkspacesStatesManager>();
-services.AddTransient<ActiveUsersWorkspaceStateReducer>();
-services.AddTransient<ProjectFilesWorkspaceStateReducer>();
+services.AddSingleton<IWorkspacesStatesManager, WorkspacesStatesManager>();
+services.AddTransient<IActiveUsersWorkspaceStateReducer, ActiveUsersWorkspaceStateReducer>();
+services.AddTransient<IProjectFilesWorkspaceStateReducer, ProjectFilesWorkspaceStateReducer>();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseMiddleware<ExceptionMiddleware>();
 

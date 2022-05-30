@@ -1,27 +1,28 @@
 ﻿using Microsoft.Extensions.Logging;
+using Shelngn.Services.Workspaces;
 using Shelngn.Services.Workspaces.ActiveUsers;
 using Shelngn.Services.Workspaces.ProjectFiles;
 using System.Collections.Concurrent;
 
-namespace Shelngn.Services.Workspaces
+namespace Shelngn.Business.Workspaces
 {
-    public class WorkspacesStatesManager
+    public class WorkspacesStatesManager : IWorkspacesStatesManager
     {
         private readonly ConcurrentDictionary<string, WorkspaceState> workspaces = new();
 
-        private readonly ActiveUsersWorkspaceStateReducer activeUsersWorkspaceStateReducer;
-        private readonly ProjectFilesWorkspaceStateReducer projectFilesWorkspaceStateReducer;
+        private readonly IActiveUsersWorkspaceStateReducer activeUsersWorkspaceStateReducer;
+        private readonly IProjectFilesWorkspaceStateReducer projectFilesWorkspaceStateReducer;
 
         private readonly ILogger<WorkspacesStatesManager> logger;
 
         public WorkspacesStatesManager(
-            ActiveUsersWorkspaceStateReducer activeUsersWorkspaceStateReducer,
-            ILogger<WorkspacesStatesManager> logger,
-            ProjectFilesWorkspaceStateReducer projectFilesWorkspaceStateReducer)
+            IActiveUsersWorkspaceStateReducer activeUsersWorkspaceStateReducer,
+            IProjectFilesWorkspaceStateReducer projectFilesWorkspaceStateReducer,
+            ILogger<WorkspacesStatesManager> logger)
         {
             this.activeUsersWorkspaceStateReducer = activeUsersWorkspaceStateReducer;
-            this.logger = logger;
             this.projectFilesWorkspaceStateReducer = projectFilesWorkspaceStateReducer;
+            this.logger = logger;
         }
 
         public async Task<WorkspaceState> AquireWorkspaceStateReferenceAsync(string workspaceId, string connectionId, Guid userId)
@@ -34,7 +35,7 @@ namespace Shelngn.Services.Workspaces
                     return InitializeWorkspaceState(wId).Result;
                 }
             );
-            await this.activeUsersWorkspaceStateReducer.AddUserAsync(connectionId, userId, workspaceState);
+            await this.activeUsersWorkspaceStateReducer.AddUserAsync(workspaceState.ActiveUsers, connectionId, userId);
             return workspaceState;
         }
 
@@ -68,7 +69,7 @@ namespace Shelngn.Services.Workspaces
                 throw new InvalidOperationException("Workspace state isn't initialized.");
             }
 
-            await this.activeUsersWorkspaceStateReducer.RemoveUserAsync(connectionId, workspaceState);
+            await this.activeUsersWorkspaceStateReducer.RemoveUserAsync(workspaceState.ActiveUsers, connectionId);
             Task.Delay(TimeSpan.FromSeconds(5)).ContinueWith(_ =>
             {
                 if (!workspaceState.ActiveUsers.IsAnyUserConnected())

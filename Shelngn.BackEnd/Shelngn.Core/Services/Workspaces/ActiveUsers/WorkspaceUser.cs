@@ -1,4 +1,4 @@
-﻿namespace Shelngn.Services.Workspaces
+﻿namespace Shelngn.Services.Workspaces.ActiveUsers
 {
     public record WorkspaceUser(
         string ConnectionId,

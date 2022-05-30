@@ -24,7 +24,7 @@ namespace Shelngn.Api.Workspaces
         public async Task DeleteFile(string fileId)
         {
             WorkspaceState state = await GetWorkspaceStateAsync();
-            var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
+            var reducer = Resolve<IProjectFilesWorkspaceStateReducer>();
 
             await reducer.DeleteFileAsync(state.ProjectFiles, fileId);
 
@@ -39,7 +39,7 @@ namespace Shelngn.Api.Workspaces
         public async Task UploadFile()
         {
             WorkspaceState state = await GetWorkspaceStateAsync();
-            var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
+            var reducer = Resolve<IProjectFilesWorkspaceStateReducer>();
 
             await reducer.FileUploadedAsync(state.ProjectFiles, this.WorkspaceIdGuid);
 
@@ -54,7 +54,7 @@ namespace Shelngn.Api.Workspaces
         public async Task MoveFile(string fileId, string folderId)
         {
             WorkspaceState state = await GetWorkspaceStateAsync();
-            var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
+            var reducer = Resolve<IProjectFilesWorkspaceStateReducer>();
 
             await reducer.MoveFileAsync(state.ProjectFiles, fileId, folderId);
 
@@ -69,7 +69,7 @@ namespace Shelngn.Api.Workspaces
         public async Task CreateFolder(string containingFolderId, string folderName)
         {
             WorkspaceState state = await GetWorkspaceStateAsync();
-            var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
+            var reducer = Resolve<IProjectFilesWorkspaceStateReducer>();
 
             await reducer.CreateFolderAsync(state.ProjectFiles, containingFolderId, folderName);
 
@@ -84,7 +84,7 @@ namespace Shelngn.Api.Workspaces
         public async Task DeleteFolder(string folderId)
         {
             WorkspaceState state = await GetWorkspaceStateAsync();
-            var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
+            var reducer = Resolve<IProjectFilesWorkspaceStateReducer>();
 
             await reducer.DeleteFolderAsync(state.ProjectFiles, folderId);
 
@@ -99,7 +99,7 @@ namespace Shelngn.Api.Workspaces
         public async Task MoveFolder(string movedFolderId, string newContainingFolderId)
         {
             WorkspaceState state = await GetWorkspaceStateAsync();
-            var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
+            var reducer = Resolve<IProjectFilesWorkspaceStateReducer>();
 
             await reducer.MoveFolderAsync(state.ProjectFiles, movedFolderId, newContainingFolderId);
 
@@ -114,7 +114,7 @@ namespace Shelngn.Api.Workspaces
         public async Task CreateFile(string folderId, string fileName)
         {
             WorkspaceState state = await GetWorkspaceStateAsync();
-            var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
+            var reducer = Resolve<IProjectFilesWorkspaceStateReducer>();
 
             await reducer.CreateEmptyFileAsync(state.ProjectFiles, folderId, fileName);
 
@@ -130,7 +130,7 @@ namespace Shelngn.Api.Workspaces
         {
             IFileSystem fileSystem = Resolve<IFileSystem>();
             WorkspaceState state = await GetWorkspaceStateAsync();
-            var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
+            var reducer = Resolve<IProjectFilesWorkspaceStateReducer>();
             string path = reducer.GetResourcePath(fileId, state.ProjectFiles.ProjectFilesRoot);
 
             await fileSystem.CreateOrOverwriteFileAsync(path, Encoding.UTF8.GetBytes(content));
@@ -148,7 +148,7 @@ namespace Shelngn.Api.Workspaces
         {
             IFileSystem fileSystem = Resolve<IFileSystem>();
             WorkspaceState state = await GetWorkspaceStateAsync();
-            var reducer = Resolve<ProjectFilesWorkspaceStateReducer>();
+            var reducer = Resolve<IProjectFilesWorkspaceStateReducer>();
             string path = reducer.GetResourcePath(fileId, state.ProjectFiles.ProjectFilesRoot);
 
             byte[] fileContent = await fileSystem.ReadFileAsync(path);

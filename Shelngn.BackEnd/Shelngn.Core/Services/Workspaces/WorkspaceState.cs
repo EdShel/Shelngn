@@ -5,13 +5,13 @@ namespace Shelngn.Services.Workspaces
 {
     public class WorkspaceState
     {
-        public WorkspaceState(ActiveUsersWorkspaceState activeUsers, ProjectFilesWorkspaceState projectFiles)
+        public WorkspaceState(IActiveUsersWorkspaceState activeUsers, IProjectFilesWorkspaceState projectFiles)
         {
             this.ActiveUsers = activeUsers;
             this.ProjectFiles = projectFiles;
         }
 
-        public ActiveUsersWorkspaceState ActiveUsers { get; private set; }
-        public ProjectFilesWorkspaceState ProjectFiles { get; private set; }
+        public IActiveUsersWorkspaceState ActiveUsers { get; private set; }
+        public IProjectFilesWorkspaceState ProjectFiles { get; private set; }
     }
 }
