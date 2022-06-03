@@ -11,6 +11,50 @@ import { getProjectFiles } from "../selectors";
 import { useWorkspaceDispatch } from "../WorkspaceContext";
 import styles from "./styles.module.css";
 
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+const retry = (operation, delay, retries) =>
+  new Promise((resolve, reject) => {
+    return operation()
+      .then(resolve)
+      .catch((reason) => {
+        if (retries > 0) {
+          return wait(delay)
+            .then(retry.bind(null, operation, delay, retries - 1))
+            .then(resolve)
+            .catch(reject);
+        }
+        return reject(reason);
+      });
+  });
+
+async function uploadFileChunked(uploadUrl, file) {
+  const chunksSizeBytes = 5 * 1024;
+  const chunksCount = Math.ceil(file.size / chunksSizeBytes);
+  for (let i = 0; i < chunksCount; i++) {
+    const chunkBegin = i * chunksSizeBytes;
+    const chunkEnd =  Math.min(chunkBegin + chunksSizeBytes, file.size);
+
+    await retry(
+      async () => {
+        const response = await fetch(uploadUrl, {
+          method: "POST",
+          headers: {
+            "Content-Range": `bytes 0-${file.size - 1}/${file.size}`,
+            "Content-Type": file.type,
+          },
+          body: file,
+        });
+        if (!response.ok) {
+          throw new Error("Server rejected the file.");
+        }
+      },
+      500,
+      5
+    );
+  }
+}
+
 const ProjectFiles = ({ className }) => {
   const workspaceId = useWorkspaceId();
   const { workspaceSend, workspaceInvoke } = useWorkspaceDispatch();

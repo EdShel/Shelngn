@@ -25,7 +25,6 @@ export const WorkspaceContextProvider = ({ children }) => {
       .build();
 
     connection.on("redux", (action) => {
-      console.log("Workspace action", action);
       dispatch(action);
     });
 

@@ -1,5 +1,6 @@
 import React from "react";
 import { Provider } from "react-redux";
+import Helmet from "react-helmet";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import store from "./store";
 import { InfoAlertProvider } from "./InfoAlert";
@@ -12,6 +13,7 @@ import OptionsPage from "./OptionsPage";
 import UrlTo from "./UrlTo";
 import { AuthenticationProvider } from "./hooks/useAuth";
 import PlayPage from "./PlayPage";
+import "./i18n";
 
 const App = () => {
   return (
@@ -19,6 +21,9 @@ const App = () => {
       <InfoAlertProvider>
         <BrowserRouter>
           <AuthenticationProvider>
+            <Helmet>
+              <title>Shelngn</title>
+            </Helmet>
             <Routes>
               <Route path={UrlTo.home()} element={<HomePage />} />
               <Route path={UrlTo.login()} element={<LoginPage />} />

@@ -8,19 +8,23 @@ import Hint from "../Hint";
 import { NavLink } from "react-router-dom";
 import UrlTo from "../../UrlTo";
 import clsx from "clsx";
+import LanguagePicker from "./LanguagePicker";
 
 const SideBar = ({ className }) => {
   const workspaceId = useWorkspaceId();
 
   return (
     <nav className={clsx(styles["side-bar"], className)}>
-      <Button iconSrc={homeIcon} text="Home" link={UrlTo.home()} />
-      {workspaceId && (
-        <>
-          <Button iconSrc={wrenchIcon} text="Workspace" link={UrlTo.workspace(workspaceId)} />
-          <Button iconSrc={gearsIcon} text="Options" link={UrlTo.options(workspaceId)} />
-        </>
-      )}
+      <div className={styles["nav-buttons"]}>
+        <Button iconSrc={homeIcon} text="Home" link={UrlTo.home()} />
+        {workspaceId && (
+          <>
+            <Button iconSrc={wrenchIcon} text="Workspace" link={UrlTo.workspace(workspaceId)} />
+            <Button iconSrc={gearsIcon} text="Options" link={UrlTo.options(workspaceId)} />
+          </>
+        )}
+      </div>
+      <LanguagePicker />
     </nav>
   );
 };

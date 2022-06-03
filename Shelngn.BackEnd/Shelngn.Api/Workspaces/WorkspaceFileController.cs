@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Shelngn.Api.Filters;
 using Shelngn.Services.FileUpload;
-using Shelngn.Services.GameProjects.Authorization;
 using Shelngn.Services.GameProjects.Files;
 
 namespace Shelngn.Api.Workspaces
@@ -36,12 +35,12 @@ namespace Shelngn.Api.Workspaces
             [FromRoute] string gameProjectId,
             [FromRoute] string filePath)
         {
-            string? filePhysicalPath = projectFileAccessor.GetFilePath(gameProjectId, filePath);
+            string? filePhysicalPath = this.projectFileAccessor.GetFilePath(gameProjectId, filePath);
             if (filePhysicalPath == null)
             {
                 return NotFound();
             }
-            if (!contentTypeProvider.TryGetContentType(filePath, out var contentType))
+            if (!this.contentTypeProvider.TryGetContentType(filePath, out var contentType))
             {
                 return BadRequest();
             }
@@ -57,7 +56,7 @@ namespace Shelngn.Api.Workspaces
             [FromHeader(Name = "Content-Type")] string contentType)
         {
             string[] forbiddenSequences = new[] { "..", ":", "~", "//" };
-                if (forbiddenSequences.Any(banned => filePath.Contains(banned)))
+            if (forbiddenSequences.Any(banned => filePath.Contains(banned)))
             {
                 return BadRequest("File path is forbidden.");
             }

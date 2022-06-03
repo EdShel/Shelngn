@@ -5,6 +5,12 @@
   padding-right: 3px;
   padding-top: 2px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-buttons {
+  flex-grow: 1;
 }
 
 .button {

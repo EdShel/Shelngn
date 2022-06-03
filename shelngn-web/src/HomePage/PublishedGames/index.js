@@ -15,9 +15,7 @@ const PublishedGames = ({ games }) => {
           <Game game={game} key={game.id} />
         ))}
       </div>
-      {games.length === 0 && (
-        <p>No games are currently published. Be the first one who shares their prototype!</p>
-      )}
+      {games.length === 0 && <p>No games are currently published. Be the first one who shares their prototype!</p>}
     </section>
   );
 };
@@ -39,6 +37,7 @@ const Game = ({ game }) => {
       <div className={styles.screenshots} onClick={handleChangeSlide}>
         {game.screenshots.map((pic, i) => (
           <img
+            key={pic.id}
             className={clsx(styles["screenshot"], currentScreenshot !== i && styles.inactive)}
             src={getScreenshotUrl(game.id, pic.imageUrl)}
             alt={game.projectName}

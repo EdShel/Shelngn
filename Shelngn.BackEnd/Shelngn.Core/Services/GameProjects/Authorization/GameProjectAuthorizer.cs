@@ -12,7 +12,7 @@ namespace Shelngn.Services.GameProjects.Authorization
             this.gameProjectRepository = gameProjectRepository;
         }
 
-        public async Task<GameProjectRights> GetRightsForUserAsync(Guid userId, Guid gameProjectId)
+        public async virtual Task<GameProjectRights> GetRightsForUserAsync(Guid userId, Guid gameProjectId)
         {
             GameProjectMember? member = await this.gameProjectRepository.GetMemberAsync(gameProjectId, userId);
             if (member == null)

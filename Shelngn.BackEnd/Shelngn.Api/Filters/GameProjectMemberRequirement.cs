@@ -3,7 +3,7 @@ using Shelngn.Services.GameProjects.Authorization;
 
 namespace Shelngn.Api.Filters
 {
-    public class GameProjectMemberRequirement : IAuthorizationRequirement
+    public class GameProjectMemberRequirement : IAuthorizationRequirement, IGameProjectMemberRequirement
     {
         public GameProjectRights Permissions { get; }
 

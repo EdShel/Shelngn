@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Header from "./Header";
-import Button from "../components/Button";
 import ScreenLayout, { headerClassName, contentClassName } from "../components/ScreenLayout";
 import Scrollable from "../components/Scrollable";
 import { getHomeGameProjects, getMyGameProjects, postCreateNewProject } from "../api";
@@ -13,6 +12,7 @@ import LineLoader from "../components/LineLoader";
 import styles from "./styles.module.css";
 import PublishedGames from "./PublishedGames";
 import TipOfTheDay from "./TipOfTheDay";
+import { useTranslation } from "react-i18next";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -21,6 +21,7 @@ const HomePage = () => {
   const [isLoading, setLoading] = useState(true);
   const { isAuthenticated } = useAuth();
   const { showError } = useShowAlertNotification();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const loadData = async () => {
@@ -57,7 +58,7 @@ const HomePage = () => {
         <div className={styles["main-container"]}>
           <LineLoader isLoading={isLoading} />
           <h1>Shelngn</h1>
-          <h2>Collaborative gameplay prototyping tool</h2>
+          <h2>{t('home.description')}</h2>
           <TipOfTheDay />
 
           {isAuthenticated && !!myGameProjects && (
