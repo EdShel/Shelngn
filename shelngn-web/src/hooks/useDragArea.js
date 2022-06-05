@@ -18,10 +18,7 @@ const useDragArea = ({ onDropped } = {}) => {
         ev.stopPropagation();
 
         const allowed = ev.dataTransfer.effectAllowed;
-        console.log(allowed)
         ev.dataTransfer.dropEffect = ('move' === allowed || 'linkMove' === allowed) ? 'move' : 'copy';
-
-        // ev.dataTransfer.dropEffect = "move";
       },
       onDragLeave: (ev) => {
         ev.preventDefault();
@@ -31,7 +28,6 @@ const useDragArea = ({ onDropped } = {}) => {
         }
       },
       onDrop: (ev) => {
-        console.log('DROP')
         ev.preventDefault();
         ev.stopPropagation();
         setDraggingOver(false);

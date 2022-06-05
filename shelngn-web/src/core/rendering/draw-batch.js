@@ -27,14 +27,14 @@ export const begin = () => {
 };
 
 export const flush = () => {
-  const vertexBuffer = gl.createBuffer(); // TODO: reuse from previous call
+  const vertexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   gl.bufferData(
     gl.ARRAY_BUFFER,
     new Float32Array(queuedVerticesBuffer),
     gl.STATIC_DRAW
   );
-  const indexBuffer = gl.createBuffer(); // TODO: reuse from previous call
+  const indexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
   gl.bufferData(
     gl.ELEMENT_ARRAY_BUFFER,

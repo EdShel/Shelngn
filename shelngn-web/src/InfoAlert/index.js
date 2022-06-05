@@ -7,10 +7,10 @@ import styles from "./styles.module.css";
 const ShowNotificationContext = React.createContext();
 
 export const InfoAlertProvider = ({ children }) => {
-  const [notifications, setNotifications] = useState([]);
+  const [notificationsQueue, setNotificationsQueue] = useState([]);
 
   const showNotification = useCallback(
-    (notification) => setNotifications((oldState) => [...oldState, notification]),
+    (notification) => setNotificationsQueue((oldState) => [...oldState, notification]),
     []
   );
   const showNotificationsShortcuts = useMemo(
@@ -21,11 +21,11 @@ export const InfoAlertProvider = ({ children }) => {
     [showNotification]
   );
 
-  const topMostNotification = notifications[0];
+  const topMostNotification = notificationsQueue[0];
 
   const handleClose = useCallback(() => {
-    setNotifications((oldNotifications) => oldNotifications.slice(1));
-  }, [setNotifications]);
+    setNotificationsQueue((oldNotifications) => oldNotifications.slice(1));
+  }, [setNotificationsQueue]);
 
   useEffect(() => {
     if (!topMostNotification || !topMostNotification.autoClose) {
@@ -56,7 +56,7 @@ export const InfoAlertProvider = ({ children }) => {
               <LineLoader loadTimeMilliseconds={2500} isLoading />
             </div>
           )}
-          {notifications.length > 1 && `(1/${notifications.length})`} {topMostNotification.text}
+          {notificationsQueue.length > 1 && `(1/${notificationsQueue.length})`} {topMostNotification.text}
           <button onClick={handleClose} className={styles.close}>
             <img src={crossIcon} alt="Close" />
           </button>

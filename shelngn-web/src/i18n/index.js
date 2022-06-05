@@ -6,7 +6,7 @@ import uk from "./uk";
 const resources = { en, uk };
 i18n.use(initReactI18next).init({
   resources,
-  lng: "en",
+  lng: localStorage.getItem("language") || "en",
   interpolation: {
     escapeValue: false,
   },

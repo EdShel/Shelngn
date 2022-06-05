@@ -23,8 +23,13 @@ p {
 
 body {
   background-color: var(--screen-background);
-  font-family: "Quicksand", sans-serif;
   color: var(--text-color);
+}
+
+button,
+input,
+body {
+  font-family: "Quicksand", sans-serif;
 }
 
 #root {

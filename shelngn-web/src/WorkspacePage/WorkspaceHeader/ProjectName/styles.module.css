@@ -4,7 +4,6 @@
   outline: none;
   color: var(--text-color);
   font-size: 1rem;
-  font-family: "Quicksand";
   border: 2px solid transparent;
   border-radius: 8px;
 }

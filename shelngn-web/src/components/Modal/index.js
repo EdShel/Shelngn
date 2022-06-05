@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import Button from "../Button";
 import styles from "./styles.module.css";
 
@@ -31,9 +32,13 @@ Modal.Title = ({ text }) => <h2 className={styles.title}>{text}</h2>;
 
 Modal.Text = ({ text }) => <p className={styles.text}>{text}</p>;
 
-Modal.OkCancelButtons = ({ onOk, onCancel, disabled = false }) => (
-  <div className={styles["buttons-row"]}>
-    <Button type="cancel" text="Cancel" onPress={onCancel} disabled={disabled} />
-    <Button type="primary" text="Ok" onPress={onOk} disabled={disabled} />
-  </div>
-);
+const OkCancelButtons = ({ onOk, onCancel, disabled = false }) => {
+  const { t } = useTranslation();
+  return (
+    <div className={styles["buttons-row"]}>
+      <Button type="cancel" text={t("common.cancel")} onPress={onCancel} disabled={disabled} />
+      <Button type="primary" text={t("common.ok")} onPress={onOk} disabled={disabled} />
+    </div>
+  );
+};
+Modal.OkCancelButtons = OkCancelButtons;

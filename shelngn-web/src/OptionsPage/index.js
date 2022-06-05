@@ -7,7 +7,6 @@ import {
   deleteScreenshot,
   deleteUnpublishProject,
   getProjectInfo,
-  getScreenshotUrl,
   postAddMember,
   postPublishProject,
 } from "../api";
@@ -26,6 +25,7 @@ import styles from "./styles.module.css";
 import PublishButton from "./PublishButton";
 import ScreenshotsList from "./ScreenshotsList";
 import Scrollable from "../components/Scrollable";
+import { useTranslation } from "react-i18next";
 
 const OptionsPage = () => {
   const workspaceId = useWorkspaceId();
@@ -39,6 +39,10 @@ const OptionsPage = () => {
   const [isPublishLoading, setPublishLoading] = useState(false);
   const navigate = useNavigate();
   const { showError, showInfo } = useShowAlertNotification();
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation();
 
   const fetchProjectInfo = useCallback(async () => {
     try {
@@ -99,7 +103,8 @@ const OptionsPage = () => {
               <div className={styles["publish-button-container"]}>
                 {project.publication.isPublished && (
                   <p>
-                    Currently published version <b>{new Date(project.publication.date).toLocaleString("en")}</b>
+                    {t("options.currentlyPublishedVersion")}{" "}
+                    <b>{new Date(project.publication.date).toLocaleString(language)}</b>
                   </p>
                 )}
                 <PublishButton
@@ -111,7 +116,9 @@ const OptionsPage = () => {
             </div>
 
             <section>
-              <h2>Members ({project.members.length})</h2>
+              <h2>
+                {t("options.members", { count: project.members.length })} ({project.members.length})
+              </h2>
               <div className={styles.members}>
                 {project.members.map((member) => (
                   <MemberCard
@@ -126,7 +133,7 @@ const OptionsPage = () => {
                 ))}
                 <button className={styles["create-user-card"]} onClick={() => setShowAddMember(true)}>
                   <img src={plusIcon} alt="Add" />
-                  Add new member
+                  {t("options.addNewMember")}
                 </button>
               </div>
             </section>
@@ -139,31 +146,31 @@ const OptionsPage = () => {
       </Scrollable>
       {showDeleteProject && (
         <ConfirmModal
-          title="Delete project"
-          text="Do you really want to delete the project?"
+          title={t("options.deleteProject")}
+          text={t("options.confirmDeleteProject")}
           onCancel={() => setShowDeleteProject(false)}
           onOk={async () => {
             try {
               await deleteProject(workspaceId);
               navigate(UrlTo.home());
             } catch (ex) {
-              showError("Cannot delete the project");
+              showError(t("options.cannotDelete"));
             }
           }}
         />
       )}
       {memberIdToDelete && (
         <ConfirmModal
-          title="Remove member"
-          text="Do you really want to remove this member?"
+          title={t("options.removeMember")}
+          text={t("options.confirmRemoveMember")}
           onOk={async () => {
             try {
               await deleteMember(workspaceId, memberIdToDelete);
-              showInfo("Removed member");
+              showInfo(t("options.removedMember"));
               setMemberIdToDelete(null);
               await fetchProjectInfo();
             } catch (ex) {
-              showError("Couldn't remove the member");
+              showError(t("options.cannotRemoveMember"));
             }
           }}
           onCancel={() => setMemberIdToDelete(null)}
@@ -171,19 +178,19 @@ const OptionsPage = () => {
       )}
       {screenshotIdToDelete && (
         <ConfirmModal
-          title="Delete screenshot"
-          text="Do you really want to delete the screenshot? It will be lost completely"
+          title={t("options.deleteScreenshot")}
+          text={t("options.confirmDeleteScreenshot")}
           onOk={async () => {
             try {
               await deleteScreenshot(workspaceId, screenshotIdToDelete);
-              showInfo("Removed screenshot");
+              showInfo(t("options.removedScreenshot"));
               setScreenshotIdToDelete(null);
               setProject((oldProj) => ({
                 ...oldProj,
                 screenshots: oldProj.screenshots.filter((s) => s.id !== screenshotIdToDelete),
               }));
             } catch (ex) {
-              showError("Couldn't delete the screenshot");
+              showError(t("options.cannotDeleteScreenshot"));
             }
           }}
           onCancel={() => setScreenshotIdToDelete(null)}
@@ -194,12 +201,12 @@ const OptionsPage = () => {
           onAddMember={async ({ emailOrUserName }) => {
             try {
               await postAddMember(workspaceId, emailOrUserName);
-              showInfo("Project member has been added");
+              showInfo(t("options.addedProjectMember"));
               setShowAddMember(false);
               await fetchProjectInfo();
             } catch (e) {
               const errorText = e.response?.data.Message;
-              showError(errorText || "Could not add project member");
+              showError(errorText || t("options.cannotAddProjectMember"));
             }
           }}
           onCancel={() => setShowAddMember(false)}

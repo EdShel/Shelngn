@@ -3,18 +3,20 @@ import { getScreenshotUrl } from "../../api";
 import useWorkspaceId from "../../WorkspacePage/hooks/useWorkspaceId";
 import crossIcon from "../../assets/cross.svg";
 import styles from "./styles.module.css";
+import { useTranslation } from "react-i18next";
 
 const ScreenshotsList = ({ screenshots, onDeleteScreenshot }) => {
   const workspaceId = useWorkspaceId();
+  const { t } = useTranslation();
 
   return (
     <div className={styles.container}>
-      <h2>Screenshots ({screenshots.length})</h2>
+      <h2>
+        {t("options.screenshots", { count: screenshots.length })} ({screenshots.length})
+      </h2>
 
       {screenshots.length === 0 && (
-        <p className={styles.placeholder}>
-          There are no screenshots for your game yet. <b>Press F12</b> during debug session to create one.
-        </p>
+        <p className={styles.placeholder} dangerouslySetInnerHTML={{ __html: t("options.noScreenshots") }} />
       )}
 
       <div className={styles.list}>
@@ -23,7 +25,7 @@ const ScreenshotsList = ({ screenshots, onDeleteScreenshot }) => {
             <img
               className={styles["screenshot-image"]}
               key={s.id}
-              alt="Screenshot"
+              alt={t('options.screenshot')}
               src={getScreenshotUrl(workspaceId, s.imageUrl)}
             />
             <img

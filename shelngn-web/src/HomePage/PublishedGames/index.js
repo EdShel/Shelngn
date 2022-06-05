@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { getScreenshotUrl } from "../../api";
 import { ReactComponent as PlayIcon } from "../../assets/play.svg";
@@ -7,15 +8,17 @@ import UrlTo from "../../UrlTo";
 import styles from "./styles.module.css";
 
 const PublishedGames = ({ games }) => {
+  const { t } = useTranslation();
+
   return (
     <section aria-labelledby="publishedGamesHeader" className={styles.container}>
-      <h2 id="publishedGamesHeader">Check out all games</h2>
+      <h2 id="publishedGamesHeader">{t("home.checkOutAllGames")}</h2>
       <div className={styles["projects-grid"]}>
         {games.map((game) => (
           <Game game={game} key={game.id} />
         ))}
       </div>
-      {games.length === 0 && <p>No games are currently published. Be the first one who shares their prototype!</p>}
+      {games.length === 0 && <p>{t("home.noPublishedGames")}</p>}
     </section>
   );
 };
@@ -24,6 +27,7 @@ export default PublishedGames;
 
 const Game = ({ game }) => {
   const [currentScreenshot, setCurrentScreenshot] = useState(0);
+  const { t } = useTranslation();
 
   const handleChangeSlide = () => {
     if (!game.screenshots.length) {
@@ -55,7 +59,7 @@ const Game = ({ game }) => {
       </div>
       <p className={styles["game-name"]}>{game.projectName}</p>
       <p className={styles.members}>
-        Author{!!game.members.length && "s"}:{" "}
+        {t("home.authors", { count: game.members.length })}:{" "}
         {game.members
           .slice(0, 3)
           .map((m) => m.userName)

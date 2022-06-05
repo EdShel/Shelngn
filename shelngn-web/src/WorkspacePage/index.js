@@ -14,7 +14,7 @@ const WorkspacePage = () => {
     <WorkspaceContextProvider>
       <ScreenLayout>
         <PageMeta />
-          <WorkspaceHeader className={headerClassName} />
+        <WorkspaceHeader className={headerClassName} />
         <div className={clsx(styles["screen-content"], contentClassName)}>
           <SplitPane className={styles.split} left={<ProjectFiles />} right={<OpenEditors className={styles.code} />} />
         </div>

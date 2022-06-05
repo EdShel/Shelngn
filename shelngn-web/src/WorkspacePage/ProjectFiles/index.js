@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { postFileUploadRequest } from "../../api";
 import ContextMenu from "../../components/ContextMenu";
@@ -13,7 +14,7 @@ import styles from "./styles.module.css";
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
-const retry = (operation, delay, retries) =>
+const retry = (operation, { delay, retries }) =>
   new Promise((resolve, reject) => {
     return operation()
       .then(resolve)
@@ -29,28 +30,27 @@ const retry = (operation, delay, retries) =>
   });
 
 async function uploadFileChunked(uploadUrl, file) {
-  const chunksSizeBytes = 5 * 1024;
+  const chunksSizeBytes = 1 * 1024 * 1024; // 1MB
   const chunksCount = Math.ceil(file.size / chunksSizeBytes);
   for (let i = 0; i < chunksCount; i++) {
     const chunkBegin = i * chunksSizeBytes;
-    const chunkEnd =  Math.min(chunkBegin + chunksSizeBytes, file.size);
+    const chunkEnd = Math.min(chunkBegin + chunksSizeBytes, file.size);
 
     await retry(
       async () => {
         const response = await fetch(uploadUrl, {
           method: "POST",
           headers: {
-            "Content-Range": `bytes 0-${file.size - 1}/${file.size}`,
+            "Content-Range": `bytes ${chunkBegin}-${chunkEnd - 1}/${file.size}`,
             "Content-Type": file.type,
           },
-          body: file,
+          body: file.slice(chunkBegin, chunkEnd),
         });
         if (!response.ok) {
           throw new Error("Server rejected the file.");
         }
       },
-      500,
-      5
+      { delay: 500, retries: 5 }
     );
   }
 }
@@ -61,6 +61,7 @@ const ProjectFiles = ({ className }) => {
   const projectFiles = useSelector(getProjectFiles);
   const [contextMenu, setContextMenu] = useState(null);
   const { showError } = useShowAlertNotification();
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   const handleContextMenu = (e) => {
@@ -72,33 +73,32 @@ const ProjectFiles = ({ className }) => {
 
     let items = [];
     if (e.file) {
-      items = [{ text: "Delete file", onClick: () => workspaceSend("deleteFile", e.file.id) }];
+      items = [{ text: t("workspace.deleteFile"), onClick: () => workspaceSend("deleteFile", e.file.id) }];
     }
     if (e.folder) {
       items = [
         {
-          text: "Create script",
+          text: t("workspace.createScript"),
           onClick: async () => {
-            const fileName = prompt("Enter script name");
+            const fileName = prompt(t("workspace.enterScriptName"));
             if (!fileName) {
               return;
             }
             const fileNameWithExt = fileName + ".js";
             const fileId = e.folder.id === "." ? fileNameWithExt : `${e.folder.id}/${fileNameWithExt}`;
             await workspaceSend("createFile", e.folder.id, fileNameWithExt);
-            // await workspaceSend("dumpFile", e.folder.id === "." ? fileName : `${e.folder.id}/${fileName}.js`, "");
             dispatch(openFile(fileId, fileNameWithExt));
           },
         },
         {
-          text: "Create folder",
+          text: t("workspace.createFolder"),
           onClick: () => {
-            const name = prompt("Enter folder name");
+            const name = prompt(t("workspace.enterFolderName"));
             workspaceSend("createFolder", e.folder.id, name);
           },
         },
         e.folder !== projectFiles && {
-          text: "Delete folder",
+          text: t("workspace.deleteFolder"),
           onClick: async () => {
             try {
               await workspaceInvoke("deleteFolder", e.folder.id);
@@ -137,25 +137,15 @@ const ProjectFiles = ({ className }) => {
           const responseData = await postFileUploadRequest(workspaceId, folder.id + "/" + fileName, file.type);
           uploadUrl = responseData.signedUrl;
         } catch (ex) {
-          showError("The file name or the file itself are invalid.");
+          showError(t("invalidFile"));
           return;
         }
         try {
-          const response = await fetch(uploadUrl, {
-            method: "POST",
-            headers: {
-              "Content-Range": `bytes 0-${file.size - 1}/${file.size}`,
-              "Content-Type": file.type,
-            },
-            body: file,
-          });
-          if (!response.ok) {
-            showError("The server rejected the file.");
-            return;
-          }
+          await uploadFileChunked(uploadUrl, file);
+
           await workspaceSend("uploadFile");
         } catch (ex) {
-          showError("Error while uploading the file.");
+          showError(t("workspace.errorWhileUploadingFile"));
         }
       }
     }

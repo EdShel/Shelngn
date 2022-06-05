@@ -41,7 +41,8 @@ services.Configure<ConnectionStringProvider>(builder.Configuration.GetSection("C
 services.Configure<AuthenticationSettings>(builder.Configuration.GetSection("AuthenticationSettings"));
 AuthenticationSettings jwtSettings = configuration.GetSection("AuthenticationSettings").Get<AuthenticationSettings>();
 services.Configure<GameProjectCreateSettings>(configuration.GetSection("GameProjectCreationSettings"));
-string[] corsAllowedOrigins = configuration.GetValue<string>("CorsAllowedOrigins").Split(";");
+string[] corsAllowedOrigins = configuration.GetValue<string>("CorsAllowedOrigins")?.Split(";")
+    ?? throw new InvalidOperationException("CORS configuration 'CorsAllowedOrigins' is not given.");
 
 TokenValidationParameters? jwtValidationOptions = new TokenValidationParameters
 {

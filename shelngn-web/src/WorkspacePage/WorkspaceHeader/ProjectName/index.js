@@ -6,12 +6,14 @@ import { useWorkspaceDispatch } from "../../WorkspaceContext";
 import Hint from "../../../components/Hint";
 import useDebouncedCallback from "../../../hooks/useDebouncedCallback";
 import styles from "./styles.module.css";
+import { useTranslation } from "react-i18next";
 
 const ProjectName = (className) => {
   const projectName = useSelector(getProjectName);
   const [enteredProjectName, setEnteredProjectName] = useState(null);
   const { workspaceSend } = useWorkspaceDispatch();
   const initialProjectNameRef = useRef();
+  const { t } = useTranslation();
 
   const sendNewProjectName = (newProjectName) => {
     workspaceSend("renameProject", newProjectName);
@@ -46,12 +48,12 @@ const ProjectName = (className) => {
   };
 
   return (
-    <Hint className={clsx(styles["project-name"], className)} renderContent={() => "Rename"}>
+    <Hint className={clsx(styles["project-name"], className)} renderContent={() => t("workspace.rename")}>
       <input
         name="projectName"
         onFocus={handleFocus}
         onBlur={handleBlur}
-        value={enteredProjectName ?? projectName ?? "Loading..."}
+        value={enteredProjectName ?? projectName ?? t("workspace.loading")}
         onKeyDown={handleKeyPress}
         onChange={handleChange}
       />

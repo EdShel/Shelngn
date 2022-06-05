@@ -9,18 +9,20 @@ import { NavLink } from "react-router-dom";
 import UrlTo from "../../UrlTo";
 import clsx from "clsx";
 import LanguagePicker from "./LanguagePicker";
+import { useTranslation } from "react-i18next";
 
 const SideBar = ({ className }) => {
   const workspaceId = useWorkspaceId();
+  const { t } = useTranslation();
 
   return (
     <nav className={clsx(styles["side-bar"], className)}>
       <div className={styles["nav-buttons"]}>
-        <Button iconSrc={homeIcon} text="Home" link={UrlTo.home()} />
+        <Button iconSrc={homeIcon} text={t("sidebar.home")} link={UrlTo.home()} />
         {workspaceId && (
           <>
-            <Button iconSrc={wrenchIcon} text="Workspace" link={UrlTo.workspace(workspaceId)} />
-            <Button iconSrc={gearsIcon} text="Options" link={UrlTo.options(workspaceId)} />
+            <Button iconSrc={wrenchIcon} text={t("sidebar.workspace")} link={UrlTo.workspace(workspaceId)} />
+            <Button iconSrc={gearsIcon} text={t("sidebar.options")} link={UrlTo.options(workspaceId)} />
           </>
         )}
       </div>

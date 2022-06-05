@@ -5,17 +5,19 @@ import UrlTo from "../../UrlTo";
 import { ReactComponent as GearsIcon } from "../../assets/gears.svg";
 import styles from "./styles.module.css";
 import Button from "../../components/Button";
+import { useTranslation } from "react-i18next";
 
 const GameProjectsList = ({ gameProjects, onCreateProject, className }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <section className={clsx(className)} aria-labelledby="gameProjectsList">
       <div className={styles.header}>
         <h2 id="gameProjectsList" className={styles.title}>
-          Your projects ({gameProjects?.length || 0})
+          {t("home.yourProjects")} ({gameProjects?.length || 0})
         </h2>
-        <Button text="Create new project for free" onPress={onCreateProject} />
+        <Button text={t("home.createNewProject")} onPress={onCreateProject} />
       </div>
       <div className={styles["game-projects-list"]}>
         {gameProjects?.map((gameProject) => (
