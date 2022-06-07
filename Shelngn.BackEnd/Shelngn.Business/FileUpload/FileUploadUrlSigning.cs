@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Shelngn.Services.FileUpload;
+﻿using Shelngn.Services.FileUpload;
 using System.Security.Cryptography;
 using System.Text;
 

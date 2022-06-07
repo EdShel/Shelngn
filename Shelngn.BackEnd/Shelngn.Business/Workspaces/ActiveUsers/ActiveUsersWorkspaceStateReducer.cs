@@ -1,6 +1,5 @@
 ﻿using Shelngn.Entities;
 using Shelngn.Services;
-using Shelngn.Services.Workspaces;
 using Shelngn.Services.Workspaces.ActiveUsers;
 
 namespace Shelngn.Business.Workspaces.ActiveUsers
