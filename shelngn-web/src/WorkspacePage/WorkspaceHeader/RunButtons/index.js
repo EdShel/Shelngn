@@ -8,6 +8,8 @@ import { useShowAlertNotification } from "../../../InfoAlert";
 import { ReactComponent as PlayIcon } from "../../../assets/play.svg";
 import UrlTo from "../../../UrlTo";
 import styles from "./styles.module.css";
+import Hint from "../../../components/Hint";
+import { useTranslation } from "react-i18next";
 
 const RunButtons = () => {
   const workspaceId = useWorkspaceId();
@@ -17,6 +19,7 @@ const RunButtons = () => {
   const openFiles = useSelector(getOpenFiles);
   const progress = useSelector(getProjectBuildProgress);
   const error = useSelector(getProjectBuildError);
+  const {t} = useTranslation();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -40,11 +43,11 @@ const RunButtons = () => {
   };
 
   return (
-    <div className={styles.buttons}>
+    <Hint className={styles.buttons} renderContent={() => <p className={styles.hint}>{t('workspace.run')}</p>}>
       <button onClick={handleRun} disabled={progress} className={styles.run}>
         <PlayIcon />
       </button>
-    </div>
+    </Hint>
   );
 };
 

@@ -39,6 +39,7 @@ const en = {
       dragNDrop: "Drag and drop <b>resource files</b> into the project tree",
       pressArrow: "Press the <b>arrow</b> icon to play your game",
       uploadedFile: "The file has been uploaded",
+      run: "Run the game",
     },
     options: {
       delete: "delete",

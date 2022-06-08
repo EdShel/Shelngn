@@ -2,6 +2,11 @@
   align-self: stretch;
 }
 
+.hint {
+  text-align: center;
+  min-width: 128px;
+}
+
 .run {
   background: none;
   outline: none;
@@ -12,7 +17,8 @@
   padding-right: 8px;
 }
 
-.run:hover, .run:focus {
+.run:hover,
+.run:focus {
   background-color: var(--screen-background);
 }
 
@@ -25,6 +31,6 @@
 }
 
 .run:disabled {
-    opacity: 0.5;
-    cursor: progress;
+  opacity: 0.5;
+  cursor: progress;
 }
