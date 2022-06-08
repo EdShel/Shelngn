@@ -27,6 +27,10 @@ export const begin = () => {
 };
 
 export const flush = () => {
+  if (!queuedIndicesBuffer.length) {
+    began = false;
+    return;
+  }
   const vertexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   gl.bufferData(
