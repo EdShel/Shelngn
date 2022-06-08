@@ -5,6 +5,7 @@ import { apiUrl } from "../../constants";
 import AppStorage from "../../AppStorage";
 import { postRefresh } from "../../api";
 import useWorkspaceId from '../hooks/useWorkspaceId';
+import { resetWorkspace } from "../reducer";
 
 const WorkspaceContext = React.createContext();
 
@@ -48,6 +49,7 @@ export const WorkspaceContextProvider = ({ children }) => {
     const init = async () => {
       await connect();
 
+      dispatch(resetWorkspace());
       connection.send("gameProject");
       connection.send("ls");
     };

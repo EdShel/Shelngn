@@ -38,6 +38,7 @@ const en = {
       chooseJsFile: "Choose a <b>*.js</b> file to start writing code",
       dragNDrop: "Drag and drop <b>resource files</b> into the project tree",
       pressArrow: "Press the <b>arrow</b> icon to play your game",
+      uploadedFile: "The file has been uploaded",
     },
     options: {
       delete: "delete",

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { getFileSource } from "../../../api";
+import Scrollable from "../../../components/Scrollable";
 import useWorkspaceId from "../../hooks/useWorkspaceId";
+import styles from "./styles.module.css";
 
 const ImagePreview = ({ currentFileId }) => {
   const workspaceId = useWorkspaceId();
@@ -25,9 +27,9 @@ const ImagePreview = ({ currentFileId }) => {
   }, [currentFileId, workspaceId]);
 
   return (
-    <div>
+    <Scrollable className={styles.scrollable}>
       <img src={imageUrl} alt="Preview" />
-    </div>
+    </Scrollable>
   );
 };
 

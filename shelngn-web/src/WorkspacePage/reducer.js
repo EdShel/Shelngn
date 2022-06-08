@@ -16,6 +16,8 @@ const READ_FILE = "workspace/readFile";
 const EDIT_FILE = "workspace/editFile";
 const DUMP_FILE = "workspace/dumpFile";
 
+const RESET_WORKSPACE = "workspace/reset";
+
 const initialState = {
   users: [],
   project: {
@@ -154,6 +156,8 @@ const reducer = (state = initialState, action) => {
           },
         },
       };
+    case RESET_WORKSPACE:
+      return initialState;
     default:
       return state;
   }
@@ -184,4 +188,8 @@ export const editFile = (fileId, newText) => ({
 export const dumpFile = (fileId) => ({
   type: DUMP_FILE,
   fileId,
+});
+
+export const resetWorkspace = () => ({
+  type: RESET_WORKSPACE,
 });

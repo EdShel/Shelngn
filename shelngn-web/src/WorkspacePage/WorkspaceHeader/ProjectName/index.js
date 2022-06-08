@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { getProjectName } from "../../selectors";
 import { useWorkspaceDispatch } from "../../WorkspaceContext";
@@ -13,7 +13,14 @@ const ProjectName = (className) => {
   const [enteredProjectName, setEnteredProjectName] = useState(null);
   const { workspaceSend } = useWorkspaceDispatch();
   const initialProjectNameRef = useRef();
+  const editTimeoutRef = useRef(null);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (!editTimeoutRef.current && enteredProjectName) {
+      setEnteredProjectName(projectName);
+    }
+  }, [projectName]);
 
   const sendNewProjectName = (newProjectName) => {
     workspaceSend("renameProject", newProjectName);
@@ -45,6 +52,13 @@ const ProjectName = (className) => {
       sendNewProjectNameDebounced(text);
     }
     setEnteredProjectName(text);
+
+    if (editTimeoutRef.current) {
+      clearTimeout(editTimeoutRef.current);
+    }
+    setTimeout(() => {
+      editTimeoutRef.current = null;
+    }, 2000);
   };
 
   return (

@@ -60,7 +60,7 @@ const ProjectFiles = ({ className }) => {
   const { workspaceSend, workspaceInvoke } = useWorkspaceDispatch();
   const projectFiles = useSelector(getProjectFiles);
   const [contextMenu, setContextMenu] = useState(null);
-  const { showError } = useShowAlertNotification();
+  const { showError, showInfo } = useShowAlertNotification();
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
@@ -144,6 +144,7 @@ const ProjectFiles = ({ className }) => {
           await uploadFileChunked(uploadUrl, file);
 
           await workspaceSend("uploadFile");
+          showInfo(t("workspace.uploadedFile"));
         } catch (ex) {
           showError(t("workspace.errorWhileUploadingFile"));
         }
