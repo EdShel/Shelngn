@@ -17,8 +17,15 @@ const useDragArea = ({ onDropped } = {}) => {
         ev.preventDefault();
         ev.stopPropagation();
 
-        const allowed = ev.dataTransfer.effectAllowed;
-        ev.dataTransfer.dropEffect = ('move' === allowed || 'linkMove' === allowed) ? 'move' : 'copy';
+        if (
+          ev.dataTransfer.items &&
+          /image|application\/x-folderid|application\/x-fileid/.test(ev.dataTransfer.items[0].type)
+        ) {
+          const allowed = ev.dataTransfer.effectAllowed;
+          ev.dataTransfer.dropEffect = "move" === allowed || "linkMove" === allowed ? "move" : "copy";
+        } else {
+          ev.dataTransfer.dropEffect = "none";
+        }
       },
       onDragLeave: (ev) => {
         ev.preventDefault();

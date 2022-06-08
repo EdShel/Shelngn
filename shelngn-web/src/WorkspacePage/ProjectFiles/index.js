@@ -94,6 +94,9 @@ const ProjectFiles = ({ className }) => {
           text: t("workspace.createFolder"),
           onClick: () => {
             const name = prompt(t("workspace.enterFolderName"));
+            if (!name) {
+              return;
+            }
             workspaceSend("createFolder", e.folder.id, name);
           },
         },

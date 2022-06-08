@@ -7,7 +7,7 @@ const PublishButton = ({ isPublished, isLoading, onTogglePublish }) => {
 
   return (
     <Button
-      text={isPublished ? t("options.publish") : t("options.unpublish")}
+      text={isPublished ? t("options.unpublish") : t("options.publish")}
       onPress={onTogglePublish}
       disabled={isLoading}
     />
