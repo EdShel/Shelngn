@@ -5,6 +5,8 @@ import Shader from "./shader";
 import Texture from "./texture"; // eslint-disable-line no-unused-vars
 import { FLOAT, FLOAT2, INT32, MATRIX4X4 } from "./vertex-data-types";
 import { degToRad } from "../util/math";
+import getColor from "./ColorResolver";
+import { clearCanvas } from ".";
 
 /** @type Shader */
 let drawingShader = null;
@@ -97,14 +99,13 @@ const Draw = {
     initializeIfNeed();
     setShader(drawingShader);
     setTexture(texture);
-    const rotationMatrix = mat4.create();
     let coords = [
       [x, y],
       [x + width, y],
       [x + width, y + height],
       [x, y + height],
     ];
-    if (rotation) {
+    if (typeof rotation !== 'undefined') {
       let originX = 0;
       let originY = 0;
       if (origin === "center") {
@@ -113,12 +114,13 @@ const Draw = {
       } else if (Array.isArray(origin)) {
         [originX = 0, originY = 0] = origin;
       }
-      const originVec = vec3.fromValues(originX, originY, 0);
+      const originVec = vec3.fromValues(x + originX, y + originY, 0);
+      const rotationMatrix = mat4.create();
       mat4.translate(rotationMatrix, rotationMatrix, originVec);
       mat4.rotateZ(rotationMatrix, rotationMatrix, degToRad(rotation));
       vec3.negate(originVec, originVec);
       mat4.translate(rotationMatrix, rotationMatrix, originVec);
-      
+
       let vec = vec2.create();
       coords = coords.map(([x, y]) => {
         vec[0] = x;
@@ -166,6 +168,10 @@ const Draw = {
       mat4.scale(projectionMatrix, projectionMatrix, [camera2D.zoom, camera2D.zoom, camera2D.zoom]);
     }
     drawingShader.setUniform("u_transformation", projectionMatrix);
+  },
+  background(colorText) {
+    const color = getColor(colorText);
+    clearCanvas(color);
   },
 };
 export default Draw;

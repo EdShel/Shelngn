@@ -31,6 +31,7 @@ export function runner(canvas, { loadBundle, textureUriResolver, onError, onInfo
 
     const proxyObjects = {
       Draw: {
+        ...Draw,
         texture(textureUrl, x, y) {
           const txt = getTexture(textureUrl);
           Draw.texture(txt, x, y);
