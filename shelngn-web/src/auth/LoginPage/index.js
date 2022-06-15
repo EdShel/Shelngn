@@ -9,12 +9,14 @@ import styles from "./styles.module.css";
 import ButtonBack from "../../components/ButtonBack";
 import ScreenLayout, { contentClassName } from "../../components/ScreenLayout";
 import { postLogin } from "../../api";
+import { useTranslation } from "react-i18next";
 
 const LoginPage = () => {
   const emailField = "email";
   const passwordField = "password";
 
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const formik = useFormik({
     initialValues: {
@@ -29,16 +31,16 @@ const LoginPage = () => {
 
   return (
     <ScreenLayout>
-      <Form className={contentClassName} title="Sign up">
+      <Form className={contentClassName} title={t("auth.signIn")}>
         <InputField
-          labelText="Email"
+          labelText={t("auth.email")}
           name={emailField}
           value={formik.values[emailField]}
           onChange={formik.handleChange}
           required
         />
         <InputField
-          labelText="Password"
+          labelText={t("auth.password")}
           name={passwordField}
           value={formik.values[passwordField]}
           onChange={formik.handleChange}
@@ -46,8 +48,8 @@ const LoginPage = () => {
           required
         />
         <div className={styles.buttons}>
-          <ButtonBack text="Back" type="cancel" />
-          <Button text="Login" onPress={formik.handleSubmit} disabled={formik.isSubmitting} />
+          <ButtonBack text={t("auth.back")} type="cancel" />
+          <Button text={t("auth.login")} onPress={formik.handleSubmit} disabled={formik.isSubmitting} />
         </div>
       </Form>
     </ScreenLayout>

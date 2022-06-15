@@ -7,6 +7,7 @@ const useDragArea = ({ onDropped } = {}) => {
   return {
     dragAreaProps: {
       onDragEnter: (ev) => {
+        console.log('Herer')
         ev.preventDefault();
         ev.stopPropagation();
         if (dragCountRef.current++ === 0) {
@@ -17,6 +18,8 @@ const useDragArea = ({ onDropped } = {}) => {
         ev.preventDefault();
         ev.stopPropagation();
 
+        console.log('ev.dataTransfer.items[0].type', ev.dataTransfer.items[0].type)
+        
         if (
           ev.dataTransfer.items &&
           /image|application\/x-folderid|application\/x-fileid/.test(ev.dataTransfer.items[0].type)

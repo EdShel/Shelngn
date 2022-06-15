@@ -75,6 +75,16 @@ const en = {
       noScreenshots: "There are no screenshots for your game yet. <b>Press F12</b> during debug session to create one.",
       screenshot: "Screenshot",
     },
+    auth: {
+      signUp: "Sign up",
+      email: "Email",
+      password: "Password",
+      userName: "User name",
+      back: "Back",
+      createAccount: "Create account",
+      signIn: "Sign in",
+      login: "Login",
+    },
   },
 };
 export default en;

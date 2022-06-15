@@ -10,6 +10,7 @@ import ButtonBack from "../../components/ButtonBack";
 import ScreenLayout, { contentClassName } from "../../components/ScreenLayout";
 import { useShowAlertNotification } from "../../InfoAlert";
 import { postLogin, postRegister } from "../../api";
+import { useTranslation } from "react-i18next";
 
 const RegisterPage = () => {
   const emailField = "email";
@@ -18,6 +19,7 @@ const RegisterPage = () => {
 
   const navigate = useNavigate();
   const { showError } = useShowAlertNotification();
+  const {t} = useTranslation();
 
   const formik = useFormik({
     initialValues: {
@@ -39,16 +41,16 @@ const RegisterPage = () => {
 
   return (
     <ScreenLayout>
-      <Form className={contentClassName} title="Sign up">
+      <Form className={contentClassName} title={t('auth.signUp')}>
         <InputField
-          labelText="Email"
+          labelText={t('auth.email')}
           name={emailField}
           value={formik.values[emailField]}
           onChange={formik.handleChange}
           required
         />
         <InputField
-          labelText="Password"
+          labelText={t('auth.password')}
           name={passwordField}
           value={formik.values[passwordField]}
           onChange={formik.handleChange}
@@ -56,14 +58,14 @@ const RegisterPage = () => {
           required
         />
         <InputField
-          labelText="User name"
+          labelText={t('auth.userName')}
           name={userNameField}
           value={formik.values[userNameField]}
           onChange={formik.handleChange}
         />
         <div className={styles.buttons}>
-          <ButtonBack text="Back" type="cancel" />
-          <Button text="Create account" onPress={formik.handleSubmit} disabled={formik.isSubmitting} />
+          <ButtonBack text={t('auth.back')} type="cancel" />
+          <Button text={t('auth.createAccount')} onPress={formik.handleSubmit} disabled={formik.isSubmitting} />
         </div>
       </Form>
     </ScreenLayout>

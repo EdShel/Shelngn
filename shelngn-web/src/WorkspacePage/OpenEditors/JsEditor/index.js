@@ -23,7 +23,7 @@ const JsEditor = ({ currentFile, currentFileId }) => {
   const sendNewCodeDebounced = useDebouncedCallback((fileId, newText) => {
     workspaceSend("dumpFile", fileId, newText);
     dispatch(dumpFile(fileId));
-  }, 2_000);
+  }, 500);
   const handleContentChange = (newText) => {
     dispatch(editFile(currentFileId, newText));
     sendNewCodeDebounced(currentFileId, newText);
